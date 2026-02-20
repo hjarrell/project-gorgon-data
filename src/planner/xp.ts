@@ -62,7 +62,7 @@ export function getXpRequiredForLevel(
 /**
  * Calculate the XP multiplier due to recipe drop-off at higher skill levels.
  *
- * Formula: multiplier = max(dropOffPct, 0.5 ^ (levelsAbove / dropOffRate))
+ * Formula: multiplier = max(dropOffPct, 1 - dropOffPct * floor(levelsAbove / dropOffRate))
  * where levelsAbove = max(0, skillLevel - dropOffLevel).
  *
  * Returns 1.0 if the recipe has no drop-off fields.
@@ -80,7 +80,8 @@ export function calcDropOffMultiplier(
   if (levelsAbove === 0) {
     return 1.0;
   }
-  const rawMultiplier = Math.pow(0.5, levelsAbove / dropOffRate);
+  const steps = Math.floor(levelsAbove / dropOffRate);
+  const rawMultiplier = 1 - dropOffPct * steps;
   return Math.max(dropOffPct, rawMultiplier);
 }
 
