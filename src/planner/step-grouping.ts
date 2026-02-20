@@ -26,6 +26,12 @@ export interface CraftRun {
   levelEnd: number;
   /** The original CraftStep objects in this run */
   steps: CraftStep[];
+  /** The skill this run belongs to. Undefined = the plan's primary skill. */
+  skill?: string;
+  /** Index of the first step in the original steps array */
+  stepStartIndex: number;
+  /** Index of the last step in the original steps array */
+  stepEndIndex: number;
 }
 
 // ============================================================
@@ -37,17 +43,21 @@ export interface CraftRun {
  *
  * E.g., [Butter, Butter, Butter, Cheese, Cheese, Butter] becomes
  * three runs: Butter x3, Cheese x2, Butter x1.
+ *
+ * Runs also break when `step.skill` changes, supporting multi-skill plans.
  */
 export function groupStepsIntoRuns(steps: CraftStep[]): CraftRun[] {
   const runs: CraftRun[] = [];
 
-  for (const step of steps) {
+  for (let i = 0; i < steps.length; i++) {
+    const step = steps[i];
     const last = runs[runs.length - 1];
-    if (last && last.internalName === step.internalName) {
+    if (last && last.internalName === step.internalName && last.skill === step.skill) {
       last.count++;
       last.totalXp += step.xpGained;
       last.totalEffort += step.effortCost;
       last.levelEnd = step.skillLevelAfter;
+      last.stepEndIndex = i;
       if (step.isFirstCraft) last.firstCrafts++;
       last.steps.push(step);
     } else {
@@ -62,6 +72,9 @@ export function groupStepsIntoRuns(steps: CraftStep[]): CraftRun[] {
         levelStart: step.skillLevelBefore,
         levelEnd: step.skillLevelAfter,
         steps: [step],
+        skill: step.skill,
+        stepStartIndex: i,
+        stepEndIndex: i,
       });
     }
   }

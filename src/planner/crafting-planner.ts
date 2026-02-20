@@ -1,9 +1,11 @@
 import type { Recipe } from '../schemas/recipes';
 import type { Skill } from '../schemas/skills';
-import type { CharacterState } from '../character-state';
+import { CharacterState } from '../character-state';
 import type { ItemEffortMap } from './xp';
 import type { RecipeScorer } from './scorers';
-import { initSimulation, stepSimulation, isSimulationDone, buildPlanResult } from './simulation';
+import { initSimulation, stepSimulation, isSimulationDone, buildPlanResult, applyCraft, canCraftRecipe } from './simulation';
+import type { RecipeCandidate } from './simulation';
+import { calcRecipeXp } from './xp';
 
 // ============================================================
 // Types
@@ -26,6 +28,8 @@ export interface CraftStep {
   skillLevelBefore: number;
   /** Skill level after this craft (may be higher if leveled up) */
   skillLevelAfter: number;
+  /** The skill this craft belongs to. Undefined = the plan's primary skill. */
+  skill?: string;
 }
 
 export interface IngredientUsage {
@@ -148,4 +152,157 @@ export function planCraftingSkill(
     if (!stepSimulation(state)) break;
   }
   return buildPlanResult(state);
+}
+
+// ============================================================
+// Quantity-Targeted Crafting Planner
+// ============================================================
+
+export interface QuantityPlanResult {
+  /** The skill used */
+  skill: string;
+  /** The recipe crafted */
+  recipeId: string;
+  recipeName: string;
+  /** How many crafts were performed */
+  totalCrafts: number;
+  /** Total items produced */
+  totalProduced: number;
+  /** Whether the target quantity was met */
+  targetMet: boolean;
+  /** Ordered list of CraftSteps (with `skill` set) */
+  steps: CraftStep[];
+  /** Ingredient totals consumed by this sub-plan */
+  ingredientTotals: Map<number, IngredientUsage>;
+  /** Keyword ingredient totals consumed by this sub-plan */
+  keywordIngredientTotals: Map<string, IngredientUsage>;
+  /** Total XP gained (may level up the sub-skill) */
+  totalXpGained: number;
+  /** Skill level at start */
+  startLevel: number;
+  /** Skill level at end */
+  endLevel: number;
+}
+
+/**
+ * Plan crafting a specific recipe to produce a target quantity of its output item.
+ * Used for sub-crafting ingredients needed by another plan.
+ *
+ * @param characterState - The character's current state
+ * @param recipeId       - The recipe key (e.g. "recipe_1234")
+ * @param targetItemCode - The ItemCode of the desired output item
+ * @param targetQuantity - How many of the output item are needed
+ * @param allRecipes     - All game recipes
+ * @param allSkills      - All game skills
+ * @param xpTableLookup  - XP table lookup
+ * @param options        - Optional maxCrafts safety cap
+ */
+export function planCraftQuantity(
+  characterState: CharacterState,
+  recipeId: string,
+  targetItemCode: number,
+  targetQuantity: number,
+  allRecipes: Map<string, Recipe>,
+  allSkills: Map<string, Skill>,
+  xpTableLookup: Map<string, number[]>,
+  options?: { maxCrafts?: number },
+): QuantityPlanResult {
+  const recipe = allRecipes.get(recipeId);
+  if (!recipe) {
+    throw new Error(`Unknown recipe: "${recipeId}"`);
+  }
+
+  // Find the output entry for the target item
+  const outputEntry = recipe.ResultItems.find((r) => r.ItemCode === targetItemCode);
+  if (!outputEntry) {
+    throw new Error(
+      `Recipe "${recipe.Name}" does not produce item ${targetItemCode}`,
+    );
+  }
+
+  const outputPerCraft = outputEntry.StackSize;
+  const craftsNeeded = Math.ceil(targetQuantity / outputPerCraft);
+  const maxCrafts = Math.min(craftsNeeded, options?.maxCrafts ?? 10000);
+
+  const rewardSkill = recipe.RewardSkill;
+
+  // Ensure the character has a skill entry for the recipe's reward skill.
+  // If not, create a shallow copy with the skill added at level 0.
+  let cs = characterState;
+  if (!characterState.skills.has(rewardSkill)) {
+    cs = new CharacterState();
+    cs.skills = new Map(characterState.skills);
+    cs.recipeCompletions = new Map(characterState.recipeCompletions);
+    cs.currentStats = new Map(characterState.currentStats);
+    cs.skills.set(rewardSkill, {
+      Level: 0,
+      BonusLevels: 0,
+      XpTowardNextLevel: 0,
+      XpNeededForNextLevel: 0,
+    });
+  }
+
+  // Initialize simulation for the recipe's skill with a very high target level
+  // (we stop based on maxCrafts, not level)
+  const simState = initSimulation(
+    cs,
+    rewardSkill,
+    {
+      targetLevel: 999,
+      maxCrafts,
+      includeRecipes: new Set([recipe.InternalName]),
+    },
+    allRecipes,
+    allSkills,
+    xpTableLookup,
+  );
+
+  // Find our specific recipe candidate
+  const candidate: RecipeCandidate | undefined = simState.candidates.find(
+    (c) => c.recipeId === recipeId,
+  );
+  if (!candidate) {
+    throw new Error(
+      `Recipe "${recipe.Name}" is not a valid candidate for skill "${rewardSkill}"`,
+    );
+  }
+
+  // Craft the recipe the exact number of times needed
+  const startLevel = simState.currentLevel;
+  let crafted = 0;
+  for (let i = 0; i < maxCrafts; i++) {
+    if (!canCraftRecipe(candidate.recipe, simState)) break;
+
+    const count = simState.completions.get(candidate.recipe.InternalName) ?? 0;
+    const xp = calcRecipeXp(
+      candidate.recipe,
+      simState.currentLevel,
+      count,
+      simState.craftingXpMod,
+    );
+    if (xp <= 0) break;
+
+    applyCraft(simState, candidate, xp);
+    crafted++;
+  }
+
+  // Tag all steps with the skill
+  for (const step of simState.steps) {
+    step.skill = rewardSkill;
+  }
+
+  return {
+    skill: rewardSkill,
+    recipeId,
+    recipeName: recipe.Name,
+    totalCrafts: crafted,
+    totalProduced: crafted * outputPerCraft,
+    targetMet: crafted * outputPerCraft >= targetQuantity,
+    steps: simState.steps,
+    ingredientTotals: simState.ingredientTotals,
+    keywordIngredientTotals: simState.keywordIngredientTotals,
+    totalXpGained: simState.totalXpGained,
+    startLevel,
+    endLevel: simState.currentLevel,
+  };
 }

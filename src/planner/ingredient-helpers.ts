@@ -1,4 +1,5 @@
 import type { Recipe } from '../schemas/recipes';
+import type { CraftStep, IngredientUsage } from './crafting-planner';
 
 // ============================================================
 // Types
@@ -131,4 +132,116 @@ function resolveNode(
   }
 
   return node;
+}
+
+// ============================================================
+// Craftable Ingredient Annotation
+// ============================================================
+
+export interface CraftableIngredientInfo {
+  itemCode: number;
+  /** All recipes that can produce this item */
+  sources: RecipeSource[];
+  /** Whether the character knows at least one of these recipes */
+  characterKnowsRecipe: boolean;
+  /** The "best" (first) recipe source, if any */
+  primarySource: RecipeSource | null;
+  /** Skill required for the primary source recipe */
+  requiredSkill: string | null;
+  /** Skill level required for the primary source recipe */
+  requiredLevel: number | null;
+}
+
+/**
+ * Annotate a set of ingredient item codes with craftability info.
+ * Returns entries only for items that have at least one producing recipe.
+ */
+export function annotateCraftableIngredients(
+  ingredientItemCodes: number[],
+  lookup: Map<number, RecipeSource[]>,
+  characterCompletions: Map<string, number>,
+): Map<number, CraftableIngredientInfo> {
+  const result = new Map<number, CraftableIngredientInfo>();
+  for (const itemCode of ingredientItemCodes) {
+    const sources = findRecipesForItem(itemCode, lookup);
+    if (sources.length === 0) continue;
+
+    const characterKnowsRecipe = sources.some(
+      (s) => characterCompletions.has(s.recipe.InternalName),
+    );
+    const primarySource = sources[0];
+
+    result.set(itemCode, {
+      itemCode,
+      sources,
+      characterKnowsRecipe,
+      primarySource,
+      requiredSkill: primarySource.recipe.Skill,
+      requiredLevel: primarySource.recipe.SkillLevelReq,
+    });
+  }
+  return result;
+}
+
+// ============================================================
+// Step-based Ingredient Computation
+// ============================================================
+
+/**
+ * Compute ingredient totals from a subset of CraftSteps.
+ * Useful for computing partial plan costs (plan cursor feature).
+ */
+export function computeIngredientTotalsFromSteps(
+  steps: CraftStep[],
+  allRecipes: Map<string, Recipe>,
+): { ingredientTotals: Map<number, IngredientUsage>; keywordIngredientTotals: Map<string, IngredientUsage> } {
+  const ingredientTotals = new Map<number, IngredientUsage>();
+  const keywordIngredientTotals = new Map<string, IngredientUsage>();
+
+  for (const step of steps) {
+    const recipe = allRecipes.get(step.recipeId);
+    if (!recipe) continue;
+
+    for (const ingredient of recipe.Ingredients) {
+      const chance = ingredient.ChanceToConsume ?? 1.0;
+      if (ingredient.ItemCode != null) {
+        const existing = ingredientTotals.get(ingredient.ItemCode);
+        if (existing) {
+          existing.totalCount += ingredient.StackSize;
+          existing.timesUsed++;
+          existing.chanceToConsume = Math.min(existing.chanceToConsume, chance);
+          existing.usedByRecipes.add(recipe.InternalName);
+          existing.recipeCount = existing.usedByRecipes.size;
+        } else {
+          ingredientTotals.set(ingredient.ItemCode, {
+            totalCount: ingredient.StackSize,
+            timesUsed: 1,
+            chanceToConsume: chance,
+            recipeCount: 1,
+            usedByRecipes: new Set([recipe.InternalName]),
+          });
+        }
+      } else if (ingredient.ItemKeys) {
+        const key = ingredient.ItemKeys.join('+');
+        const existing = keywordIngredientTotals.get(key);
+        if (existing) {
+          existing.totalCount += ingredient.StackSize;
+          existing.timesUsed++;
+          existing.chanceToConsume = Math.min(existing.chanceToConsume, chance);
+          existing.usedByRecipes.add(recipe.InternalName);
+          existing.recipeCount = existing.usedByRecipes.size;
+        } else {
+          keywordIngredientTotals.set(key, {
+            totalCount: ingredient.StackSize,
+            timesUsed: 1,
+            chanceToConsume: chance,
+            recipeCount: 1,
+            usedByRecipes: new Set([recipe.InternalName]),
+          });
+        }
+      }
+    }
+  }
+
+  return { ingredientTotals, keywordIngredientTotals };
 }

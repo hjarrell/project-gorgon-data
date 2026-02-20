@@ -10,6 +10,7 @@ export type { ItemEffortMap } from './xp';
 
 export {
   planCraftingSkill,
+  planCraftQuantity,
 } from './crafting-planner';
 
 export type {
@@ -17,18 +18,31 @@ export type {
   IngredientUsage,
   PlanResult,
   PlannerOptions,
+  QuantityPlanResult,
 } from './crafting-planner';
 
 export {
   buildItemRecipeLookup,
   findRecipesForItem,
   resolveIngredientTree,
+  annotateCraftableIngredients,
+  computeIngredientTotalsFromSteps,
 } from './ingredient-helpers';
 
 export type {
   RecipeSource,
   IngredientNode,
+  CraftableIngredientInfo,
 } from './ingredient-helpers';
+
+export {
+  buildCompositePlan,
+} from './composite-plan';
+
+export type {
+  SubCraftPlan,
+  CompositePlanResult,
+} from './composite-plan';
 
 export {
   xpScorer,
