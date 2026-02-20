@@ -27,12 +27,14 @@ export {
   resolveIngredientTree,
   annotateCraftableIngredients,
   computeIngredientTotalsFromSteps,
+  extractSkillDependencies,
 } from './ingredient-helpers';
 
 export type {
   RecipeSource,
   IngredientNode,
   CraftableIngredientInfo,
+  SkillDependency,
 } from './ingredient-helpers';
 
 export {

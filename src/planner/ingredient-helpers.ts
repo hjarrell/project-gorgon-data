@@ -187,6 +187,64 @@ export function annotateCraftableIngredients(
 // Step-based Ingredient Computation
 // ============================================================
 
+// ============================================================
+// Skill Dependency Extraction
+// ============================================================
+
+export interface SkillDependency {
+  /** Item code of the ingredient that needs this skill */
+  itemCode: number;
+  /** Skill name required to craft the ingredient */
+  requiredSkill: string;
+  /** Minimum skill level required */
+  requiredLevel: number;
+  /** Name of the recipe that produces the ingredient */
+  recipeName: string;
+  /** Recipe key (e.g. "recipe_1234") */
+  recipeId: string;
+}
+
+/**
+ * Identify cross-skill dependencies from a plan's craftable ingredients.
+ *
+ * Returns ingredients whose crafting recipes require a different skill
+ * than the plan's primary skill, and where the character's level in
+ * that skill is insufficient.
+ *
+ * @param planSkill             - The primary skill of the current plan
+ * @param craftableIngredients  - Craftability annotations for the plan's ingredients
+ * @param charSkills            - Character's skill levels (empty map if no character loaded)
+ */
+export function extractSkillDependencies(
+  planSkill: string,
+  craftableIngredients: Map<number, CraftableIngredientInfo>,
+  charSkills: Map<string, { Level: number }>,
+): SkillDependency[] {
+  const deps: SkillDependency[] = [];
+
+  for (const [itemCode, info] of craftableIngredients) {
+    if (!info.requiredSkill || info.requiredLevel === null) continue;
+    if (info.requiredSkill === planSkill) continue;
+
+    const charLevel = charSkills.get(info.requiredSkill)?.Level ?? 0;
+    if (charLevel >= info.requiredLevel) continue;
+
+    deps.push({
+      itemCode,
+      requiredSkill: info.requiredSkill,
+      requiredLevel: info.requiredLevel,
+      recipeName: info.primarySource?.recipe.Name ?? 'Unknown',
+      recipeId: info.primarySource?.recipeId ?? '',
+    });
+  }
+
+  return deps;
+}
+
+// ============================================================
+// Step-based Ingredient Computation
+// ============================================================
+
 /**
  * Compute ingredient totals from a subset of CraftSteps.
  * Useful for computing partial plan costs (plan cursor feature).
