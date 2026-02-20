@@ -84,13 +84,12 @@ export function initSimulation(
   }
   const xpTableName = skillDef.XpTable;
 
-  const skillEntry = characterState.skills.get(targetSkill);
-  if (!skillEntry) {
-    throw new Error(
-      `Character has no data for skill "${targetSkill}". ` +
-        `Available skills: ${[...characterState.skills.keys()].join(', ')}`,
-    );
-  }
+  const skillEntry = characterState.skills.get(targetSkill) ?? {
+    Level: 0,
+    BonusLevels: 0,
+    XpTowardNextLevel: 0,
+    XpNeededForNextLevel: 0,
+  };
 
   // Mutable simulation state
   const currentLevel = skillEntry.Level;
