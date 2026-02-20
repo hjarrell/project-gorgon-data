@@ -14,6 +14,18 @@ export {
 
 export type {
   CraftStep,
+  IngredientUsage,
   PlanResult,
   PlannerOptions,
 } from './crafting-planner';
+
+export {
+  buildItemRecipeLookup,
+  findRecipesForItem,
+  resolveIngredientTree,
+} from './ingredient-helpers';
+
+export type {
+  RecipeSource,
+  IngredientNode,
+} from './ingredient-helpers';

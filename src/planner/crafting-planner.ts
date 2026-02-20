@@ -27,6 +27,19 @@ export interface CraftStep {
   skillLevelAfter: number;
 }
 
+export interface IngredientUsage {
+  /** Total stack quantity across all crafts (e.g. StackSize=2 used 50 times = 100) */
+  totalCount: number;
+  /** Number of individual craft operations that used this ingredient */
+  timesUsed: number;
+  /** ChanceToConsume value (1.0 = always consumed, < 1.0 = tool/partial) */
+  chanceToConsume: number;
+  /** Number of distinct recipes in the plan that use this ingredient */
+  recipeCount: number;
+  /** InternalNames of recipes that use this ingredient */
+  usedByRecipes: Set<string>;
+}
+
 export interface PlanResult {
   /** The skill being leveled */
   skill: string;
@@ -48,6 +61,12 @@ export interface PlanResult {
   totalEffort: number;
   /** Number of level-ups achieved */
   levelUps: number;
+  /** Ingredients consumed across all crafts. Map of ItemCode → usage details. */
+  ingredientTotals: Map<number, IngredientUsage>;
+  /** Keyword-based ingredients consumed. Map of keyword string → usage details. */
+  keywordIngredientTotals: Map<string, IngredientUsage>;
+  /** Remaining inventory after all crafts. Only present when inventory was provided. */
+  inventoryRemaining?: Map<number, number>;
 }
 
 export interface PlannerOptions {
@@ -70,11 +89,24 @@ export interface PlannerOptions {
    */
   includeRecipes?: Set<string>;
   /**
+   * Recipe InternalNames to exclude from consideration.
+   * These recipes will never be picked by the planner.
+   */
+  excludeRecipes?: Set<string>;
+  /**
    * When true, crafting a recipe automatically unlocks any recipe
    * that lists it as a PrereqRecipe, adding it to the candidate pool
    * mid-simulation. Default false.
    */
   unlockPrereqs?: boolean;
+  /**
+   * Current inventory of items. Map of ItemCode → quantity available.
+   * When provided, the planner only picks recipes whose consumable ingredients
+   * are available in inventory, and deducts consumed items after each craft.
+   * Recipe ResultItems are added back to inventory (enables crafting chains).
+   * Items with ChanceToConsume < 1.0 (tools) must be present but are not deducted.
+   */
+  inventory?: Map<number, number>;
 }
 
 // ============================================================
@@ -154,6 +186,10 @@ export function planCraftingSkill(
   // Crafting XP modifier from character stats
   const craftingXpMod = characterState.currentStats.get('CRAFTING_XP_EARNED_MOD') ?? 1.0;
 
+  // Clone inventory for mutable simulation (if provided)
+  const hasInventory = options.inventory != null;
+  const inventory = hasInventory ? new Map(options.inventory!) : null;
+
   // --- Build prereq unlock index (InternalName → recipes that require it) ---
   const prereqUnlocks = new Map<string, RecipeCandidate[]>();
   if (options.unlockPrereqs) {
@@ -173,11 +209,13 @@ export function planCraftingSkill(
   const candidateSet = new Set<string>();
 
   // --- Gather candidate recipes that reward XP in targetSkill ---
+  const excludeRecipes = options.excludeRecipes;
   const candidates: RecipeCandidate[] = [];
   for (const [recipeId, recipe] of allRecipes) {
     if (recipe.RewardSkill !== targetSkill) continue;
     // Character must know this recipe (InternalName in completions, which includes includeRecipes)
     if (!completions.has(recipe.InternalName)) continue;
+    if (excludeRecipes?.has(recipe.InternalName)) continue;
     candidates.push({ recipeId, recipe });
     candidateSet.add(recipe.InternalName);
   }
@@ -191,6 +229,8 @@ export function planCraftingSkill(
   const steps: CraftStep[] = [];
   let totalXpGained = 0;
   let totalEffort = 0;
+  const ingredientTotals = new Map<number, IngredientUsage>();
+  const keywordIngredientTotals = new Map<string, IngredientUsage>();
 
   while (currentLevel < options.targetLevel && steps.length < maxCrafts) {
     // Find the best recipe to craft right now
@@ -212,6 +252,24 @@ export function planCraftingSkill(
       // Check MaxUses
       const count = completions.get(recipe.InternalName) ?? 0;
       if (recipe.MaxUses != null && count >= recipe.MaxUses) continue;
+
+      // Check inventory availability (if inventory tracking is active)
+      if (inventory) {
+        let hasIngredients = true;
+        for (const ingredient of recipe.Ingredients) {
+          if (ingredient.ItemCode == null) continue; // keyword ingredients skip inventory check
+          const available = inventory.get(ingredient.ItemCode) ?? 0;
+          const chance = ingredient.ChanceToConsume ?? 1.0;
+          if (chance === 1.0) {
+            // Consumable: need at least StackSize
+            if (available < ingredient.StackSize) { hasIngredients = false; break; }
+          } else {
+            // Tool: need at least 1 present
+            if (available < 1) { hasIngredients = false; break; }
+          }
+        }
+        if (!hasIngredients) continue;
+      }
 
       // Calculate effective XP
       const xp = calcRecipeXp(recipe, currentLevel, count, craftingXpMod);
@@ -242,6 +300,65 @@ export function planCraftingSkill(
     const levelBefore = currentLevel;
     const effort = calcRecipeEffort(recipe, itemEffort);
 
+    // Accumulate ingredient consumption
+    for (const ingredient of recipe.Ingredients) {
+      const chance = ingredient.ChanceToConsume ?? 1.0;
+      if (ingredient.ItemCode != null) {
+        const existing = ingredientTotals.get(ingredient.ItemCode);
+        if (existing) {
+          existing.totalCount += ingredient.StackSize;
+          existing.timesUsed++;
+          existing.chanceToConsume = Math.min(existing.chanceToConsume, chance);
+          existing.usedByRecipes.add(recipe.InternalName);
+          existing.recipeCount = existing.usedByRecipes.size;
+        } else {
+          ingredientTotals.set(ingredient.ItemCode, {
+            totalCount: ingredient.StackSize,
+            timesUsed: 1,
+            chanceToConsume: chance,
+            recipeCount: 1,
+            usedByRecipes: new Set([recipe.InternalName]),
+          });
+        }
+      } else if (ingredient.ItemKeys) {
+        const key = ingredient.ItemKeys.join('+');
+        const existing = keywordIngredientTotals.get(key);
+        if (existing) {
+          existing.totalCount += ingredient.StackSize;
+          existing.timesUsed++;
+          existing.chanceToConsume = Math.min(existing.chanceToConsume, chance);
+          existing.usedByRecipes.add(recipe.InternalName);
+          existing.recipeCount = existing.usedByRecipes.size;
+        } else {
+          keywordIngredientTotals.set(key, {
+            totalCount: ingredient.StackSize,
+            timesUsed: 1,
+            chanceToConsume: chance,
+            recipeCount: 1,
+            usedByRecipes: new Set([recipe.InternalName]),
+          });
+        }
+      }
+    }
+
+    // Deduct consumed ingredients and add results to inventory
+    if (inventory) {
+      for (const ingredient of recipe.Ingredients) {
+        if (ingredient.ItemCode == null) continue;
+        const chance = ingredient.ChanceToConsume ?? 1.0;
+        if (chance === 1.0) {
+          const cur = inventory.get(ingredient.ItemCode) ?? 0;
+          inventory.set(ingredient.ItemCode, cur - ingredient.StackSize);
+        }
+        // Tools (chance < 1.0) are not deducted — they survive
+      }
+      // Add ResultItems back to inventory
+      for (const result of recipe.ResultItems) {
+        const cur = inventory.get(result.ItemCode) ?? 0;
+        inventory.set(result.ItemCode, cur + result.StackSize);
+      }
+    }
+
     // Apply XP
     currentXp += bestXp;
     totalXpGained += bestXp;
@@ -255,7 +372,8 @@ export function planCraftingSkill(
       const unlocked = prereqUnlocks.get(recipe.InternalName);
       if (unlocked) {
         for (const candidate of unlocked) {
-          if (!candidateSet.has(candidate.recipe.InternalName)) {
+          if (!candidateSet.has(candidate.recipe.InternalName) &&
+              !excludeRecipes?.has(candidate.recipe.InternalName)) {
             candidates.push(candidate);
             candidateSet.add(candidate.recipe.InternalName);
             // Seed completion count so it's eligible (first craft = 0)
@@ -299,5 +417,8 @@ export function planCraftingSkill(
     totalXpGained,
     totalEffort,
     levelUps: currentLevel - startLevel,
+    ingredientTotals,
+    keywordIngredientTotals,
+    ...(inventory ? { inventoryRemaining: inventory } : {}),
   };
 }

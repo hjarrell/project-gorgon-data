@@ -7,6 +7,9 @@ import {
   calcRecipeXp,
   calcRecipeEffort,
   planCraftingSkill,
+  buildItemRecipeLookup,
+  findRecipesForItem,
+  resolveIngredientTree,
 } from './index';
 import type { ItemEffortMap } from './index';
 import type { Recipe } from '../schemas/recipes';
@@ -523,5 +526,419 @@ describe('planCraftingSkill — recipe unlocks', () => {
     // Should produce identical results
     expect(withoutUnlock.totalCrafts).toBe(withUnlock.totalCrafts);
     expect(withoutUnlock.totalXpGained).toBe(withUnlock.totalXpGained);
+  });
+});
+
+// ============================================================
+// Ingredient Totals in PlanResult
+// ============================================================
+
+describe('planCraftingSkill — ingredient totals', () => {
+  const state = new CharacterState();
+  state.loadCharacterSheet(characterJson);
+
+  const xpTableLookup = buildXpTableLookup(
+    RAW_XP_TABLES as Record<string, { InternalName: string; XpAmounts: number[] }>,
+  );
+
+  it('tracks ingredient totals across all crafts', () => {
+    const result = planCraftingSkill(
+      state,
+      'Cooking',
+      { targetLevel: 20 },
+      recipes,
+      skills,
+      xpTableLookup,
+    );
+
+    expect(result.ingredientTotals.size).toBeGreaterThan(0);
+
+    // Each usage entry should have positive count and valid fields
+    let totalItems = 0;
+    for (const usage of result.ingredientTotals.values()) {
+      expect(usage.totalCount).toBeGreaterThan(0);
+      expect(usage.chanceToConsume).toBeGreaterThan(0);
+      expect(usage.chanceToConsume).toBeLessThanOrEqual(1.0);
+      expect(usage.recipeCount).toBeGreaterThan(0);
+      expect(usage.usedByRecipes.size).toBe(usage.recipeCount);
+      totalItems += usage.totalCount;
+    }
+    expect(totalItems).toBeGreaterThan(0);
+  });
+
+  it('returns empty ingredient totals when no crafts needed', () => {
+    const result = planCraftingSkill(
+      state,
+      'Pathology',
+      { targetLevel: 50 },
+      recipes,
+      skills,
+      xpTableLookup,
+    );
+
+    expect(result.steps.length).toBe(0);
+    expect(result.ingredientTotals.size).toBe(0);
+    expect(result.keywordIngredientTotals.size).toBe(0);
+  });
+
+  it('ingredient counts scale with number of crafts', () => {
+    const small = planCraftingSkill(
+      state,
+      'Cooking',
+      { targetLevel: 19 },
+      recipes,
+      skills,
+      xpTableLookup,
+    );
+
+    const large = planCraftingSkill(
+      state,
+      'Cooking',
+      { targetLevel: 25 },
+      recipes,
+      skills,
+      xpTableLookup,
+    );
+
+    // More crafts → more or equal ingredients
+    let smallTotal = 0;
+    for (const usage of small.ingredientTotals.values()) smallTotal += usage.totalCount;
+    let largeTotal = 0;
+    for (const usage of large.ingredientTotals.values()) largeTotal += usage.totalCount;
+
+    expect(largeTotal).toBeGreaterThanOrEqual(smallTotal);
+  });
+});
+
+// ============================================================
+// Exclude Recipes
+// ============================================================
+
+describe('planCraftingSkill — excludeRecipes', () => {
+  const state = new CharacterState();
+  state.loadCharacterSheet(characterJson);
+
+  const xpTableLookup = buildXpTableLookup(
+    RAW_XP_TABLES as Record<string, { InternalName: string; XpAmounts: number[] }>,
+  );
+
+  it('excludes specified recipes from the plan', () => {
+    const baseResult = planCraftingSkill(
+      state,
+      'Cooking',
+      { targetLevel: 25 },
+      recipes,
+      skills,
+      xpTableLookup,
+    );
+
+    // Find a recipe that appears in the base plan
+    const recipeToExclude = baseResult.steps[0].internalName;
+
+    const excludedResult = planCraftingSkill(
+      state,
+      'Cooking',
+      { targetLevel: 25, excludeRecipes: new Set([recipeToExclude]) },
+      recipes,
+      skills,
+      xpTableLookup,
+    );
+
+    // Excluded recipe should not appear in the plan
+    const excludedSteps = excludedResult.steps.filter((s) => s.internalName === recipeToExclude);
+    expect(excludedSteps.length).toBe(0);
+
+    // Should still reach the target (Cooking has many recipes)
+    expect(excludedResult.targetReached).toBe(true);
+  });
+
+  it('excludeRecipes does not affect other recipes', () => {
+    // Exclude a recipe that wouldn't have been used anyway (fake name)
+    const result = planCraftingSkill(
+      state,
+      'Cooking',
+      { targetLevel: 20 },
+      recipes,
+      skills,
+      xpTableLookup,
+    );
+
+    const resultWithIrrelevantExclude = planCraftingSkill(
+      state,
+      'Cooking',
+      { targetLevel: 20, excludeRecipes: new Set(['NonExistentRecipe']) },
+      recipes,
+      skills,
+      xpTableLookup,
+    );
+
+    expect(result.totalCrafts).toBe(resultWithIrrelevantExclude.totalCrafts);
+    expect(result.totalXpGained).toBe(resultWithIrrelevantExclude.totalXpGained);
+  });
+});
+
+// ============================================================
+// Ingredient Helpers
+// ============================================================
+
+describe('buildItemRecipeLookup', () => {
+  const lookup = buildItemRecipeLookup(recipes);
+
+  it('finds recipes that produce Butter (ItemCode 5011)', () => {
+    const sources = findRecipesForItem(5011, lookup);
+    expect(sources.length).toBeGreaterThan(0);
+    // Butter is made by Cheesemaking
+    expect(sources.some((s) => s.recipe.Skill === 'Cheesemaking')).toBe(true);
+  });
+
+  it('finds recipes that produce Oak Wood Chips (ItemCode 13201)', () => {
+    const sources = findRecipesForItem(13201, lookup);
+    expect(sources.length).toBeGreaterThan(0);
+    expect(sources.some((s) => s.recipe.Skill === 'Carpentry')).toBe(true);
+  });
+
+  it('returns empty array for uncraftable items', () => {
+    // ItemCode 999999 shouldn't exist
+    const sources = findRecipesForItem(999999, lookup);
+    expect(sources).toEqual([]);
+  });
+
+  it('includes output stack size and percent chance', () => {
+    const sources = findRecipesForItem(5011, lookup);
+    const butterSource = sources.find((s) => s.recipe.InternalName === 'Butter');
+    expect(butterSource).toBeDefined();
+    expect(butterSource!.outputStackSize).toBe(3); // Butter produces 3
+  });
+});
+
+// ============================================================
+// Inventory-Constrained Planning
+// ============================================================
+
+describe('planCraftingSkill — inventory', () => {
+  const state = new CharacterState();
+  state.loadCharacterSheet(characterJson);
+
+  const xpTableLookup = buildXpTableLookup(
+    RAW_XP_TABLES as Record<string, { InternalName: string; XpAmounts: number[] }>,
+  );
+
+  it('limits crafts to available inventory', () => {
+    // Run without inventory to see what the first recipe needs
+    const unconstrained = planCraftingSkill(
+      state,
+      'Cooking',
+      { targetLevel: 25 },
+      recipes,
+      skills,
+      xpTableLookup,
+    );
+
+    expect(unconstrained.targetReached).toBe(true);
+
+    // Run with empty inventory — should produce zero crafts
+    const emptyInv = planCraftingSkill(
+      state,
+      'Cooking',
+      { targetLevel: 25, inventory: new Map() },
+      recipes,
+      skills,
+      xpTableLookup,
+    );
+
+    expect(emptyInv.steps.length).toBe(0);
+    expect(emptyInv.targetReached).toBe(false);
+  });
+
+  it('deducts consumed ingredients and tracks remaining inventory', () => {
+    // Get the first recipe used in the unconstrained plan
+    const unconstrained = planCraftingSkill(
+      state,
+      'Cooking',
+      { targetLevel: 20, maxCrafts: 1 },
+      recipes,
+      skills,
+      xpTableLookup,
+    );
+
+    expect(unconstrained.steps.length).toBe(1);
+    const firstRecipeId = unconstrained.steps[0].recipeId;
+    const recipe = recipes.get(firstRecipeId)!;
+
+    // Build inventory with exactly enough for 1 craft
+    const inv = new Map<number, number>();
+    for (const ing of recipe.Ingredients) {
+      if (ing.ItemCode != null) {
+        inv.set(ing.ItemCode, ing.StackSize);
+      }
+    }
+
+    const result = planCraftingSkill(
+      state,
+      'Cooking',
+      { targetLevel: 20, maxCrafts: 1, inventory: inv },
+      recipes,
+      skills,
+      xpTableLookup,
+    );
+
+    expect(result.steps.length).toBe(1);
+    expect(result.inventoryRemaining).toBeDefined();
+
+    // Consumed ingredients should be at 0 (or have ResultItems added back)
+    for (const ing of recipe.Ingredients) {
+      if (ing.ItemCode != null) {
+        const chance = ing.ChanceToConsume ?? 1.0;
+        const remaining = result.inventoryRemaining!.get(ing.ItemCode) ?? 0;
+        if (chance === 1.0) {
+          // Should be deducted
+          expect(remaining).toBeLessThanOrEqual(ing.StackSize);
+        }
+      }
+    }
+  });
+
+  it('adds ResultItems back to inventory', () => {
+    // Find a Cooking recipe that has ResultItems
+    const unconstrained = planCraftingSkill(
+      state,
+      'Cooking',
+      { targetLevel: 20, maxCrafts: 1 },
+      recipes,
+      skills,
+      xpTableLookup,
+    );
+
+    expect(unconstrained.steps.length).toBe(1);
+    const recipe = recipes.get(unconstrained.steps[0].recipeId)!;
+
+    // Build generous inventory
+    const inv = new Map<number, number>();
+    for (const ing of recipe.Ingredients) {
+      if (ing.ItemCode != null) {
+        inv.set(ing.ItemCode, ing.StackSize * 10);
+      }
+    }
+
+    const result = planCraftingSkill(
+      state,
+      'Cooking',
+      { targetLevel: 20, maxCrafts: 1, inventory: inv },
+      recipes,
+      skills,
+      xpTableLookup,
+    );
+
+    // Check ResultItems were added to inventory
+    for (const resultItem of recipe.ResultItems) {
+      const remaining = result.inventoryRemaining!.get(resultItem.ItemCode) ?? 0;
+      expect(remaining).toBeGreaterThanOrEqual(resultItem.StackSize);
+    }
+  });
+
+  it('does not return inventoryRemaining when no inventory provided', () => {
+    const result = planCraftingSkill(
+      state,
+      'Cooking',
+      { targetLevel: 20 },
+      recipes,
+      skills,
+      xpTableLookup,
+    );
+
+    expect(result.inventoryRemaining).toBeUndefined();
+  });
+
+  it('does not deduct tools (ChanceToConsume < 1.0) from inventory', () => {
+    // Find a recipe with a tool ingredient (ChanceToConsume < 1.0)
+    let toolRecipe: Recipe | undefined;
+    let toolRecipeId = '';
+    for (const [id, r] of recipes) {
+      if (r.RewardSkill !== 'Cooking') continue;
+      if (!state.recipeCompletions.has(r.InternalName)) continue;
+      const hasTool = r.Ingredients.some((i) =>
+        i.ChanceToConsume != null && i.ChanceToConsume < 1.0 && i.ItemCode != null,
+      );
+      if (hasTool) {
+        toolRecipe = r;
+        toolRecipeId = id;
+        break;
+      }
+    }
+
+    if (!toolRecipe) return; // skip if no such recipe exists
+
+    // Build inventory for exactly 1 craft
+    const inv = new Map<number, number>();
+    for (const ing of toolRecipe.Ingredients) {
+      if (ing.ItemCode != null) {
+        inv.set(ing.ItemCode, ing.StackSize);
+      }
+    }
+
+    const result = planCraftingSkill(
+      state,
+      'Cooking',
+      { targetLevel: 100, maxCrafts: 1, inventory: inv },
+      recipes,
+      skills,
+      xpTableLookup,
+    );
+
+    if (result.steps.length > 0 && result.steps[0].recipeId === toolRecipeId) {
+      // Tool ingredient should still be present
+      for (const ing of toolRecipe.Ingredients) {
+        if (ing.ItemCode != null && ing.ChanceToConsume != null && ing.ChanceToConsume < 1.0) {
+          const remaining = result.inventoryRemaining!.get(ing.ItemCode) ?? 0;
+          expect(remaining).toBe(ing.StackSize); // not deducted
+        }
+      }
+    }
+  });
+});
+
+describe('resolveIngredientTree', () => {
+  it('resolves immediate ingredients for Oak Wood Chips', () => {
+    // Oak Wood Chips (13201) is made from Oak Wood (13101)
+    const tree = resolveIngredientTree(13201, 5, recipes);
+    expect(tree.itemCode).toBe(13201);
+    expect(tree.quantity).toBe(5);
+    expect(tree.craftableVia.length).toBeGreaterThan(0);
+    expect(tree.subIngredients).toBeDefined();
+    expect(tree.subIngredients!.length).toBeGreaterThan(0);
+    // Oak Wood should be a sub-ingredient
+    const oakWood = tree.subIngredients!.find((n) => n.itemCode === 13101);
+    expect(oakWood).toBeDefined();
+  });
+
+  it('returns no sub-ingredients for uncraftable items', () => {
+    const tree = resolveIngredientTree(999999, 1, recipes);
+    expect(tree.craftableVia.length).toBe(0);
+    expect(tree.subIngredients).toBeUndefined();
+  });
+
+  it('respects maxDepth=0 and does not recurse', () => {
+    const tree = resolveIngredientTree(13201, 1, recipes, undefined, 0);
+    expect(tree.craftableVia.length).toBeGreaterThan(0);
+    // At depth 0, subIngredients should not be resolved
+    expect(tree.subIngredients).toBeUndefined();
+  });
+
+  it('resolves deeper with maxDepth=2', () => {
+    // Arrow1 recipe: needs ArrowHead1 + ArrowShaft1 items
+    // ArrowShaft1 is craftable from Oak Dowels which are craftable from Oak Wood
+    // Find ArrowShaft result item code
+    const lookup = buildItemRecipeLookup(recipes);
+
+    // Oak Dowels (13401) → made from Oak Wood (13101)
+    const tree = resolveIngredientTree(13401, 2, recipes, lookup, 2);
+    expect(tree.itemCode).toBe(13401);
+    expect(tree.subIngredients).toBeDefined();
+    // Oak Wood at depth 1
+    const oakWood = tree.subIngredients!.find((n) => n.itemCode === 13101);
+    expect(oakWood).toBeDefined();
+    // Oak Wood is itself craftable (from logs?) — but may or may not have sub-ingredients at depth 2
+    // Just verify the tree structure is valid
+    expect(oakWood!.craftableVia).toBeDefined();
   });
 });
