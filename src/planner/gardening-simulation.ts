@@ -190,9 +190,32 @@ function applyXp(state: GardeningSimulationState, xp: number): number {
 
   if (state.currentLevel > levelBefore) {
     refreshBestSeeds(state);
+    scheduleNewlyUnlockedSlots(state);
   }
 
   return state.currentLevel;
+}
+
+/**
+ * After a level-up unlocks new seeds, find idle slots whose group
+ * now has a best seed but has no pending events, and schedule planting.
+ */
+function scheduleNewlyUnlockedSlots(state: GardeningSimulationState): void {
+  const slotsWithEvents = new Set<string>();
+  for (const event of state.eventQueue) {
+    if (event.slotId) slotsWithEvents.add(event.slotId);
+  }
+
+  let plantTime = state.currentTime + state.timing.wiggleTimeSeconds;
+  for (const [slotId, slot] of state.slots) {
+    if (slot.phase !== 'empty') continue;
+    if (slotsWithEvents.has(slotId)) continue;
+    const bestSeed = state.bestSeedPerGroup.get(slot.group.name);
+    if (!bestSeed) continue;
+
+    enqueueEvent(state, { timestamp: plantTime, type: 'plant', slotId, priority: 3 });
+    plantTime += state.timing.wiggleTimeSeconds;
+  }
 }
 
 // ============================================================

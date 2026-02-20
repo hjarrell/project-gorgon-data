@@ -5,6 +5,8 @@ import type {
   GardeningPlannerOptions,
   GardeningPlanResult,
   GardeningHarvestRun,
+  GardeningPhase,
+  GardeningPhaseCrop,
   GardenAction,
 } from './gardening-types';
 import {
@@ -80,6 +82,7 @@ function buildGardeningPlanResult(
     targetReached: state.currentLevel >= state.options.targetLevel,
     actions: state.actions,
     harvestRuns: groupActionsIntoHarvestRuns(state.actions),
+    phases: groupActionsIntoPhases(state.actions),
     totalHarvests,
     totalXpGained: state.totalXpGained,
     totalTimeSeconds,
@@ -96,7 +99,7 @@ function buildGardeningPlanResult(
 }
 
 // ============================================================
-// Group Actions into Harvest Runs
+// Group Actions into Harvest Runs (legacy)
 // ============================================================
 
 /**
@@ -137,4 +140,100 @@ export function groupActionsIntoHarvestRuns(actions: GardenAction[]): GardeningH
   }
 
   return runs;
+}
+
+// ============================================================
+// Phase-Based Grouping
+// ============================================================
+
+/**
+ * Group harvests into phases. A new phase starts when a previously-
+ * unseen seed type appears (i.e. a new seed was unlocked via level-up).
+ * Within each phase, harvests are aggregated by seed type into crops.
+ */
+export function groupActionsIntoPhases(actions: GardenAction[]): GardeningPhase[] {
+  const harvests = actions.filter((a) => a.type === 'harvest' && a.xpGained > 0);
+  if (harvests.length === 0) return [];
+
+  const phases: GardeningPhase[] = [];
+  const allSeenSeedCodes = new Set<number>();
+  let currentHarvests: GardenAction[] = [];
+  let currentNewSeeds: string[] = [];
+
+  function finalizePhase(): void {
+    if (currentHarvests.length === 0) return;
+
+    // Aggregate by seed type within this phase
+    const cropMap = new Map<number, GardeningPhaseCrop>();
+    for (const h of currentHarvests) {
+      const code = h.seedItemCode!;
+      const seed = gardeningSeedsByCode.get(code);
+      if (!seed) continue;
+
+      const existing = cropMap.get(code);
+      if (existing) {
+        existing.count++;
+        existing.totalXp += h.xpGained;
+      } else {
+        cropMap.set(code, {
+          seedItemCode: code,
+          seedName: seed.seedName,
+          resultItemCode: seed.resultItemCode,
+          resultName: seed.resultName,
+          count: 1,
+          totalXp: h.xpGained,
+          xpEach: h.xpGained,
+          growTimeSeconds: seed.growTimeSeconds,
+        });
+      }
+    }
+
+    // Finalize xpEach as average
+    const crops: GardeningPhaseCrop[] = [];
+    for (const crop of cropMap.values()) {
+      crop.xpEach = crop.count > 0 ? Math.round(crop.totalXp / crop.count) : 0;
+      crops.push(crop);
+    }
+    // Sort crops: most harvests first
+    crops.sort((a, b) => b.count - a.count);
+
+    const first = currentHarvests[0];
+    const last = currentHarvests[currentHarvests.length - 1];
+
+    phases.push({
+      phaseIndex: phases.length,
+      levelStart: first.skillLevelBefore,
+      levelEnd: last.skillLevelAfter,
+      timeStartSeconds: first.timestamp,
+      timeEndSeconds: last.timestamp,
+      totalHarvests: currentHarvests.length,
+      totalXp: currentHarvests.reduce((sum, h) => sum + h.xpGained, 0),
+      crops,
+      newSeeds: [...currentNewSeeds],
+    });
+
+    currentHarvests = [];
+    currentNewSeeds = [];
+  }
+
+  for (const harvest of harvests) {
+    const seedCode = harvest.seedItemCode!;
+    const seed = gardeningSeedsByCode.get(seedCode);
+
+    if (!allSeenSeedCodes.has(seedCode)) {
+      // New seed type! If we have accumulated harvests, finalize as a phase
+      if (currentHarvests.length > 0) {
+        finalizePhase();
+      }
+      allSeenSeedCodes.add(seedCode);
+      currentNewSeeds.push(seed?.seedName ?? `Seed #${seedCode}`);
+    }
+
+    currentHarvests.push(harvest);
+  }
+
+  // Finalize last phase
+  finalizePhase();
+
+  return phases;
 }

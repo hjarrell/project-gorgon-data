@@ -4,6 +4,8 @@ import type { IngredientUsage } from './crafting-planner';
 // Gardening Seed Data (from wikidata/gardening.json)
 // ============================================================
 
+export type SeedCategory = 'vegetable' | 'flower' | 'cotton' | 'grass' | 'unique';
+
 export interface GardeningSeedEntry {
   seedItemCode: number;
   seedName: string;
@@ -20,9 +22,9 @@ export interface GardeningSeedEntry {
   resultValue: number | null;
   resultYield: number;
   notes?: string;
+  /** Internal category tag set during loading */
+  _category: SeedCategory;
 }
-
-export type SeedCategory = 'vegetable' | 'flower' | 'cotton' | 'grass' | 'unique';
 
 // ============================================================
 // Slot Configuration
@@ -119,6 +121,42 @@ export interface GardeningHarvestRun {
   timeEndSeconds: number;
 }
 
+// ============================================================
+// Phase-Based Grouping (for table display)
+// ============================================================
+
+export interface GardeningPhaseCrop {
+  seedItemCode: number;
+  seedName: string;
+  resultItemCode: number;
+  resultName: string;
+  /** Number of harvests of this crop in the phase */
+  count: number;
+  /** Total XP from this crop in the phase */
+  totalXp: number;
+  /** XP per harvest */
+  xpEach: number;
+  /** Grow time in seconds (from seed data) */
+  growTimeSeconds: number | null;
+}
+
+/**
+ * A phase is a period where the same set of seed types is active.
+ * A new phase starts when a level-up unlocks a new seed type.
+ */
+export interface GardeningPhase {
+  phaseIndex: number;
+  levelStart: number;
+  levelEnd: number;
+  timeStartSeconds: number;
+  timeEndSeconds: number;
+  totalHarvests: number;
+  totalXp: number;
+  crops: GardeningPhaseCrop[];
+  /** Seed names newly introduced in this phase */
+  newSeeds: string[];
+}
+
 export interface GardeningPlanResult {
   skill: 'Gardening';
   startLevel: number;
@@ -128,8 +166,10 @@ export interface GardeningPlanResult {
 
   /** Ordered timeline of all actions */
   actions: GardenAction[];
-  /** Grouped harvest runs for display */
+  /** Grouped harvest runs for display (legacy, see phases for better grouping) */
   harvestRuns: GardeningHarvestRun[];
+  /** Phase-based grouping: each phase has a stable set of active seeds */
+  phases: GardeningPhase[];
 
   /** Total harvests performed */
   totalHarvests: number;

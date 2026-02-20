@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { CharacterState } from '../character-state';
 import { skills, RAW_XP_TABLES } from '../data/skills';
 import { buildXpTableLookup } from './xp';
-import { planGardeningSkill, DEFAULT_GARDENING_TIMING } from './gardening-planner';
+import { planGardeningSkill, groupActionsIntoPhases, DEFAULT_GARDENING_TIMING } from './gardening-planner';
 import {
   gardeningSeeds,
   gardeningSeedsByCode,
@@ -179,19 +179,34 @@ describe('planGardeningSkill', () => {
     expect(result.targetReached).toBe(false);
   });
 
-  it('unlocks new seeds on level up', () => {
+  it('unlocks new seeds on level up and plants them', () => {
     const cs = makeCharState(0);
-    // Level 0->10 should go from potato only to also cabbage (level 10)
+    // Level 0->10: potato (lv0), onion (lv5), cabbage (lv10) should all appear
     const result = planGardeningSkill(cs, makeOptions({ targetLevel: 10 }), skills, xpTables);
 
-    // Check that we planted more than just one seed type
     const seedTypes = new Set(
       result.actions
         .filter((a) => a.type === 'plant' && a.seedItemCode != null)
         .map((a) => a.seedItemCode),
     );
-    // At minimum potato + onion (lv 5 unlock)
-    expect(seedTypes.size).toBeGreaterThanOrEqual(1);
+    // Potato (0) + Soybean (0) + Onion (5) at minimum
+    expect(seedTypes.size).toBeGreaterThanOrEqual(3);
+    // Onion (10102) should be planted after level 5
+    expect(seedTypes.has(10102)).toBe(true);
+  });
+
+  it('plants squash after reaching level 30', () => {
+    const cs = makeCharState(25);
+    // Level 25->35: squash unlocks at 30
+    const result = planGardeningSkill(cs, makeOptions({ targetLevel: 35 }), skills, xpTables);
+
+    const seedTypes = new Set(
+      result.actions
+        .filter((a) => a.type === 'plant' && a.seedItemCode != null)
+        .map((a) => a.seedItemCode),
+    );
+    // Squash Seedling (10105) unlocks at level 30
+    expect(seedTypes.has(10105)).toBe(true);
   });
 
   it('tracks produce harvested', () => {
@@ -220,5 +235,69 @@ describe('planGardeningSkill', () => {
     const result = planGardeningSkill(cs, makeOptions({ targetLevel: 3 }), skills, xpTables);
 
     expect(result.keywordIngredientTotals.size).toBe(0);
+  });
+});
+
+// ── Phase Grouping Tests ─────────────────────────────────
+
+describe('groupActionsIntoPhases', () => {
+  it('groups all harvests into phases', () => {
+    const cs = makeCharState(0);
+    const result = planGardeningSkill(cs, makeOptions({ targetLevel: 10 }), skills, xpTables);
+
+    expect(result.phases.length).toBeGreaterThan(0);
+
+    // Total harvests across all phases should match
+    const phaseHarvests = result.phases.reduce((sum, p) => sum + p.totalHarvests, 0);
+    expect(phaseHarvests).toBe(result.totalHarvests);
+  });
+
+  it('creates new phase when new seed type appears', () => {
+    const cs = makeCharState(0);
+    // 0->10 spans: potato(0), soybean(0), bluebell(3), onion(5), cabbage(10)
+    const result = planGardeningSkill(cs, makeOptions({ targetLevel: 10 }), skills, xpTables);
+
+    // Should have multiple phases as new seeds unlock
+    expect(result.phases.length).toBeGreaterThan(1);
+
+    // First phase should contain initial seeds
+    expect(result.phases[0].crops.length).toBeGreaterThan(0);
+
+    // Each phase after the first should have newSeeds listing what unlocked
+    for (let i = 1; i < result.phases.length; i++) {
+      expect(result.phases[i].newSeeds.length).toBeGreaterThan(0);
+    }
+  });
+
+  it('aggregates multiple harvests of same seed within a phase', () => {
+    const cs = makeCharState(0);
+    const result = planGardeningSkill(cs, makeOptions({ targetLevel: 3 }), skills, xpTables);
+
+    // Within the first phase, potato should appear as a single crop with count > 1
+    const firstPhase = result.phases[0];
+    const potatoCrop = firstPhase.crops.find((c) => c.seedItemCode === 10101);
+    if (potatoCrop) {
+      expect(potatoCrop.count).toBeGreaterThan(1);
+      expect(potatoCrop.xpEach).toBeGreaterThan(0);
+      expect(potatoCrop.totalXp).toBe(potatoCrop.xpEach * potatoCrop.count);
+    }
+  });
+
+  it('crops have grow time and XP data', () => {
+    const cs = makeCharState(0);
+    const result = planGardeningSkill(cs, makeOptions({ targetLevel: 5 }), skills, xpTables);
+
+    for (const phase of result.phases) {
+      for (const crop of phase.crops) {
+        expect(crop.seedName).toBeTruthy();
+        expect(crop.resultName).toBeTruthy();
+        expect(crop.growTimeSeconds).toBeGreaterThan(0);
+        expect(crop.xpEach).toBeGreaterThan(0);
+      }
+    }
+  });
+
+  it('returns empty array for empty actions', () => {
+    expect(groupActionsIntoPhases([])).toEqual([]);
   });
 });

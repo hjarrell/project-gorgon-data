@@ -82,6 +82,7 @@ export type { CraftRun } from './step-grouping';
 export {
   planGardeningSkill,
   groupActionsIntoHarvestRuns,
+  groupActionsIntoPhases,
   DEFAULT_GARDENING_TIMING,
 } from './gardening-planner';
 
@@ -94,6 +95,8 @@ export type {
   GardenActionType,
   GardenAction,
   GardeningHarvestRun,
+  GardeningPhaseCrop,
+  GardeningPhase,
   GardeningPlanResult,
 } from './gardening-types';
 
