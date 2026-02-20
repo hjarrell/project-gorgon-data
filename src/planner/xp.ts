@@ -1,6 +1,16 @@
 import type { Recipe } from '../schemas/recipes';
 
 // ============================================================
+// Item Effort
+// ============================================================
+
+/**
+ * Maps ItemCode → effort multiplier for that item.
+ * Items not in the map default to 1.0.
+ */
+export type ItemEffortMap = Map<number, number>;
+
+// ============================================================
 // XP Table Lookup
 // ============================================================
 
@@ -115,4 +125,29 @@ export function calcRecipeXp(
   }
 
   return baseXp;
+}
+
+// ============================================================
+// Recipe Effort Calculation
+// ============================================================
+
+/**
+ * Calculate the total effort cost of crafting a recipe once.
+ *
+ * Effort = sum of (stackSize * chanceToConsume * itemEffort) for each ingredient.
+ * - ChanceToConsume defaults to 1.0 (fully consumed) when absent.
+ * - Items not in the effort map default to effort 1.0.
+ * - Keyword-based ingredients (ItemKeys, no ItemCode) default to effort 1.0.
+ */
+export function calcRecipeEffort(
+  recipe: Recipe,
+  itemEffort?: ItemEffortMap,
+): number {
+  let total = 0;
+  for (const ingredient of recipe.Ingredients) {
+    const chance = ingredient.ChanceToConsume ?? 1.0;
+    const effort = (ingredient.ItemCode != null && itemEffort?.get(ingredient.ItemCode)) || 1.0;
+    total += ingredient.StackSize * chance * effort;
+  }
+  return total;
 }

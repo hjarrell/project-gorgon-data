@@ -1,7 +1,8 @@
 import type { Recipe } from '../schemas/recipes';
 import type { Skill } from '../schemas/skills';
 import type { CharacterState } from '../character-state';
-import { calcRecipeXp, getXpRequiredForLevel } from './xp';
+import { calcRecipeXp, calcRecipeEffort, getXpRequiredForLevel } from './xp';
+import type { ItemEffortMap } from './xp';
 
 // ============================================================
 // Types
@@ -16,6 +17,8 @@ export interface CraftStep {
   internalName: string;
   /** Effective XP gained from this craft */
   xpGained: number;
+  /** Effort cost of this craft (ingredient-weighted) */
+  effortCost: number;
   /** Whether this was the first time crafting this recipe */
   isFirstCraft: boolean;
   /** Skill level before this craft */
@@ -41,6 +44,8 @@ export interface PlanResult {
   totalCrafts: number;
   /** Total XP gained across all crafts */
   totalXpGained: number;
+  /** Total effort cost across all crafts */
+  totalEffort: number;
   /** Number of level-ups achieved */
   levelUps: number;
 }
@@ -50,6 +55,14 @@ export interface PlannerOptions {
   targetLevel: number;
   /** Safety cap on number of crafts (default 10000) */
   maxCrafts?: number;
+  /**
+   * Scoring strategy.
+   * - "xp": pick the recipe with the highest effective XP per craft (default).
+   * - "efficient": pick the recipe with the highest XP per effort.
+   */
+  strategy?: 'xp' | 'efficient';
+  /** Per-item effort overrides keyed by ItemCode. Only used with "efficient" strategy. */
+  itemEffort?: ItemEffortMap;
 }
 
 // ============================================================
@@ -129,15 +142,21 @@ export function planCraftingSkill(
     candidates.push({ recipeId, recipe });
   }
 
+  // --- Strategy config ---
+  const strategy = options.strategy ?? 'xp';
+  const itemEffort = options.itemEffort;
+
   // --- Greedy simulation ---
   const startLevel = currentLevel;
   const steps: CraftStep[] = [];
   let totalXpGained = 0;
+  let totalEffort = 0;
 
   while (currentLevel < options.targetLevel && steps.length < maxCrafts) {
     // Find the best recipe to craft right now
     let bestCandidate: RecipeCandidate | null = null;
     let bestXp = 0;
+    let bestScore = 0;
 
     for (const candidate of candidates) {
       const { recipe } = candidate;
@@ -156,7 +175,19 @@ export function planCraftingSkill(
 
       // Calculate effective XP
       const xp = calcRecipeXp(recipe, currentLevel, count, craftingXpMod);
-      if (xp > bestXp) {
+      if (xp <= 0) continue;
+
+      // Score based on strategy
+      let score: number;
+      if (strategy === 'efficient') {
+        const effort = calcRecipeEffort(recipe, itemEffort);
+        score = effort > 0 ? xp / effort : xp;
+      } else {
+        score = xp;
+      }
+
+      if (score > bestScore) {
+        bestScore = score;
         bestXp = xp;
         bestCandidate = candidate;
       }
@@ -169,10 +200,12 @@ export function planCraftingSkill(
     const count = completions.get(recipe.InternalName) ?? 0;
     const isFirstCraft = count === 0;
     const levelBefore = currentLevel;
+    const effort = calcRecipeEffort(recipe, itemEffort);
 
     // Apply XP
     currentXp += bestXp;
     totalXpGained += bestXp;
+    totalEffort += effort;
 
     // Update completion count
     completions.set(recipe.InternalName, count + 1);
@@ -191,6 +224,7 @@ export function planCraftingSkill(
       recipeName: recipe.Name,
       internalName: recipe.InternalName,
       xpGained: bestXp,
+      effortCost: effort,
       isFirstCraft,
       skillLevelBefore: levelBefore,
       skillLevelAfter: currentLevel,
@@ -206,6 +240,7 @@ export function planCraftingSkill(
     steps,
     totalCrafts: steps.length,
     totalXpGained,
+    totalEffort,
     levelUps: currentLevel - startLevel,
   };
 }

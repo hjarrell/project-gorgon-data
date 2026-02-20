@@ -5,8 +5,10 @@ import {
   buildXpTableLookup,
   calcDropOffMultiplier,
   calcRecipeXp,
+  calcRecipeEffort,
   planCraftingSkill,
 } from './index';
+import type { ItemEffortMap } from './index';
 import type { Recipe } from '../schemas/recipes';
 import characterJson from '../example/Character_ShepardPiedPiper.json';
 
@@ -181,5 +183,194 @@ describe('planCraftingSkill', () => {
         xpTableLookup,
       ),
     ).toThrow('Unknown skill');
+  });
+
+  it('includes effortCost and totalEffort in results', () => {
+    const result = planCraftingSkill(
+      state,
+      'Cooking',
+      { targetLevel: 20 },
+      recipes,
+      skills,
+      xpTableLookup,
+    );
+
+    expect(result.totalEffort).toBeGreaterThan(0);
+    for (const step of result.steps) {
+      expect(step.effortCost).toBeGreaterThan(0);
+    }
+  });
+});
+
+// ============================================================
+// Recipe Effort Calculation
+// ============================================================
+
+describe('calcRecipeEffort', () => {
+  it('sums stackSize for ingredients with no effort overrides', () => {
+    const recipe: Recipe = {
+      Description: 'Test',
+      IconId: 1,
+      Ingredients: [
+        { ItemCode: 100, StackSize: 2 },
+        { ItemCode: 200, StackSize: 3 },
+      ],
+      InternalName: 'Test',
+      Name: 'Test',
+      ResultItems: [],
+      RewardSkill: 'Cooking',
+      RewardSkillXp: 10,
+      RewardSkillXpFirstTime: 40,
+      Skill: 'Cooking',
+      SkillLevelReq: 0,
+    };
+    // No effort map → all items default 1.0 → 2*1 + 3*1 = 5
+    expect(calcRecipeEffort(recipe)).toBe(5);
+  });
+
+  it('applies effort overrides per ItemCode', () => {
+    const recipe: Recipe = {
+      Description: 'Test',
+      IconId: 1,
+      Ingredients: [
+        { ItemCode: 100, StackSize: 2 },
+        { ItemCode: 200, StackSize: 1 },
+      ],
+      InternalName: 'Test',
+      Name: 'Test',
+      ResultItems: [],
+      RewardSkill: 'Cooking',
+      RewardSkillXp: 10,
+      RewardSkillXpFirstTime: 40,
+      Skill: 'Cooking',
+      SkillLevelReq: 0,
+    };
+    const effort: ItemEffortMap = new Map([[200, 10]]);
+    // 2*1.0 + 1*10.0 = 12
+    expect(calcRecipeEffort(recipe, effort)).toBe(12);
+  });
+
+  it('accounts for ChanceToConsume', () => {
+    const recipe: Recipe = {
+      Description: 'Test',
+      IconId: 1,
+      Ingredients: [
+        { ItemCode: 100, StackSize: 1 },
+        { ItemCode: 200, StackSize: 1, ChanceToConsume: 0.2 },
+      ],
+      InternalName: 'Test',
+      Name: 'Test',
+      ResultItems: [],
+      RewardSkill: 'Cooking',
+      RewardSkillXp: 10,
+      RewardSkillXpFirstTime: 40,
+      Skill: 'Cooking',
+      SkillLevelReq: 0,
+    };
+    // 1*1.0*1.0 + 1*1.0*0.2 = 1.2
+    expect(calcRecipeEffort(recipe)).toBeCloseTo(1.2);
+  });
+
+  it('defaults keyword-based ingredients (no ItemCode) to effort 1.0', () => {
+    const recipe: Recipe = {
+      Description: 'Test',
+      IconId: 1,
+      Ingredients: [
+        { ItemKeys: ['Equipment'], StackSize: 1 },
+      ],
+      InternalName: 'Test',
+      Name: 'Test',
+      ResultItems: [],
+      RewardSkill: 'Cooking',
+      RewardSkillXp: 10,
+      RewardSkillXpFirstTime: 40,
+      Skill: 'Cooking',
+      SkillLevelReq: 0,
+    };
+    expect(calcRecipeEffort(recipe)).toBe(1);
+  });
+});
+
+// ============================================================
+// Efficient Strategy
+// ============================================================
+
+describe('planCraftingSkill — efficient strategy', () => {
+  const state = new CharacterState();
+  state.loadCharacterSheet(characterJson);
+
+  const xpTableLookup = buildXpTableLookup(
+    RAW_XP_TABLES as Record<string, { InternalName: string; XpAmounts: number[] }>,
+  );
+
+  it('reaches the target level with efficient strategy', () => {
+    const result = planCraftingSkill(
+      state,
+      'Cooking',
+      { targetLevel: 25, strategy: 'efficient' },
+      recipes,
+      skills,
+      xpTableLookup,
+    );
+
+    expect(result.targetReached).toBe(true);
+    expect(result.endLevel).toBeGreaterThanOrEqual(25);
+    expect(result.totalEffort).toBeGreaterThan(0);
+  });
+
+  it('may choose different recipes than xp strategy', () => {
+    const xpResult = planCraftingSkill(
+      state,
+      'Cooking',
+      { targetLevel: 25, strategy: 'xp' },
+      recipes,
+      skills,
+      xpTableLookup,
+    );
+    const effResult = planCraftingSkill(
+      state,
+      'Cooking',
+      { targetLevel: 25, strategy: 'efficient' },
+      recipes,
+      skills,
+      xpTableLookup,
+    );
+
+    // Both reach the target
+    expect(xpResult.targetReached).toBe(true);
+    expect(effResult.targetReached).toBe(true);
+
+    // Efficient strategy should use less or equal total effort
+    expect(effResult.totalEffort).toBeLessThanOrEqual(xpResult.totalEffort);
+  });
+
+  it('responds to itemEffort overrides', () => {
+    // Make all items very cheap except one specific ingredient
+    const defaultResult = planCraftingSkill(
+      state,
+      'Blacksmithing',
+      { targetLevel: 18, strategy: 'efficient' },
+      recipes,
+      skills,
+      xpTableLookup,
+    );
+
+    // Now make a key ingredient very expensive
+    const expensiveEffort: ItemEffortMap = new Map([[22551, 100]]); // Gryphon Statue mold
+    const expensiveResult = planCraftingSkill(
+      state,
+      'Blacksmithing',
+      { targetLevel: 18, strategy: 'efficient', itemEffort: expensiveEffort },
+      recipes,
+      skills,
+      xpTableLookup,
+    );
+
+    // Both should reach the target
+    expect(defaultResult.targetReached).toBe(true);
+    expect(expensiveResult.targetReached).toBe(true);
+
+    // With expensive item, planner should report higher total effort
+    expect(expensiveResult.totalEffort).toBeGreaterThanOrEqual(defaultResult.totalEffort);
   });
 });

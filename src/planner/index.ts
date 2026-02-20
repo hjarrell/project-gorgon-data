@@ -3,7 +3,10 @@ export {
   getXpRequiredForLevel,
   calcDropOffMultiplier,
   calcRecipeXp,
+  calcRecipeEffort,
 } from './xp';
+
+export type { ItemEffortMap } from './xp';
 
 export {
   planCraftingSkill,
