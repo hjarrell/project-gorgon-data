@@ -1,0 +1,2912 @@
+{
+"Character": "ShepardPiedPiper",
+"Timestamp": "2026-02-19 23:39:05Z",
+"Report": "Storage",
+"ReportVersion": 1,
+"Items": [
+{
+  "TypeID": 31504,
+  "StorageVault": "Saddlebag",
+  "StackSize": 1,
+  "Value": 760,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Knife: Duelist's Slash 4"
+},
+{
+  "TypeID": 31602,
+  "StorageVault": "Saddlebag",
+  "StackSize": 1,
+  "Value": 600,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Weather Witch: Summon Doomstorm 2"
+},
+{
+  "TypeID": 31473,
+  "StorageVault": "Saddlebag",
+  "StackSize": 1,
+  "Value": 300,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Psychology: Mock 2"
+},
+{
+  "TypeID": 3506,
+  "StorageVault": "Saddlebag",
+  "StackSize": 1,
+  "Value": 250,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Alchemy: Weak Poison For Knives"
+},
+{
+  "TypeID": 32055,
+  "StorageVault": "Saddlebag",
+  "StackSize": 1,
+  "Value": 38,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Work Order for Heartshrooms"
+},
+{
+  "TypeID": 32048,
+  "StorageVault": "Saddlebag",
+  "StackSize": 1,
+  "Value": 30,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Work Order for Fulgurites"
+},
+{
+  "TypeID": 32318,
+  "StorageVault": "Saddlebag",
+  "StackSize": 1,
+  "Value": 15,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Work Order for Shoddy Chairs (Carpentry)"
+},
+{
+  "TypeID": 10308,
+  "StorageVault": "Saddlebag",
+  "StackSize": 1,
+  "Value": 90,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Poppy"
+},
+{
+  "TypeID": 10307,
+  "StorageVault": "Saddlebag",
+  "StackSize": 1,
+  "Value": 80,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Marigold"
+},
+{
+  "TypeID": 10306,
+  "StorageVault": "Saddlebag",
+  "StackSize": 3,
+  "Value": 70,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Pansy"
+},
+{
+  "TypeID": 1006,
+  "StorageVault": "Saddlebag",
+  "StackSize": 9,
+  "Value": 300,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Saltpeter"
+},
+{
+  "TypeID": 17301,
+  "StorageVault": "Saddlebag",
+  "StackSize": 100,
+  "Value": 10,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Rawhide Sheet"
+},
+{
+  "TypeID": 17101,
+  "StorageVault": "Saddlebag",
+  "StackSize": 14,
+  "Value": 10,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Shoddy Leather Roll"
+},
+{
+  "TypeID": 17103,
+  "StorageVault": "Saddlebag",
+  "StackSize": 100,
+  "Value": 40,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Crude Leather Roll"
+},
+{
+  "TypeID": 17104,
+  "StorageVault": "Saddlebag",
+  "StackSize": 100,
+  "Value": 60,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Decent Leather Roll"
+},
+{
+  "TypeID": 17104,
+  "StorageVault": "Saddlebag",
+  "StackSize": 33,
+  "Value": 60,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Decent Leather Roll"
+},
+{
+  "TypeID": 17301,
+  "StorageVault": "Saddlebag",
+  "StackSize": 34,
+  "Value": 10,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Rawhide Sheet"
+},
+{
+  "TypeID": 17103,
+  "StorageVault": "Saddlebag",
+  "StackSize": 5,
+  "Value": 40,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Crude Leather Roll"
+},
+{
+  "TypeID": 4323,
+  "StorageVault": "Saddlebag",
+  "StackSize": 5,
+  "Value": 50,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Good Metal Slab"
+},
+{
+  "TypeID": 1005,
+  "StorageVault": "Saddlebag",
+  "StackSize": 6,
+  "Value": 200,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Sulfur"
+},
+{
+  "TypeID": 10001,
+  "StorageVault": "Saddlebag",
+  "StackSize": 5,
+  "Value": 30,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Bottle of Fertilizer"
+},
+{
+  "TypeID": 10001,
+  "StorageVault": "Saddlebag",
+  "StackSize": 5,
+  "Value": 30,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Bottle of Fertilizer"
+},
+{
+  "TypeID": 10001,
+  "StorageVault": "Saddlebag",
+  "StackSize": 5,
+  "Value": 30,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Bottle of Fertilizer"
+},
+{
+  "TypeID": 10001,
+  "StorageVault": "Saddlebag",
+  "StackSize": 5,
+  "Value": 30,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Bottle of Fertilizer"
+},
+{
+  "TypeID": 10001,
+  "StorageVault": "Saddlebag",
+  "StackSize": 5,
+  "Value": 30,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Bottle of Fertilizer"
+},
+{
+  "TypeID": 10001,
+  "StorageVault": "Saddlebag",
+  "StackSize": 5,
+  "Value": 30,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Bottle of Fertilizer"
+},
+{
+  "TypeID": 10001,
+  "StorageVault": "Saddlebag",
+  "StackSize": 2,
+  "Value": 30,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Bottle of Fertilizer"
+},
+{
+  "TypeID": 12556,
+  "StorageVault": "Saddlebag",
+  "StackSize": 1,
+  "Value": 35,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Canvas"
+},
+{
+  "TypeID": 12503,
+  "StorageVault": "Saddlebag",
+  "StackSize": 12,
+  "Value": 9,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Coarse Cotton Yarn"
+},
+{
+  "TypeID": 12505,
+  "StorageVault": "Saddlebag",
+  "StackSize": 1,
+  "Value": 90,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Cotton Thread"
+},
+{
+  "TypeID": 1114,
+  "StorageVault": "Saddlebag",
+  "StackSize": 3,
+  "Value": 200,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Magic Tooth"
+},
+{
+  "TypeID": 3506,
+  "StorageVault": "DalvosChest",
+  "StackSize": 1,
+  "Value": 250,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Alchemy: Weak Poison For Knives"
+},
+{
+  "TypeID": 1125,
+  "StorageVault": "DalvosChest",
+  "StackSize": 5,
+  "Value": 8,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Piece of Green Glass"
+},
+{
+  "TypeID": 43016,
+  "StorageVault": "KhyrulekMementoChest",
+  "StackSize": 1,
+  "Value": 75,
+  "Slot": "Hands",
+  "Level": 25,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Ursula's Gloves"
+},
+{
+  "TypeID": 15024,
+  "StorageVault": "KhyrulekMementoChest",
+  "StackSize": 2,
+  "Value": 400,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Fire Shield Potion"
+},
+{
+  "TypeID": 42053,
+  "Rarity": "Legendary",
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 678,
+  "Slot": "Chest",
+  "Level": 40,
+  "PetHusbandryState": "Unregistered",
+  "TSysPowers": [
+    {
+      "Tier": 7,
+      "Power": "DoeEyesHealPower"
+    },
+    {
+      "Tier": 7,
+      "Power": "CutenessOverloadDoT"
+    },
+    {
+      "Tier": 3,
+      "Power": "DeerKickFireResist"
+    },
+    {
+      "Tier": 7,
+      "Power": "MonstrousRageSelfSlashingBoost"
+    },
+    {
+      "Tier": 7,
+      "Power": "PetDmgBoostBoost"
+    }
+  ],
+  "Name": "Thentree Harness of Lingering Cuteness"
+},
+{
+  "TypeID": 41305,
+  "Rarity": "Rare",
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 372,
+  "Slot": "Legs",
+  "Level": 40,
+  "PetHusbandryState": "Unregistered",
+  "TSysPowers": [
+    {
+      "Tier": 7,
+      "Power": "HandledAnimalCritBoost"
+    },
+    {
+      "Tier": 7,
+      "Power": "BoundingEscapeHealPower"
+    },
+    {
+      "Tier": 7,
+      "Power": "BoostStakeTheHeart"
+    }
+  ],
+  "Name": "Heart-Staking Thentree Skirt"
+},
+{
+  "TypeID": 43040,
+  "Rarity": "Epic",
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 645,
+  "Slot": "Hands",
+  "Level": 40,
+  "PetHusbandryState": "Unregistered",
+  "TSysPowers": [
+    {
+      "Tier": 7,
+      "Power": "CleverTrickPetMod"
+    },
+    {
+      "Tier": 7,
+      "Power": "HandledAnimalSpecialAttackBoost"
+    },
+    {
+      "Tier": 3,
+      "Power": "DeerKickBugDoT"
+    },
+    {
+      "Tier": 7,
+      "Power": "DeerPummelingHoovesBoost"
+    }
+  ],
+  "Name": "Stalwart Gauntlets of Deadly Pets"
+},
+{
+  "TypeID": 40112,
+  "Rarity": "Epic",
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 483,
+  "Slot": "Feet",
+  "Level": 35,
+  "PetHusbandryState": "Unregistered",
+  "TSysPowers": [
+    {
+      "Tier": 3,
+      "Power": "DeerBashSummon"
+    },
+    {
+      "Tier": 7,
+      "Power": "DoeEyesShortBuff"
+    },
+    {
+      "Tier": 7,
+      "Power": "ShrillCommandBoost"
+    },
+    {
+      "Tier": 7,
+      "Power": "MonstrousRageSelfCrushingBoost"
+    }
+  ],
+  "Name": "Ciervos's Anklets of Bash-Attraction"
+},
+{
+  "TypeID": 55509,
+  "Rarity": "Epic",
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 556,
+  "Slot": "MainHand",
+  "Level": 40,
+  "PetHusbandryState": "Unregistered",
+  "TSysPowers": [
+    {
+      "Tier": 7,
+      "Power": "DeerPummelingHoovesBoost"
+    },
+    {
+      "Tier": 3,
+      "Power": "DeerKickReduceRage"
+    },
+    {
+      "Tier": 7,
+      "Power": "GetItOffMeTauntBoost"
+    },
+    {
+      "Tier": 3,
+      "Power": "CleverTrickPetBuffBasic"
+    }
+  ],
+  "Name": "Flame Basher of Concerned Pets"
+},
+{
+  "TypeID": 48026,
+  "Rarity": "Rare",
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 360,
+  "Slot": "Necklace",
+  "Level": 40,
+  "PetHusbandryState": "Unregistered",
+  "TSysPowers": [
+    {
+      "Tier": 7,
+      "Power": "SicEmAccuracyBoost"
+    },
+    {
+      "Tier": 7,
+      "Power": "DoeEyesShortBuff"
+    },
+    {
+      "Tier": 2,
+      "Power": "PowerBoostVeryWeak"
+    }
+  ],
+  "Name": "Amulet of Crushing Mitigation 5"
+},
+{
+  "TypeID": 49223,
+  "Rarity": "Exceptional",
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 397,
+  "Slot": "Ring",
+  "Level": 50,
+  "PetHusbandryState": "Unregistered",
+  "TSysPowers": [
+    {
+      "Tier": 3,
+      "Power": "DeerKickBugDoTB"
+    },
+    {
+      "Tier": 3,
+      "Power": "AntlerSlashHealPower"
+    },
+    {
+      "Tier": 7,
+      "Power": "HandledAnimalTauntReduce"
+    }
+  ],
+  "Name": "Ring of Snakelike Behavior"
+},
+{
+  "TypeID": 15807,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 3,
+  "Value": 40,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Moistening Cream"
+},
+{
+  "TypeID": 125,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 1200,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Sword Lord Potion"
+},
+{
+  "TypeID": 28104,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 37,
+  "Value": 48,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Decent Phlogiston"
+},
+{
+  "TypeID": 1003,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 12,
+  "Value": 100,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Fire Dust"
+},
+{
+  "TypeID": 1396,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 13,
+  "Value": 100,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Shock Dust"
+},
+{
+  "TypeID": 1001,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 100,
+  "Value": 1,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Strange Dirt"
+},
+{
+  "TypeID": 31113,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 1700,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Spirit Fox: Cinderstorm 3"
+},
+{
+  "TypeID": 31003,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 1300,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Unarmed: Headbutt 3"
+},
+{
+  "TypeID": 31060,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 1300,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Sword: Decapitate 2"
+},
+{
+  "TypeID": 31055,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 1220,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Sword: Riposte 3"
+},
+{
+  "TypeID": 3297,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 875,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Tailoring: Camouflaged Decent Shirt"
+},
+{
+  "TypeID": 3333,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 875,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Tailoring: Add Electricity Damage to Cloth Pants"
+},
+{
+  "TypeID": 3654,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 840,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Saddlery: Decent Mystic Saddlebag"
+},
+{
+  "TypeID": 3277,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 800,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Leatherworking: Decent Evasion Leggings"
+},
+{
+  "TypeID": 3535,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 625,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Alchemy: Strong Antivenom"
+},
+{
+  "TypeID": 3536,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 625,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Alchemy: Trollbane Oil"
+},
+{
+  "TypeID": 3011,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 440,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Flower Arrangement: Gardening Display #A"
+},
+{
+  "TypeID": 3406,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 405,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Shamanic Infusion: Beginner's Scray Leg Infusion"
+},
+{
+  "TypeID": 3517,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 375,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Alchemy: Inks for Special Occasions Pt 2"
+},
+{
+  "TypeID": 3135,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 304,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Cheesemaking: Slave's Cheese"
+},
+{
+  "TypeID": 3228,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 256,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Cooking: Dried Cave Fish"
+},
+{
+  "TypeID": 3506,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 250,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Alchemy: Weak Poison For Knives"
+},
+{
+  "TypeID": 3506,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 250,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Alchemy: Weak Poison For Knives"
+},
+{
+  "TypeID": 3613,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 50,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Fae Phrenology Research"
+},
+{
+  "TypeID": 3095,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 25,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Cooking: Lungfish Roll"
+},
+{
+  "TypeID": 3095,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 25,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Cooking: Lungfish Roll"
+},
+{
+  "TypeID": 3097,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 25,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Cooking: Mokapok Stew"
+},
+{
+  "TypeID": 3098,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 25,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Cooking: Succulent Pork Chops"
+},
+{
+  "TypeID": 32053,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 75,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Work Order for Basilisk Tail Tips"
+},
+{
+  "TypeID": 32047,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 68,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Work Order for Orcish Hair Combs"
+},
+{
+  "TypeID": 32685,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 68,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Work Order for Concentrated Wolfen Speed Juices (Alchemy)"
+},
+{
+  "TypeID": 32032,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 60,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Work Order for Wolfsbane"
+},
+{
+  "TypeID": 33003,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 60,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Work Order for Onyxs (Surveying)"
+},
+{
+  "TypeID": 32028,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 27,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Work Order for Power Potions"
+},
+{
+  "TypeID": 32209,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 15,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Work Order for Perch Fillets (Fishing)"
+},
+{
+  "TypeID": 32552,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 12,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Work Order for Rough Leather Rolls (Tanning)"
+},
+{
+  "TypeID": 33351,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 11,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Work Order for Soft-Boiled Eggs (Cooking)"
+},
+{
+  "TypeID": 32031,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 3,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Work Order for Oregano"
+},
+{
+  "TypeID": 32002,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 2,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Work Order for Antlers"
+},
+{
+  "TypeID": 32261,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 2,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Work Order for Bluebells (Gardening)"
+},
+{
+  "TypeID": 32801,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 2,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Work Order for Beginner's Arrows (Fletching)"
+},
+{
+  "TypeID": 12403,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 10,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Gruzark's Chapbook"
+},
+{
+  "TypeID": 12403,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 10,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Gruzark's Chapbook"
+},
+{
+  "TypeID": 1154,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 7,
+  "Value": 1000,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Council Certificate"
+},
+{
+  "TypeID": 4451,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 40,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Butcher Knife"
+},
+{
+  "TypeID": 4401,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 15,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Simple Skinning Knife"
+},
+{
+  "TypeID": 18043,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 3,
+  "Value": 100,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Diamond"
+},
+{
+  "TypeID": 17105,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 5,
+  "Value": 100,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Nice Leather Roll"
+},
+{
+  "TypeID": 17210,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 750,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Trophy Cow Hide"
+},
+{
+  "TypeID": 17005,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 8,
+  "Value": 50,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Nice Animal Skin"
+},
+{
+  "TypeID": 13152,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 100,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Perfect Maple Wood"
+},
+{
+  "TypeID": 13102,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 7,
+  "Value": 25,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Maple Wood"
+},
+{
+  "TypeID": 13003,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 42,
+  "Value": 20,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Strong Nails"
+},
+{
+  "TypeID": 13002,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 100,
+  "Value": 5,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Simple Nails"
+},
+{
+  "TypeID": 13002,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 21,
+  "Value": 5,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Simple Nails"
+},
+{
+  "TypeID": 82,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 2,
+  "Value": 500,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Eternal Greens"
+},
+{
+  "TypeID": 1156,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 2,
+  "Value": 25,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Evil Grass"
+},
+{
+  "TypeID": 10104,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 10,
+  "Value": 10,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Beet Seedling"
+},
+{
+  "TypeID": 10103,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 10,
+  "Value": 8,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Cabbage Leafling"
+},
+{
+  "TypeID": 10102,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 10,
+  "Value": 6,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Onion Seedling"
+},
+{
+  "TypeID": 10101,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 10,
+  "Value": 5,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Potato Seedling"
+},
+{
+  "TypeID": 10251,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 3,
+  "Value": 14,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Barley Seeds"
+},
+{
+  "TypeID": 10206,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 2,
+  "Value": 13,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Pansy Seeds"
+},
+{
+  "TypeID": 10205,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 2,
+  "Value": 12,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Daisy Seeds"
+},
+{
+  "TypeID": 10202,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 5,
+  "Value": 8,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Red Aster Seeds"
+},
+{
+  "TypeID": 10201,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 4,
+  "Value": 5,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Bluebell Seeds"
+},
+{
+  "TypeID": 17433,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 5,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Elf Skull"
+},
+{
+  "TypeID": 17434,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 2,
+  "Value": 5,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Rakshasa Skull"
+},
+{
+  "TypeID": 1170,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 4,
+  "Value": 50,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Stomach"
+},
+{
+  "TypeID": 1190,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 2,
+  "Value": 50,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Rubbery Tongue"
+},
+{
+  "TypeID": 1259,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 12,
+  "Value": 25,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Bear Gallbladder"
+},
+{
+  "TypeID": 1116,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 4,
+  "Value": 10,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Cat Eyeball"
+},
+{
+  "TypeID": 1112,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 500,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Ivory Horn"
+},
+{
+  "TypeID": 1117,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 50,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Pig Snout"
+},
+{
+  "TypeID": 1153,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 5,
+  "Value": 50,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Ice Core"
+},
+{
+  "TypeID": 1219,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 35,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Guano"
+},
+{
+  "TypeID": 1145,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 30,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Enchanted Bear Claw"
+},
+{
+  "TypeID": 1189,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 25,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Powdered Mammal"
+},
+{
+  "TypeID": 1011,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 5,
+  "Value": 20,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Spiderweb"
+},
+{
+  "TypeID": 1018,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 20,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Giant Spider Leg"
+},
+{
+  "TypeID": 1258,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 4,
+  "Value": 20,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Bear Claw"
+},
+{
+  "TypeID": 1016,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 6,
+  "Value": 10,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Antler"
+},
+{
+  "TypeID": 1249,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 2,
+  "Value": 10,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Rat Tail"
+},
+{
+  "TypeID": 1250,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 3,
+  "Value": 7,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Rat Tooth"
+},
+{
+  "TypeID": 1019,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 9,
+  "Value": 5,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Spider Leg"
+},
+{
+  "TypeID": 1139,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 4,
+  "Value": 5,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Feathers"
+},
+{
+  "TypeID": 5102,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 7,
+  "Value": 12,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Perch"
+},
+{
+  "TypeID": 5103,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 10,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Eel"
+},
+{
+  "TypeID": 5109,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 3,
+  "Value": 10,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Lungfish"
+},
+{
+  "TypeID": 5205,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 34,
+  "Value": 8,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Crab Meat"
+},
+{
+  "TypeID": 5101,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 4,
+  "Value": 6,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Clownfish"
+},
+{
+  "TypeID": 5308,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 5,
+  "Value": 70,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Oregano"
+},
+{
+  "TypeID": 5312,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 6,
+  "Value": 30,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Guava"
+},
+{
+  "TypeID": 5005,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 10,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Large Strawberry"
+},
+{
+  "TypeID": 1157,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 3,
+  "Value": 80,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Anchor Rune"
+},
+{
+  "TypeID": 12006,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 10,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Unidentified Painting"
+},
+{
+  "TypeID": 12006,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 10,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Unidentified Painting"
+},
+{
+  "TypeID": 12006,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 10,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Unidentified Painting"
+},
+{
+  "TypeID": 12006,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 10,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Unidentified Painting"
+},
+{
+  "TypeID": 12007,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 10,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Unidentified Painting"
+},
+{
+  "TypeID": 12007,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 10,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Unidentified Painting"
+},
+{
+  "TypeID": 12007,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 10,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Unidentified Painting"
+},
+{
+  "TypeID": 12007,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 10,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Unidentified Painting"
+},
+{
+  "TypeID": 12007,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 10,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Unidentified Painting"
+},
+{
+  "TypeID": 1425,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 100,
+  "PetHusbandryState": "Unregistered",
+  "Name": "River Sand"
+},
+{
+  "TypeID": 1278,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 75,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Magnifying Glass"
+},
+{
+  "TypeID": 1176,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 3,
+  "Value": 50,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Fulgurite"
+},
+{
+  "TypeID": 1276,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 2,
+  "Value": 40,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Springs"
+},
+{
+  "TypeID": 1303,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 4,
+  "Value": 14,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Piece of Violet Glass"
+},
+{
+  "TypeID": 1126,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 3,
+  "Value": 4,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Perfectly Round Pebble"
+},
+{
+  "TypeID": 1135,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 1,
+  "Value": 50,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Brass Gear"
+},
+{
+  "TypeID": 14016,
+  "StorageVault": "SerbuleCommunityChest",
+  "StackSize": 6,
+  "Value": 1,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Winter Fae Blood"
+},
+{
+  "TypeID": 5027,
+  "StorageVault": "*AccountStorage_Serbule",
+  "StackSize": 8,
+  "Value": 30,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Cinnamon"
+},
+{
+  "TypeID": 14053,
+  "StorageVault": "*AccountStorage_Serbule",
+  "StackSize": 11,
+  "Value": 10,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Red Wing Token"
+},
+{
+  "TypeID": 1170,
+  "StorageVault": "*AccountStorage_Serbule",
+  "StackSize": 8,
+  "Value": 50,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Stomach"
+},
+{
+  "TypeID": 5103,
+  "StorageVault": "*AccountStorage_Serbule",
+  "StackSize": 1,
+  "Value": 10,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Eel"
+},
+{
+  "TypeID": 1165,
+  "StorageVault": "*AccountStorage_Serbule",
+  "StackSize": 8,
+  "Value": 10,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Green Game Chip"
+},
+{
+  "TypeID": 1428,
+  "StorageVault": "*AccountStorage_Serbule",
+  "StackSize": 2,
+  "Value": 100,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Horse Aphrodisiac"
+},
+{
+  "TypeID": 10262,
+  "StorageVault": "*AccountStorage_Serbule",
+  "StackSize": 5,
+  "Value": 7,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Horse Apple Seedling"
+},
+{
+  "TypeID": 1002,
+  "StorageVault": "*AccountStorage_Serbule",
+  "StackSize": 19,
+  "Value": 50,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Rubywall Crystal"
+},
+{
+  "TypeID": 4322,
+  "StorageVault": "*AccountStorage_Serbule",
+  "StackSize": 2,
+  "Value": 10,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Basic Metal Slab"
+},
+{
+  "TypeID": 28152,
+  "StorageVault": "*AccountStorage_Serbule",
+  "StackSize": 3,
+  "Value": 75,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Medium Prism"
+},
+{
+  "TypeID": 28151,
+  "StorageVault": "*AccountStorage_Serbule",
+  "StackSize": 51,
+  "Value": 50,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Small Prism"
+},
+{
+  "TypeID": 6027,
+  "StorageVault": "*AccountStorage_Serbule",
+  "StackSize": 1,
+  "Value": 215,
+  "PetHusbandryState": "Unregistered",
+  "Name": "BBQ Ribs"
+},
+{
+  "TypeID": 1172,
+  "StorageVault": "*AccountStorage_Serbule",
+  "StackSize": 5,
+  "Value": 100,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Myconian Jelly"
+},
+{
+  "TypeID": 4472,
+  "StorageVault": "*AccountStorage_Serbule",
+  "StackSize": 1,
+  "Value": 200,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Craniometer"
+},
+{
+  "TypeID": 4403,
+  "StorageVault": "*AccountStorage_Serbule",
+  "StackSize": 1,
+  "Value": 90,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Good Skinning Knife"
+},
+{
+  "TypeID": 3041,
+  "StorageVault": "*AccountStorage_Serbule",
+  "StackSize": 1,
+  "Value": 50,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Mushroom Suspension Guide"
+},
+{
+  "TypeID": 3041,
+  "StorageVault": "*AccountStorage_Serbule",
+  "StackSize": 1,
+  "Value": 50,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Mushroom Suspension Guide"
+},
+{
+  "TypeID": 3506,
+  "StorageVault": "*AccountStorage_Serbule",
+  "StackSize": 1,
+  "Value": 250,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Alchemy: Weak Poison For Knives"
+},
+{
+  "TypeID": 31523,
+  "StorageVault": "*AccountStorage_Serbule",
+  "StackSize": 1,
+  "Value": 700,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Priest: Flamestrike 3"
+},
+{
+  "TypeID": 3298,
+  "StorageVault": "*AccountStorage_Serbule",
+  "StackSize": 1,
+  "Value": 1125,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Tailoring: Camouflaged Nice Shirt"
+},
+{
+  "TypeID": 3523,
+  "StorageVault": "*AccountStorage_Serbule",
+  "StackSize": 1,
+  "Value": 1125,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Lycanthropic Alchemy: Blood Seeker Ointment"
+},
+{
+  "TypeID": 3523,
+  "StorageVault": "*AccountStorage_Serbule",
+  "StackSize": 1,
+  "Value": 1125,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Lycanthropic Alchemy: Blood Seeker Ointment"
+},
+{
+  "TypeID": 31254,
+  "StorageVault": "*AccountStorage_Serbule",
+  "StackSize": 1,
+  "Value": 800,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Werewolf: Pouncing Rend 3+"
+},
+{
+  "TypeID": 31008,
+  "StorageVault": "*AccountStorage_Serbule",
+  "StackSize": 1,
+  "Value": 580,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Unarmed: Jab 2"
+},
+{
+  "TypeID": 3522,
+  "StorageVault": "*AccountStorage_Serbule",
+  "StackSize": 1,
+  "Value": 875,
+  "PetHusbandryState": "Unregistered",
+  "Name": "Lycanthropic Alchemy: Sanguinizer"
+},
+{
+  "TypeID": 44008,
+  "Rarity": "Exceptional",
+  "StackSize": 1,
+  "Value": 378,
+  "Slot": "Head",
+  "Level": 35,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "TSysPowers": [
+    {
+      "Tier": 3,
+      "Power": "BardBoost"
+    },
+    {
+      "Tier": 6,
+      "Power": "SongOfDiscordStun"
+    },
+    {
+      "Tier": 6,
+      "Power": "SicEmPetMod"
+    }
+  ],
+  "Name": "Bard's Goblin Helmet of Dizzying Performance"
+},
+{
+  "TypeID": 42006,
+  "Rarity": "Rare",
+  "StackSize": 1,
+  "Value": 435,
+  "Slot": "Chest",
+  "Level": 35,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "TSysPowers": [
+    {
+      "Tier": 8,
+      "Power": "RotskinDoT"
+    },
+    {
+      "Tier": 8,
+      "Power": "RallyHealPower"
+    },
+    {
+      "Tier": 8,
+      "Power": "TauntBoost"
+    }
+  ],
+  "Name": "Provocative Goblin Breastplate"
+},
+{
+  "TypeID": 42045,
+  "Rarity": "Exceptional",
+  "StackSize": 1,
+  "Value": 561,
+  "Slot": "Chest",
+  "Level": 50,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "TSysPowers": [
+    {
+      "Tier": 9,
+      "Power": "CleverTrickPetBoost"
+    },
+    {
+      "Tier": 9,
+      "Power": "MonstrousRageSelfSlashingBoost"
+    },
+    {
+      "Tier": 9,
+      "Power": "BardBlastDoT"
+    }
+  ],
+  "Name": "Spring Fairy Top of Viciously Clever Pets"
+},
+{
+  "TypeID": 41006,
+  "Rarity": "Exceptional",
+  "StackSize": 1,
+  "Value": 347,
+  "Slot": "Legs",
+  "Level": 30,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "TSysPowers": [
+    {
+      "Tier": 6,
+      "Power": "HeartThornPoisonDoT"
+    },
+    {
+      "Tier": 6,
+      "Power": "DruidBoostIndirectNature"
+    },
+    {
+      "Tier": 6,
+      "Power": "BardBoostNature"
+    }
+  ],
+  "Name": "Nature Bard's Goblin Skirt"
+},
+{
+  "TypeID": 41012,
+  "Rarity": "Rare",
+  "StackSize": 1,
+  "Value": 425,
+  "Slot": "Legs",
+  "Level": 35,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "TSysPowers": [
+    {
+      "Tier": 7,
+      "Power": "BardSongSelfHeal"
+    },
+    {
+      "Tier": 7,
+      "Power": "CloudSightDamageBoost"
+    },
+    {
+      "Tier": 7,
+      "Power": "MinorHealArmor"
+    }
+  ],
+  "Name": "Cloudy Makopa's Pants"
+},
+{
+  "TypeID": 41006,
+  "Rarity": "Rare",
+  "StackSize": 1,
+  "Value": 365,
+  "Slot": "Legs",
+  "Level": 30,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "TSysPowers": [
+    {
+      "Tier": 7,
+      "Power": "HeartThornPoisonDoT"
+    },
+    {
+      "Tier": 7,
+      "Power": "BardBoostNature"
+    },
+    {
+      "Tier": 3,
+      "Power": "MajorHealCrit"
+    }
+  ],
+  "Name": "Nature Bard's Goblin Skirt"
+},
+{
+  "TypeID": 41012,
+  "Rarity": "Epic",
+  "StackSize": 1,
+  "Value": 523,
+  "Slot": "Legs",
+  "Level": 35,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "TSysPowers": [
+    {
+      "Tier": 7,
+      "Power": "SongOfDiscordBoost"
+    },
+    {
+      "Tier": 7,
+      "Power": "BardBoostNature"
+    },
+    {
+      "Tier": 7,
+      "Power": "HandledAnimalHealingMod"
+    },
+    {
+      "Tier": 7,
+      "Power": "HandledAnimalCritBoost"
+    }
+  ],
+  "Name": "Nature Bard's Makopa's Pants of Violent Injuries"
+},
+{
+  "TypeID": 43108,
+  "Rarity": "Epic",
+  "StackSize": 1,
+  "Value": 850,
+  "Slot": "Hands",
+  "Level": 50,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "TSysPowers": [
+    {
+      "Tier": 10,
+      "Power": "SongOfDiscordBuffsBlasts"
+    },
+    {
+      "Tier": 10,
+      "Power": "SongOfDiscordRageahol"
+    },
+    {
+      "Tier": 4,
+      "Power": "MaxBreathBoost"
+    },
+    {
+      "Tier": 2,
+      "Power": "PowerBoostVeryWeak"
+    }
+  ],
+  "Name": "Elven Gauntlets"
+},
+{
+  "TypeID": 40006,
+  "Rarity": "Rare",
+  "StackSize": 1,
+  "Value": 342,
+  "Slot": "Feet",
+  "Level": 30,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "TSysPowers": [
+    {
+      "Tier": 7,
+      "Power": "BlastOfDespairBoost"
+    },
+    {
+      "Tier": 7,
+      "Power": "PulseOfLifeHealing"
+    },
+    {
+      "Tier": 7,
+      "Power": "CoreAttackCheaperMinorHeal"
+    }
+  ],
+  "Name": "Goblin Slippers"
+},
+{
+  "TypeID": 40006,
+  "Rarity": "Rare",
+  "StackSize": 1,
+  "Value": 342,
+  "Slot": "Feet",
+  "Level": 30,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "TSysPowers": [
+    {
+      "Tier": 7,
+      "Power": "CosmicStrikeDamage"
+    },
+    {
+      "Tier": 7,
+      "Power": "SongOfBraveryBoostArmorRecovery"
+    },
+    {
+      "Tier": 7,
+      "Power": "ArmorRepairBoost"
+    }
+  ],
+  "Name": "Repairman's Goblin Slippers"
+},
+{
+  "TypeID": 40120,
+  "Rarity": "Rare",
+  "StackSize": 1,
+  "Value": 438,
+  "Slot": "Feet",
+  "Level": 50,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "TSysPowers": [
+    {
+      "Tier": 3,
+      "Power": "MarkWeaknessMod"
+    },
+    {
+      "Tier": 8,
+      "Power": "SongOfResurgenceBuffMajorHeals"
+    },
+    {
+      "Tier": 4,
+      "Power": "MajorHealCrit"
+    }
+  ],
+  "Name": "Weakness-Seeking Spring Fairy Shoes"
+},
+{
+  "TypeID": 54002,
+  "StackSize": 1,
+  "Value": 150,
+  "Slot": "MainHand",
+  "Level": 10,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Hand Drum"
+},
+{
+  "TransmuteCount": 4,
+  "TypeID": 46504,
+  "StackSize": 1,
+  "Durability": 0.76002,
+  "PetHusbandryState": "Unregistered",
+  "AttunedTo": "ShepardPiedPiper",
+  "Name": "Sturdy Bard Lute of Trick Bites",
+  "Rarity": "Epic",
+  "Value": 481,
+  "Slot": "MainHand",
+  "Level": 20,
+  "IsInInventory": true,
+  "TSysPowers": [
+    {
+      "Tier": 7,
+      "Power": "BardSongSelfHeal"
+    },
+    {
+      "Tier": 2,
+      "Power": "MarkWeaknessMod"
+    },
+    {
+      "Tier": 3,
+      "Power": "CleverTrickPetBuffBasic"
+    },
+    {
+      "Tier": 7,
+      "Power": "SongOfDiscordBoost"
+    }
+  ]
+},
+{
+  "TypeID": 46709,
+  "Rarity": "Legendary",
+  "StackSize": 1,
+  "Value": 810,
+  "Slot": "OffHand",
+  "Level": 40,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "TSysPowers": [
+    {
+      "Tier": 4,
+      "Power": "BlastOfDefianceReap"
+    },
+    {
+      "Tier": 4,
+      "Power": "BardBoost"
+    },
+    {
+      "Tier": 8,
+      "Power": "SongOfDiscordRageahol"
+    },
+    {
+      "Tier": 8,
+      "Power": "WildEnduranceHealingBoost"
+    },
+    {
+      "Tier": 4,
+      "Power": "AnimalHandlingBasicAttackBoost"
+    }
+  ],
+  "Name": "Death Lur of Offensive Music"
+},
+{
+  "TypeID": 46704,
+  "Rarity": "Exceptional",
+  "StackSize": 1,
+  "Value": 367,
+  "Slot": "OffHand",
+  "Level": 25,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "TSysPowers": [
+    {
+      "Tier": 7,
+      "Power": "SongOfDiscordCrit"
+    },
+    {
+      "Tier": 7,
+      "Power": "SongOfDiscordRageahol"
+    },
+    {
+      "Tier": 7,
+      "Power": "CloudSightDeleriumBoost"
+    }
+  ],
+  "Name": "Blast Horn"
+},
+{
+  "TypeID": 46706,
+  "Rarity": "Rare",
+  "StackSize": 1,
+  "Value": 365,
+  "Slot": "OffHand",
+  "Level": 30,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "TSysPowers": [
+    {
+      "Tier": 7,
+      "Power": "SongOfResurgenceBuffMajorHeals"
+    },
+    {
+      "Tier": 7,
+      "Power": "CloudSightDeleriumBoost"
+    },
+    {
+      "Tier": 7,
+      "Power": "GenericBoostPoison"
+    }
+  ],
+  "Name": "Quality Ocarina"
+},
+{
+  "TypeID": 54005,
+  "StackSize": 1,
+  "Value": 200,
+  "Slot": "OffHand",
+  "Level": 10,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Mini-Dulcimer"
+},
+{
+  "TransmuteCount": 6,
+  "TypeID": 48030,
+  "StackSize": 1,
+  "Durability": 0.52005,
+  "PetHusbandryState": "Unregistered",
+  "AttunedTo": "ShepardPiedPiper",
+  "Name": "Amulet of Slashing Mitigation 4",
+  "Rarity": "Legendary",
+  "Value": 630,
+  "Slot": "Necklace",
+  "Level": 30,
+  "IsInInventory": true,
+  "TSysPowers": [
+    {
+      "Tier": 6,
+      "Power": "BlastOfFuryFaster"
+    },
+    {
+      "Tier": 6,
+      "Power": "BlastOfDespairArmor"
+    },
+    {
+      "Tier": 3,
+      "Power": "CleverTrickPetBuffBasic"
+    },
+    {
+      "Tier": 6,
+      "Power": "HandledAnimalDeathAvoidance"
+    },
+    {
+      "Tier": 6,
+      "Power": "SongOfDiscordLowerRage"
+    }
+  ]
+},
+{
+  "TransmuteCount": 1,
+  "TypeID": 49028,
+  "StackSize": 1,
+  "Durability": 0.92001,
+  "PetHusbandryState": "Unregistered",
+  "AttunedTo": "ShepardPiedPiper",
+  "Name": "Grand Ring of Pet Abuse",
+  "Rarity": "Legendary",
+  "Value": 585,
+  "Slot": "Ring",
+  "Level": 30,
+  "IsInInventory": true,
+  "TSysPowers": [
+    {
+      "Tier": 6,
+      "Power": "UnnaturalWrathPetAbuse"
+    },
+    {
+      "Tier": 6,
+      "Power": "HandledAnimalSpecialAttackBoost"
+    },
+    {
+      "Tier": 6,
+      "Power": "HandledAnimalDoTMod"
+    },
+    {
+      "Tier": 6,
+      "Power": "BlastOfFuryFaster"
+    },
+    {
+      "Tier": 3,
+      "Power": "DisharmonyBuff"
+    }
+  ]
+},
+{
+  "TypeID": 54302,
+  "StackSize": 1,
+  "Value": 150,
+  "Slot": "Waist",
+  "Level": 35,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Lucky Belt of Nice Rewards"
+},
+{
+  "TypeID": 56002,
+  "StackSize": 1,
+  "Value": 223,
+  "Slot": "Saddle",
+  "Level": 10,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "IsCrafted": true,
+  "Name": "Rough Saddle"
+},
+{
+  "TypeID": 56005,
+  "Rarity": "Uncommon",
+  "StackSize": 1,
+  "Value": 1168,
+  "Slot": "Saddle",
+  "Level": 40,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "TSysPowers": [{
+    "Tier": 4,
+    "Power": "SaddleMaxWaterSpeed"
+  }],
+  "Crafter": "Slunk",
+  "IsCrafted": true,
+  "Name": "Nice Saddle"
+},
+{
+  "TypeID": 56125,
+  "Rarity": "Uncommon",
+  "StackSize": 1,
+  "Value": 1288,
+  "Slot": "Saddlebag",
+  "Level": 40,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "TSysPowers": [{
+    "Tier": 4,
+    "Power": "SaddlebagMaxAnxiety"
+  }],
+  "Crafter": "Coltaine",
+  "IsCrafted": true,
+  "Name": "Nice Mystic Saddlebag"
+},
+{
+  "TypeID": 56341,
+  "StackSize": 1,
+  "Value": 300,
+  "Slot": "Horseshoes",
+  "Level": 1,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Basic Horseshoes"
+},
+{
+  "TypeID": 56305,
+  "Rarity": "Uncommon",
+  "StackSize": 1,
+  "Value": 962,
+  "Slot": "Horseshoes",
+  "Level": 40,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "TSysPowers": [{
+    "Tier": 4,
+    "Power": "HorseshoesAcceleration"
+  }],
+  "Crafter": "Freddy",
+  "IsCrafted": true,
+  "Name": "Nice Horseshoes"
+},
+{
+  "TypeID": 4204,
+  "StackSize": 6,
+  "Value": 100,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Expert's First Aid Kit"
+},
+{
+  "TypeID": 4203,
+  "StackSize": 1,
+  "Value": 50,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Good First Aid Kit"
+},
+{
+  "TypeID": 4202,
+  "StackSize": 100,
+  "Value": 20,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Basic First Aid Kit"
+},
+{
+  "TypeID": 4202,
+  "StackSize": 8,
+  "Value": 20,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Basic First Aid Kit"
+},
+{
+  "TypeID": 4201,
+  "StackSize": 16,
+  "Value": 10,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Simple First Aid Kit"
+},
+{
+  "TypeID": 4303,
+  "StackSize": 8,
+  "Value": 25,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Good Armor Patch Kit"
+},
+{
+  "TypeID": 4302,
+  "StackSize": 14,
+  "Value": 10,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Basic Armor Patch Kit"
+},
+{
+  "TypeID": 4301,
+  "StackSize": 68,
+  "Value": 7,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Simple Armor Patch Kit"
+},
+{
+  "TypeID": 6011,
+  "StackSize": 1,
+  "Value": 155,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Squash Soup"
+},
+{
+  "TypeID": 6081,
+  "StackSize": 10,
+  "Value": 130,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Juicy Ham"
+},
+{
+  "TypeID": 6043,
+  "StackSize": 4,
+  "Value": 98,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Cabbage Soup"
+},
+{
+  "TypeID": 6010,
+  "StackSize": 8,
+  "Value": 96,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Baked Beets"
+},
+{
+  "TypeID": 5008,
+  "StackSize": 2,
+  "Value": 20,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Goblin Wheatbread"
+},
+{
+  "TypeID": 5012,
+  "StackSize": 1,
+  "Value": 133,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Mild Cheddar Cheese"
+},
+{
+  "TypeID": 6058,
+  "StackSize": 5,
+  "Value": 57,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Apple Juice"
+},
+{
+  "TypeID": 6058,
+  "StackSize": 5,
+  "Value": 57,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Apple Juice"
+},
+{
+  "TypeID": 1118,
+  "StackSize": 4,
+  "Value": 15,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Crossing Oil"
+},
+{
+  "TypeID": 4103,
+  "StackSize": 1,
+  "Value": 50,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Expert Ink"
+},
+{
+  "TypeID": 28055,
+  "Rarity": "Uncommon",
+  "StackSize": 1,
+  "Value": 160,
+  "TSysImbuePower": "ToxinballDoT",
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "TSysImbuePowerTier": 6,
+  "Name": "Leg Augment of Poison Balls"
+},
+{
+  "TypeID": 28058,
+  "Rarity": "Uncommon",
+  "StackSize": 1,
+  "Value": 160,
+  "TSysImbuePower": "CosmicStrikeBoostHealing",
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "TSysImbuePowerTier": 6,
+  "Name": "Ring Augment"
+},
+{
+  "TypeID": 28152,
+  "StackSize": 3,
+  "Value": 75,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Medium Prism"
+},
+{
+  "TypeID": 28151,
+  "StackSize": 70,
+  "Value": 50,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Small Prism"
+},
+{
+  "TypeID": 28103,
+  "StackSize": 597,
+  "Value": 36,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Crude Phlogiston"
+},
+{
+  "TypeID": 28102,
+  "StackSize": 23,
+  "Value": 24,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Rough Phlogiston"
+},
+{
+  "TypeID": 1003,
+  "StackSize": 5,
+  "Value": 100,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Fire Dust"
+},
+{
+  "TypeID": 1396,
+  "StackSize": 2,
+  "Value": 100,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Shock Dust"
+},
+{
+  "TypeID": 1001,
+  "StackSize": 85,
+  "Value": 1,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Strange Dirt"
+},
+{
+  "TypeID": 19209,
+  "StackSize": 1,
+  "Value": 0,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Ilmari War Cache Map"
+},
+{
+  "TypeID": 31002,
+  "StackSize": 1,
+  "Value": 700,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Unarmed: Headbutt 2"
+},
+{
+  "TypeID": 31523,
+  "StackSize": 1,
+  "Value": 700,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Priest: Flamestrike 3"
+},
+{
+  "TypeID": 3102,
+  "StackSize": 1,
+  "Value": 150,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Cooking: Ur-Bacon"
+},
+{
+  "TypeID": 12403,
+  "StackSize": 1,
+  "Value": 10,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Gruzark's Chapbook"
+},
+{
+  "TypeID": 4432,
+  "StackSize": 1,
+  "Value": 400,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Multipurpose Knife"
+},
+{
+  "TypeID": 4552,
+  "StackSize": 1,
+  "Value": 1000,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Gem Crusher"
+},
+{
+  "TypeID": 1185,
+  "StackSize": 1,
+  "Value": 50,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Shovel"
+},
+{
+  "TypeID": 4001,
+  "StackSize": 1,
+  "Value": 50,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Autopsy Kit"
+},
+{
+  "TypeID": 13001,
+  "StackSize": 1,
+  "Value": 50,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Handsaw"
+},
+{
+  "TypeID": 4551,
+  "StackSize": 1,
+  "Value": 10,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Dye Pot"
+},
+{
+  "TypeID": 18033,
+  "StackSize": 31,
+  "Value": 100,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Amethyst"
+},
+{
+  "TypeID": 1002,
+  "StackSize": 61,
+  "Value": 50,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Rubywall Crystal"
+},
+{
+  "TypeID": 4322,
+  "StackSize": 1,
+  "Value": 10,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Basic Metal Slab"
+},
+{
+  "TypeID": 4321,
+  "StackSize": 2,
+  "Value": 5,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Simple Metal Slab"
+},
+{
+  "TypeID": 17005,
+  "StackSize": 1,
+  "Value": 50,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Nice Animal Skin"
+},
+{
+  "TypeID": 17004,
+  "StackSize": 5,
+  "Value": 30,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Decent Animal Skin"
+},
+{
+  "TypeID": 17003,
+  "StackSize": 2,
+  "Value": 20,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Crude Animal Skin"
+},
+{
+  "TypeID": 17002,
+  "StackSize": 1,
+  "Value": 10,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Rough Animal Skin"
+},
+{
+  "TypeID": 12501,
+  "StackSize": 5,
+  "Value": 3,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Cotton"
+},
+{
+  "TypeID": 13101,
+  "StackSize": 8,
+  "Value": 10,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Oak Wood"
+},
+{
+  "TypeID": 1012,
+  "StackSize": 6,
+  "Value": 10,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Mandrake Root"
+},
+{
+  "TypeID": 10252,
+  "StackSize": 1,
+  "Value": 12,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Sugarcane Seeds"
+},
+{
+  "TypeID": 10204,
+  "StackSize": 1,
+  "Value": 10,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Dahlia Seeds"
+},
+{
+  "TypeID": 1009,
+  "StackSize": 29,
+  "Value": 1,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Grass"
+},
+{
+  "TypeID": 1153,
+  "StackSize": 2,
+  "Value": 50,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Ice Core"
+},
+{
+  "TypeID": 5105,
+  "StackSize": 25,
+  "Value": 3,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Crab"
+},
+{
+  "TypeID": 5310,
+  "StackSize": 56,
+  "Value": 10,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Grapes"
+},
+{
+  "TypeID": 5309,
+  "StackSize": 28,
+  "Value": 5,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Red Apple"
+},
+{
+  "TypeID": 5336,
+  "StackSize": 2,
+  "Value": 3,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Horse Apple"
+},
+{
+  "TypeID": 12007,
+  "StackSize": 1,
+  "Value": 10,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Unidentified Painting"
+},
+{
+  "TypeID": 1164,
+  "StackSize": 5,
+  "Value": 1,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Red Game Chip"
+},
+{
+  "TypeID": 14053,
+  "StackSize": 11,
+  "Value": 10,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Red Wing Token"
+},
+{
+  "TypeID": 1303,
+  "StackSize": 4,
+  "Value": 14,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Piece of Violet Glass"
+},
+{
+  "TypeID": 13431,
+  "StackSize": 8,
+  "Value": 50,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Emergency Warmth Fire"
+},
+{
+  "TypeID": 5001,
+  "StackSize": 23,
+  "Value": 5,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Salt"
+},
+{
+  "TypeID": 5002,
+  "StackSize": 57,
+  "Value": 5,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Flour"
+},
+{
+  "TypeID": 5003,
+  "StackSize": 8,
+  "Value": 1,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Sugar"
+},
+{
+  "TypeID": 19029,
+  "StackSize": 1,
+  "Value": 0,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Old Owner's Note"
+},
+{
+  "TypeID": 19119,
+  "StackSize": 1,
+  "Value": 0,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Letter from Sir Arif"
+},
+{
+  "TypeID": 19402,
+  "StackSize": 1,
+  "Value": 0,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Exotic Spider Equipment"
+},
+{
+  "TypeID": 1168,
+  "StackSize": 2,
+  "Value": 40,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Mind Enhancement Gem"
+},
+{
+  "TypeID": 10202,
+  "StackSize": 1,
+  "Value": 8,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Red Aster Seeds"
+},
+{
+  "TypeID": 13102,
+  "StackSize": 1,
+  "Value": 25,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Maple Wood"
+},
+{
+  "TypeID": 10201,
+  "StackSize": 2,
+  "Value": 5,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Bluebell Seeds"
+},
+{
+  "TypeID": 19017,
+  "StackSize": 1,
+  "Value": 0,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Squeaky's Tiara"
+},
+{
+  "TypeID": 17001,
+  "StackSize": 2,
+  "Value": 5,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Shoddy Animal Skin"
+},
+{
+  "TypeID": 5500,
+  "StackSize": 1,
+  "Value": 27,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Cave Cheese"
+},
+{
+  "TypeID": 5311,
+  "StackSize": 1,
+  "Value": 20,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Orange"
+},
+{
+  "TypeID": 1139,
+  "StackSize": 1,
+  "Value": 5,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Feathers"
+},
+{
+  "TypeID": 19010,
+  "StackSize": 1,
+  "Value": 0,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Mu's Message Spore"
+},
+{
+  "TypeID": 22002,
+  "StackSize": 2,
+  "Value": 30,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Pyrite"
+},
+{
+  "TypeID": 11004,
+  "StackSize": 5,
+  "Value": 12,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Field Mushroom"
+},
+{
+  "TypeID": 11003,
+  "StackSize": 5,
+  "Value": 8,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Boletus Mushroom"
+},
+{
+  "TypeID": 5034,
+  "StackSize": 2,
+  "Value": 7,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Sinewy Dog Meat"
+},
+{
+  "TypeID": 3190,
+  "StackSize": 1,
+  "Value": 480,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Cheesemaking: Tofu"
+},
+{
+  "TypeID": 11005,
+  "StackSize": 1,
+  "Value": 16,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Blusher Mushroom"
+},
+{
+  "TypeID": 1019,
+  "StackSize": 12,
+  "Value": 5,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Spider Leg"
+},
+{
+  "TypeID": 106,
+  "StackSize": 1,
+  "Value": 50,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Power Potion"
+},
+{
+  "TypeID": 1172,
+  "StackSize": 1,
+  "Value": 100,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Myconian Jelly"
+},
+{
+  "TypeID": 11009,
+  "StackSize": 1,
+  "Value": 35,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Iocaine Mushroom"
+},
+{
+  "TypeID": 1171,
+  "StackSize": 3,
+  "Value": 30,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Heartshroom"
+},
+{
+  "TypeID": 49028,
+  "Rarity": "Exceptional",
+  "StackSize": 1,
+  "Value": 363,
+  "Slot": "Ring",
+  "Level": 30,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "TSysPowers": [
+    {
+      "Tier": 6,
+      "Power": "CosmicStrikeBoostHealing"
+    },
+    {
+      "Tier": 6,
+      "Power": "BrambleSkinMaxPowerBoostB"
+    },
+    {
+      "Tier": 6,
+      "Power": "GenericMitigationElectricity"
+    }
+  ],
+  "Name": "Grounded Grand Ring"
+},
+{
+  "TypeID": 1429,
+  "StackSize": 1,
+  "Value": 100,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Small Black Dragon Scale"
+},
+{
+  "TypeID": 4323,
+  "StackSize": 1,
+  "Value": 50,
+  "PetHusbandryState": "Unregistered",
+  "IsInInventory": true,
+  "Name": "Good Metal Slab"
+}
+]
+}

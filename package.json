@@ -1,0 +1,47 @@
+{
+  "name": "project-gorgon-data",
+  "version": "0.1.0",
+  "description": "Typed game data library for Project Gorgon MMO with Zod schemas",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js"
+    },
+    "./schemas": {
+      "types": "./dist/schemas/index.d.ts",
+      "require": "./dist/schemas/index.js"
+    },
+    "./data": {
+      "types": "./dist/data/index.d.ts",
+      "require": "./dist/data/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "pnpm run clean && pnpm run build",
+    "test": "vitest run",
+    "analyze": "tsx scripts/analyze-json.ts"
+  },
+  "keywords": [
+    "project-gorgon",
+    "mmorpg",
+    "game-data"
+  ],
+  "author": "hunterjarrell",
+  "license": "MIT",
+  "packageManager": "pnpm@10.8.1",
+  "peerDependencies": {
+    "zod": "^3.25.0 || ^4.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18",
+    "zod": "^3.25.0 || ^4.0.0"
+  }
+}
