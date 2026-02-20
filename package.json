@@ -4,26 +4,76 @@
   "description": "Typed game data library for Project Gorgon MMO with Zod schemas",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "sideEffects": false,
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
+      "import": "./dist-esm/index.js",
       "require": "./dist/index.js"
     },
     "./schemas": {
       "types": "./dist/schemas/index.d.ts",
+      "import": "./dist-esm/schemas/index.js",
       "require": "./dist/schemas/index.js"
     },
     "./data": {
       "types": "./dist/data/index.d.ts",
+      "import": "./dist-esm/data/index.js",
       "require": "./dist/data/index.js"
+    },
+    "./data/items": {
+      "types": "./dist/data/items.d.ts",
+      "import": "./dist-esm/data/items.js",
+      "require": "./dist/data/items.js"
+    },
+    "./data/recipes": {
+      "types": "./dist/data/recipes.d.ts",
+      "import": "./dist-esm/data/recipes.js",
+      "require": "./dist/data/recipes.js"
+    },
+    "./data/skills": {
+      "types": "./dist/data/skills.d.ts",
+      "import": "./dist-esm/data/skills.js",
+      "require": "./dist/data/skills.js"
+    },
+    "./data/abilities": {
+      "types": "./dist/data/abilities.d.ts",
+      "import": "./dist-esm/data/abilities.js",
+      "require": "./dist/data/abilities.js"
+    },
+    "./data/npcs": {
+      "types": "./dist/data/npcs.d.ts",
+      "import": "./dist-esm/data/npcs.js",
+      "require": "./dist/data/npcs.js"
+    },
+    "./data/areas": {
+      "types": "./dist/data/areas.d.ts",
+      "import": "./dist-esm/data/areas.js",
+      "require": "./dist/data/areas.js"
+    },
+    "./data/sources": {
+      "types": "./dist/data/sources.d.ts",
+      "import": "./dist-esm/data/sources.js",
+      "require": "./dist/data/sources.js"
+    },
+    "./planner": {
+      "types": "./dist/planner/index.d.ts",
+      "import": "./dist-esm/planner/index.js",
+      "require": "./dist/planner/index.js"
+    },
+    "./helpers": {
+      "types": "./dist/helpers/index.d.ts",
+      "import": "./dist-esm/helpers/index.js",
+      "require": "./dist/helpers/index.js"
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "dist-esm"
   ],
   "scripts": {
-    "build": "tsc",
-    "clean": "rm -rf dist",
+    "build": "tsc && tsc -p tsconfig.esm.json",
+    "clean": "rm -rf dist dist-esm",
     "prepublishOnly": "pnpm run clean && pnpm run build",
     "test": "vitest run",
     "analyze": "tsx scripts/analyze-json.ts"

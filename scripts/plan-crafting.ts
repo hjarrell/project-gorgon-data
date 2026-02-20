@@ -25,8 +25,9 @@ import { readFileSync } from 'fs';
 import { resolve } from 'path';
 import { CharacterState } from '../src/character-state';
 import { recipes, items, skills, RAW_XP_TABLES } from '../src/data';
-import { buildXpTableLookup, planCraftingSkill, buildItemRecipeLookup, findRecipesForItem } from '../src/planner';
+import { buildXpTableLookup, planCraftingSkill, buildItemRecipeLookup, findRecipesForItem, groupStepsIntoRuns } from '../src/planner';
 import type { ItemEffortMap, PlannerOptions } from '../src/planner';
+import { getItemName } from '../src/helpers';
 
 // --- Parse args ---
 const args = process.argv.slice(2);
@@ -158,39 +159,7 @@ if (result.steps.length === 0) {
   console.log('No crafts needed (already at or above target level).');
 } else {
   // Summary table: group consecutive crafts of the same recipe
-  interface RunSummary {
-    recipeName: string;
-    internalName: string;
-    count: number;
-    firstCrafts: number;
-    totalXp: number;
-    totalEffort: number;
-    levelStart: number;
-    levelEnd: number;
-  }
-
-  const runs: RunSummary[] = [];
-  for (const step of result.steps) {
-    const last = runs[runs.length - 1];
-    if (last && last.internalName === step.internalName) {
-      last.count++;
-      last.totalXp += step.xpGained;
-      last.totalEffort += step.effortCost;
-      last.levelEnd = step.skillLevelAfter;
-      if (step.isFirstCraft) last.firstCrafts++;
-    } else {
-      runs.push({
-        recipeName: step.recipeName,
-        internalName: step.internalName,
-        count: 1,
-        firstCrafts: step.isFirstCraft ? 1 : 0,
-        totalXp: step.xpGained,
-        totalEffort: step.effortCost,
-        levelStart: step.skillLevelBefore,
-        levelEnd: step.skillLevelAfter,
-      });
-    }
-  }
+  const runs = groupStepsIntoRuns(result.steps);
 
   // Print summary
   console.log('--- Summary (grouped by consecutive recipe) ---');
@@ -251,9 +220,7 @@ if (result.steps.length === 0) {
   }
   const ingredientRows: IngredientRow[] = [];
   for (const [itemCode, usage] of result.ingredientTotals) {
-    const itemKey = `item_${itemCode}`;
-    const item = items.get(itemKey);
-    const name = item?.Name ?? `Item #${itemCode}`;
+    const name = getItemName(itemCode, items);
     ingredientRows.push({ name, itemCode, count: usage.totalCount, timesUsed: usage.timesUsed, chance: usage.chanceToConsume, recipeCount: usage.recipeCount });
   }
   ingredientRows.sort((a, b) => b.count - a.count);
@@ -307,9 +274,7 @@ if (result.steps.length === 0) {
       const before = inventory.get(itemCode) ?? 0;
       const after = result.inventoryRemaining.get(itemCode) ?? 0;
       if (before === after) continue;
-      const itemKey = `item_${itemCode}`;
-      const item = items.get(itemKey);
-      const name = item?.Name ?? `Item #${itemCode}`;
+      const name = getItemName(itemCode, items);
       diffRows.push({ name, itemCode, before, after, diff: after - before });
     }
 

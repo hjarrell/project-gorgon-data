@@ -54,3 +54,9 @@ export type {
   CandidateScore,
   BestCandidate,
 } from './simulation';
+
+export {
+  groupStepsIntoRuns,
+} from './step-grouping';
+
+export type { CraftRun } from './step-grouping';
