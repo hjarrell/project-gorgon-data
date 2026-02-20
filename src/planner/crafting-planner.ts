@@ -63,6 +63,18 @@ export interface PlannerOptions {
   strategy?: 'xp' | 'efficient';
   /** Per-item effort overrides keyed by ItemCode. Only used with "efficient" strategy. */
   itemEffort?: ItemEffortMap;
+  /**
+   * Additional recipe InternalNames to treat as known (completion count 0).
+   * Useful for recipes the character could learn but hasn't yet.
+   * These get first-time bonus XP when crafted.
+   */
+  includeRecipes?: Set<string>;
+  /**
+   * When true, crafting a recipe automatically unlocks any recipe
+   * that lists it as a PrereqRecipe, adding it to the candidate pool
+   * mid-simulation. Default false.
+   */
+  unlockPrereqs?: boolean;
 }
 
 // ============================================================
@@ -124,6 +136,15 @@ export function planCraftingSkill(
   // Clone recipe completions so we can mutate during simulation
   const completions = new Map(characterState.recipeCompletions);
 
+  // Seed includeRecipes into completions with count 0 (unknown but available)
+  if (options.includeRecipes) {
+    for (const name of options.includeRecipes) {
+      if (!completions.has(name)) {
+        completions.set(name, 0);
+      }
+    }
+  }
+
   // Also track mutable skill levels for prerequisite checking (Skill != RewardSkill cases)
   const skillLevels = new Map<string, number>();
   for (const [name, entry] of characterState.skills) {
@@ -133,13 +154,32 @@ export function planCraftingSkill(
   // Crafting XP modifier from character stats
   const craftingXpMod = characterState.currentStats.get('CRAFTING_XP_EARNED_MOD') ?? 1.0;
 
+  // --- Build prereq unlock index (InternalName → recipes that require it) ---
+  const prereqUnlocks = new Map<string, RecipeCandidate[]>();
+  if (options.unlockPrereqs) {
+    for (const [recipeId, recipe] of allRecipes) {
+      if (recipe.RewardSkill !== targetSkill) continue;
+      if (!recipe.PrereqRecipe) continue;
+      let list = prereqUnlocks.get(recipe.PrereqRecipe);
+      if (!list) {
+        list = [];
+        prereqUnlocks.set(recipe.PrereqRecipe, list);
+      }
+      list.push({ recipeId, recipe });
+    }
+  }
+
+  // --- Track which InternalNames are already in the candidate pool ---
+  const candidateSet = new Set<string>();
+
   // --- Gather candidate recipes that reward XP in targetSkill ---
   const candidates: RecipeCandidate[] = [];
   for (const [recipeId, recipe] of allRecipes) {
     if (recipe.RewardSkill !== targetSkill) continue;
-    // Character must know this recipe (InternalName in RecipeCompletions)
+    // Character must know this recipe (InternalName in completions, which includes includeRecipes)
     if (!completions.has(recipe.InternalName)) continue;
     candidates.push({ recipeId, recipe });
+    candidateSet.add(recipe.InternalName);
   }
 
   // --- Strategy config ---
@@ -209,6 +249,23 @@ export function planCraftingSkill(
 
     // Update completion count
     completions.set(recipe.InternalName, count + 1);
+
+    // Unlock recipes that have this recipe as a PrereqRecipe
+    if (options.unlockPrereqs) {
+      const unlocked = prereqUnlocks.get(recipe.InternalName);
+      if (unlocked) {
+        for (const candidate of unlocked) {
+          if (!candidateSet.has(candidate.recipe.InternalName)) {
+            candidates.push(candidate);
+            candidateSet.add(candidate.recipe.InternalName);
+            // Seed completion count so it's eligible (first craft = 0)
+            if (!completions.has(candidate.recipe.InternalName)) {
+              completions.set(candidate.recipe.InternalName, 0);
+            }
+          }
+        }
+      }
+    }
 
     // Handle level-ups (may cascade)
     while (xpNeeded > 0 && currentXp >= xpNeeded) {

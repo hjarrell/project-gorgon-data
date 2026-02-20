@@ -344,6 +344,38 @@ describe('planCraftingSkill — efficient strategy', () => {
     expect(effResult.totalEffort).toBeLessThanOrEqual(xpResult.totalEffort);
   });
 
+  it('uses includeRecipes to add unknown recipes with first-time bonuses', () => {
+    // Fletching is at level 1 with only ArrowHead1 (0 repeatable XP) known.
+    // Without extra recipes, the planner gets stuck after the single first craft.
+    const withoutInclude = planCraftingSkill(
+      state,
+      'Fletching',
+      { targetLevel: 10, strategy: 'xp' },
+      recipes,
+      skills,
+      xpTableLookup,
+    );
+
+    const withInclude = planCraftingSkill(
+      state,
+      'Fletching',
+      { targetLevel: 10, strategy: 'xp', includeRecipes: new Set([
+        'ArrowShaft1', 'Arrow1', 'BarbedArrow1', 'LongArrow1',
+        'DenseArrow1', 'ReservoirArrow1', 'SnareArrow1',
+        'ArrowHead2', 'ArrowShaft2', 'Arrow2',
+      ]) },
+      recipes,
+      skills,
+      xpTableLookup,
+    );
+
+    // Without includes, stuck — can't reach target
+    expect(withoutInclude.targetReached).toBe(false);
+    // With includes, the first-craft bonuses and repeatable XP unlock progress
+    expect(withInclude.targetReached).toBe(true);
+    expect(withInclude.steps.filter((s) => s.isFirstCraft).length).toBeGreaterThan(1);
+  });
+
   it('responds to itemEffort overrides', () => {
     // Make all items very cheap except one specific ingredient
     const defaultResult = planCraftingSkill(
@@ -372,5 +404,124 @@ describe('planCraftingSkill — efficient strategy', () => {
 
     // With expensive item, planner should report higher total effort
     expect(expensiveResult.totalEffort).toBeGreaterThanOrEqual(defaultResult.totalEffort);
+  });
+});
+
+// ============================================================
+// Recipe Unlocks (includeRecipes + unlockPrereqs)
+// ============================================================
+
+describe('planCraftingSkill — recipe unlocks', () => {
+  const state = new CharacterState();
+  state.loadCharacterSheet(characterJson);
+
+  const xpTableLookup = buildXpTableLookup(
+    RAW_XP_TABLES as Record<string, { InternalName: string; XpAmounts: number[] }>,
+  );
+
+  it('includeRecipes seeds unknown recipes as available with first-time bonus', () => {
+    // Without includeRecipes, Fletching is stuck (ArrowHead1 gives 0 repeatable XP)
+    const baseResult = planCraftingSkill(
+      state,
+      'Fletching',
+      { targetLevel: 5 },
+      recipes,
+      skills,
+      xpTableLookup,
+    );
+
+    // With includeRecipes, add several early fletching recipes
+    const expandedResult = planCraftingSkill(
+      state,
+      'Fletching',
+      { targetLevel: 5, includeRecipes: new Set(['ArrowShaft1', 'Arrow1', 'BarbedArrow1']) },
+      recipes,
+      skills,
+      xpTableLookup,
+    );
+
+    // Base can't reach target, expanded can
+    expect(baseResult.targetReached).toBe(false);
+    expect(expandedResult.targetReached).toBe(true);
+
+    // The expanded plan should use multiple first-craft bonuses
+    const expandedFCs = expandedResult.steps.filter((s) => s.isFirstCraft).length;
+    expect(expandedFCs).toBeGreaterThanOrEqual(3);
+  });
+
+  it('unlockPrereqs makes chained recipes available after crafting prereq', () => {
+    // Include a wide range of fletching recipes including Arrow5
+    // With unlockPrereqs, crafting Arrow5 should make Arrow6 available
+    const allLowFletchingRecipes = [
+      'ArrowShaft1', 'Arrow1', 'BarbedArrow1', 'LongArrow1', 'DenseArrow1',
+      'ReservoirArrow1', 'SnareArrow1',
+      'ArrowHead2', 'ArrowShaft2', 'ArrowShaft2B', 'Fletching2', 'Arrow2',
+      'BarbedArrow2', 'LongArrow2', 'DenseArrow2', 'ReservoirArrow2', 'SnareArrow2',
+      'ArrowHead3', 'ArrowShaft3', 'ArrowShaft3B', 'Arrow3',
+      'BarbedArrow3', 'LongArrow3', 'DenseArrow3', 'ReservoirArrow3', 'SnareArrow3',
+      'ArrowHead4', 'ArrowShaft4', 'ArrowShaft4B', 'Fletching4', 'Arrow4',
+      'BarbedArrow4', 'LongArrow4', 'DenseArrow4', 'ReservoirArrow4', 'SnareArrow4',
+      'ArrowHead5', 'ArrowShaft5', 'ArrowShaft5B', 'Arrow5',
+      'BarbedArrow5', 'LongArrow5', 'DenseArrow5', 'ReservoirArrow5', 'SnareArrow5',
+    ];
+
+    const withoutUnlock = planCraftingSkill(
+      state,
+      'Fletching',
+      { targetLevel: 55, includeRecipes: new Set(allLowFletchingRecipes), unlockPrereqs: false },
+      recipes,
+      skills,
+      xpTableLookup,
+    );
+
+    const withUnlock = planCraftingSkill(
+      state,
+      'Fletching',
+      { targetLevel: 55, includeRecipes: new Set(allLowFletchingRecipes), unlockPrereqs: true },
+      recipes,
+      skills,
+      xpTableLookup,
+    );
+
+    // Both should reach the target
+    expect(withoutUnlock.targetReached).toBe(true);
+    expect(withUnlock.targetReached).toBe(true);
+
+    // With prereq unlocks, Arrow6/BarbedArrow6/etc. should appear as first crafts
+    const unlockedNames = withUnlock.steps
+      .filter((s) => s.isFirstCraft)
+      .map((s) => s.internalName);
+    const withoutUnlockedNames = withoutUnlock.steps
+      .filter((s) => s.isFirstCraft)
+      .map((s) => s.internalName);
+
+    // Arrow6 should be unlocked (prereq Arrow5) — only with unlockPrereqs
+    expect(unlockedNames).toContain('Arrow6');
+    expect(withoutUnlockedNames).not.toContain('Arrow6');
+  });
+
+  it('unlockPrereqs does nothing when no prereq chains exist', () => {
+    // Cooking recipes don't have PrereqRecipe chains at low levels
+    const withoutUnlock = planCraftingSkill(
+      state,
+      'Cooking',
+      { targetLevel: 20, unlockPrereqs: false },
+      recipes,
+      skills,
+      xpTableLookup,
+    );
+
+    const withUnlock = planCraftingSkill(
+      state,
+      'Cooking',
+      { targetLevel: 20, unlockPrereqs: true },
+      recipes,
+      skills,
+      xpTableLookup,
+    );
+
+    // Should produce identical results
+    expect(withoutUnlock.totalCrafts).toBe(withUnlock.totalCrafts);
+    expect(withoutUnlock.totalXpGained).toBe(withUnlock.totalXpGained);
   });
 });
