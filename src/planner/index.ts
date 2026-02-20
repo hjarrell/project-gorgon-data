@@ -29,3 +29,28 @@ export type {
   RecipeSource,
   IngredientNode,
 } from './ingredient-helpers';
+
+export {
+  xpScorer,
+  efficientScorer,
+} from './scorers';
+
+export type { RecipeScorer } from './scorers';
+
+export {
+  initSimulation,
+  canCraftRecipe,
+  scoreCandidate,
+  findBestCandidate,
+  applyCraft,
+  stepSimulation,
+  isSimulationDone,
+  buildPlanResult,
+} from './simulation';
+
+export type {
+  SimulationState,
+  RecipeCandidate,
+  CandidateScore,
+  BestCandidate,
+} from './simulation';

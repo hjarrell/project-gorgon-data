@@ -10,8 +10,17 @@ import {
   buildItemRecipeLookup,
   findRecipesForItem,
   resolveIngredientTree,
+  xpScorer,
+  efficientScorer,
+  initSimulation,
+  canCraftRecipe,
+  scoreCandidate,
+  findBestCandidate,
+  stepSimulation,
+  isSimulationDone,
+  buildPlanResult,
 } from './index';
-import type { ItemEffortMap } from './index';
+import type { ItemEffortMap, RecipeScorer } from './index';
 import type { Recipe } from '../schemas/recipes';
 import characterJson from '../example/Character_ShepardPiedPiper.json';
 
@@ -940,5 +949,600 @@ describe('resolveIngredientTree', () => {
     // Oak Wood is itself craftable (from logs?) — but may or may not have sub-ingredients at depth 2
     // Just verify the tree structure is valid
     expect(oakWood!.craftableVia).toBeDefined();
+  });
+});
+
+// ============================================================
+// Scorers
+// ============================================================
+
+describe('xpScorer', () => {
+  const mockRecipe: Recipe = {
+    Description: 'Test',
+    IconId: 1,
+    Ingredients: [],
+    InternalName: 'TestRecipe',
+    Name: 'Test Recipe',
+    ResultItems: [],
+    RewardSkill: 'Cooking',
+    RewardSkillXp: 100,
+    RewardSkillXpFirstTime: 400,
+    Skill: 'Cooking',
+    SkillLevelReq: 0,
+  };
+
+  it('returns raw XP regardless of effort', () => {
+    expect(xpScorer(mockRecipe, 200, 5)).toBe(200);
+    expect(xpScorer(mockRecipe, 200, 50)).toBe(200);
+    expect(xpScorer(mockRecipe, 0, 10)).toBe(0);
+  });
+});
+
+describe('efficientScorer', () => {
+  const mockRecipe: Recipe = {
+    Description: 'Test',
+    IconId: 1,
+    Ingredients: [],
+    InternalName: 'TestRecipe',
+    Name: 'Test Recipe',
+    ResultItems: [],
+    RewardSkill: 'Cooking',
+    RewardSkillXp: 100,
+    RewardSkillXpFirstTime: 400,
+    Skill: 'Cooking',
+    SkillLevelReq: 0,
+  };
+
+  it('returns XP / effort', () => {
+    expect(efficientScorer(mockRecipe, 200, 5)).toBe(40);
+    expect(efficientScorer(mockRecipe, 100, 4)).toBe(25);
+  });
+
+  it('returns raw XP when effort is 0', () => {
+    expect(efficientScorer(mockRecipe, 200, 0)).toBe(200);
+  });
+});
+
+// ============================================================
+// Simulation — initSimulation
+// ============================================================
+
+describe('initSimulation', () => {
+  const state = new CharacterState();
+  state.loadCharacterSheet(characterJson);
+
+  const xpTableLookup = buildXpTableLookup(
+    RAW_XP_TABLES as Record<string, { InternalName: string; XpAmounts: number[] }>,
+  );
+
+  it('initializes simulation state with correct starting values', () => {
+    const sim = initSimulation(
+      state, 'Cooking', { targetLevel: 25 },
+      recipes, skills, xpTableLookup,
+    );
+
+    expect(sim.targetSkill).toBe('Cooking');
+    expect(sim.currentLevel).toBe(17);
+    expect(sim.startLevel).toBe(17);
+    expect(sim.targetLevel).toBe(25);
+    expect(sim.maxCrafts).toBe(10000);
+    expect(sim.steps).toEqual([]);
+    expect(sim.totalXpGained).toBe(0);
+    expect(sim.totalEffort).toBe(0);
+    expect(sim.candidates.length).toBeGreaterThan(0);
+    expect(sim.inventory).toBeNull();
+  });
+
+  it('uses xpScorer by default', () => {
+    const sim = initSimulation(
+      state, 'Cooking', { targetLevel: 25 },
+      recipes, skills, xpTableLookup,
+    );
+    expect(sim.scorer).toBe(xpScorer);
+  });
+
+  it('uses efficientScorer when strategy is efficient', () => {
+    const sim = initSimulation(
+      state, 'Cooking', { targetLevel: 25, strategy: 'efficient' },
+      recipes, skills, xpTableLookup,
+    );
+    expect(sim.scorer).toBe(efficientScorer);
+  });
+
+  it('uses custom scorer when provided', () => {
+    const custom: RecipeScorer = (_r, xp) => xp * 2;
+    const sim = initSimulation(
+      state, 'Cooking', { targetLevel: 25, scorer: custom },
+      recipes, skills, xpTableLookup,
+    );
+    expect(sim.scorer).toBe(custom);
+  });
+
+  it('seeds includeRecipes into completions with count 0', () => {
+    const sim = initSimulation(
+      state, 'Fletching',
+      { targetLevel: 10, includeRecipes: new Set(['ArrowShaft1', 'Arrow1']) },
+      recipes, skills, xpTableLookup,
+    );
+
+    expect(sim.completions.get('ArrowShaft1')).toBe(0);
+    expect(sim.completions.get('Arrow1')).toBe(0);
+    // These should also be in the candidate pool
+    expect(sim.candidateSet.has('ArrowShaft1')).toBe(true);
+    expect(sim.candidateSet.has('Arrow1')).toBe(true);
+  });
+
+  it('throws for unknown skill', () => {
+    expect(() =>
+      initSimulation(state, 'FakeSkill', { targetLevel: 10 }, recipes, skills, xpTableLookup),
+    ).toThrow('Unknown skill');
+  });
+
+  it('clones inventory when provided', () => {
+    const inv = new Map([[100, 50]]);
+    const sim = initSimulation(
+      state, 'Cooking', { targetLevel: 25, inventory: inv },
+      recipes, skills, xpTableLookup,
+    );
+
+    expect(sim.inventory).not.toBeNull();
+    expect(sim.inventory!.get(100)).toBe(50);
+    // Verify it's a clone, not a reference
+    inv.set(100, 999);
+    expect(sim.inventory!.get(100)).toBe(50);
+  });
+});
+
+// ============================================================
+// Simulation — canCraftRecipe
+// ============================================================
+
+describe('canCraftRecipe', () => {
+  const charState = new CharacterState();
+  charState.loadCharacterSheet(characterJson);
+
+  const xpTableLookup = buildXpTableLookup(
+    RAW_XP_TABLES as Record<string, { InternalName: string; XpAmounts: number[] }>,
+  );
+
+  it('returns true for a recipe the character can craft', () => {
+    const sim = initSimulation(
+      charState, 'Cooking', { targetLevel: 25 },
+      recipes, skills, xpTableLookup,
+    );
+
+    // Find a recipe that's in the candidate pool — it should be craftable
+    const candidate = sim.candidates[0];
+    expect(canCraftRecipe(candidate.recipe, sim)).toBe(true);
+  });
+
+  it('returns false when skill level is too low', () => {
+    const sim = initSimulation(
+      charState, 'Cooking', { targetLevel: 25 },
+      recipes, skills, xpTableLookup,
+    );
+
+    // Create a recipe that requires level 999
+    const highLevelRecipe: Recipe = {
+      Description: 'Test',
+      IconId: 1,
+      Ingredients: [],
+      InternalName: 'HighLevel',
+      Name: 'High Level',
+      ResultItems: [],
+      RewardSkill: 'Cooking',
+      RewardSkillXp: 100,
+      RewardSkillXpFirstTime: 400,
+      Skill: 'Cooking',
+      SkillLevelReq: 999,
+    };
+
+    expect(canCraftRecipe(highLevelRecipe, sim)).toBe(false);
+  });
+
+  it('returns false when MaxUses is exceeded', () => {
+    const sim = initSimulation(
+      charState, 'Cooking', { targetLevel: 25 },
+      recipes, skills, xpTableLookup,
+    );
+
+    const limitedRecipe: Recipe = {
+      Description: 'Test',
+      IconId: 1,
+      Ingredients: [],
+      InternalName: 'Limited',
+      Name: 'Limited',
+      ResultItems: [],
+      RewardSkill: 'Cooking',
+      RewardSkillXp: 100,
+      RewardSkillXpFirstTime: 400,
+      Skill: 'Cooking',
+      SkillLevelReq: 0,
+      MaxUses: 3,
+    };
+
+    // Set completions to MaxUses
+    sim.completions.set('Limited', 3);
+    expect(canCraftRecipe(limitedRecipe, sim)).toBe(false);
+
+    // Below MaxUses should be fine
+    sim.completions.set('Limited', 2);
+    expect(canCraftRecipe(limitedRecipe, sim)).toBe(true);
+  });
+
+  it('returns false when inventory lacks ingredients', () => {
+    const sim = initSimulation(
+      charState, 'Cooking', { targetLevel: 25, inventory: new Map() },
+      recipes, skills, xpTableLookup,
+    );
+
+    const recipe: Recipe = {
+      Description: 'Test',
+      IconId: 1,
+      Ingredients: [{ ItemCode: 5001, StackSize: 2 }],
+      InternalName: 'NeedsItems',
+      Name: 'Needs Items',
+      ResultItems: [],
+      RewardSkill: 'Cooking',
+      RewardSkillXp: 100,
+      RewardSkillXpFirstTime: 400,
+      Skill: 'Cooking',
+      SkillLevelReq: 0,
+    };
+
+    expect(canCraftRecipe(recipe, sim)).toBe(false);
+
+    // Add enough inventory
+    sim.inventory!.set(5001, 2);
+    expect(canCraftRecipe(recipe, sim)).toBe(true);
+
+    // Not quite enough
+    sim.inventory!.set(5001, 1);
+    expect(canCraftRecipe(recipe, sim)).toBe(false);
+  });
+
+  it('requires tools to be present but does not require full stack', () => {
+    const sim = initSimulation(
+      charState, 'Cooking', { targetLevel: 25, inventory: new Map([[9999, 1]]) },
+      recipes, skills, xpTableLookup,
+    );
+
+    const recipe: Recipe = {
+      Description: 'Test',
+      IconId: 1,
+      Ingredients: [{ ItemCode: 9999, StackSize: 1, ChanceToConsume: 0.03 }],
+      InternalName: 'ToolRecipe',
+      Name: 'Tool Recipe',
+      ResultItems: [],
+      RewardSkill: 'Cooking',
+      RewardSkillXp: 100,
+      RewardSkillXpFirstTime: 400,
+      Skill: 'Cooking',
+      SkillLevelReq: 0,
+    };
+
+    expect(canCraftRecipe(recipe, sim)).toBe(true);
+
+    // Without the tool
+    sim.inventory!.delete(9999);
+    expect(canCraftRecipe(recipe, sim)).toBe(false);
+  });
+});
+
+// ============================================================
+// Simulation — scoreCandidate & findBestCandidate
+// ============================================================
+
+describe('scoreCandidate', () => {
+  const charState = new CharacterState();
+  charState.loadCharacterSheet(characterJson);
+
+  const xpTableLookup = buildXpTableLookup(
+    RAW_XP_TABLES as Record<string, { InternalName: string; XpAmounts: number[] }>,
+  );
+
+  it('returns xp, effort, and score for a valid candidate', () => {
+    const sim = initSimulation(
+      charState, 'Cooking', { targetLevel: 25 },
+      recipes, skills, xpTableLookup,
+    );
+
+    const candidate = sim.candidates[0];
+    const result = scoreCandidate(candidate, sim);
+    expect(result).not.toBeNull();
+    expect(result!.xp).toBeGreaterThan(0);
+    expect(result!.effort).toBeGreaterThanOrEqual(0);
+    expect(result!.score).toBeGreaterThan(0);
+  });
+
+  it('returns null for ineligible candidate', () => {
+    const sim = initSimulation(
+      charState, 'Cooking', { targetLevel: 25 },
+      recipes, skills, xpTableLookup,
+    );
+
+    const fakeCandidate = {
+      recipeId: 'fake',
+      recipe: {
+        Description: 'Test',
+        IconId: 1,
+        Ingredients: [],
+        InternalName: 'Fake',
+        Name: 'Fake',
+        ResultItems: [],
+        RewardSkill: 'Cooking',
+        RewardSkillXp: 100,
+        RewardSkillXpFirstTime: 400,
+        Skill: 'Cooking',
+        SkillLevelReq: 999, // too high
+      } as Recipe,
+    };
+
+    expect(scoreCandidate(fakeCandidate, sim)).toBeNull();
+  });
+
+  it('uses custom scorer when provided', () => {
+    const sim = initSimulation(
+      charState, 'Cooking', { targetLevel: 25 },
+      recipes, skills, xpTableLookup,
+    );
+
+    const candidate = sim.candidates[0];
+    const doubleScorer: RecipeScorer = (_r, xp) => xp * 2;
+    const defaultResult = scoreCandidate(candidate, sim);
+    const customResult = scoreCandidate(candidate, sim, doubleScorer);
+
+    expect(customResult).not.toBeNull();
+    expect(defaultResult).not.toBeNull();
+    // Custom scorer doubles the score vs the default xpScorer (which returns raw XP)
+    expect(customResult!.score).toBe(defaultResult!.xp * 2);
+  });
+});
+
+describe('findBestCandidate', () => {
+  const charState = new CharacterState();
+  charState.loadCharacterSheet(characterJson);
+
+  const xpTableLookup = buildXpTableLookup(
+    RAW_XP_TABLES as Record<string, { InternalName: string; XpAmounts: number[] }>,
+  );
+
+  it('returns the highest-scoring candidate', () => {
+    const sim = initSimulation(
+      charState, 'Cooking', { targetLevel: 25 },
+      recipes, skills, xpTableLookup,
+    );
+
+    const best = findBestCandidate(sim);
+    expect(best).not.toBeNull();
+    expect(best!.xp).toBeGreaterThan(0);
+
+    // Verify it's actually the best by checking all candidates
+    for (const candidate of sim.candidates) {
+      const result = scoreCandidate(candidate, sim);
+      if (result) {
+        expect(best!.xp).toBeGreaterThanOrEqual(result.xp);
+      }
+    }
+  });
+
+  it('returns null when no candidates can give XP', () => {
+    const sim = initSimulation(
+      charState, 'Cooking', { targetLevel: 25, inventory: new Map() },
+      recipes, skills, xpTableLookup,
+    );
+
+    const best = findBestCandidate(sim);
+    expect(best).toBeNull();
+  });
+});
+
+// ============================================================
+// Simulation — stepSimulation & isSimulationDone
+// ============================================================
+
+describe('stepSimulation', () => {
+  const charState = new CharacterState();
+  charState.loadCharacterSheet(characterJson);
+
+  const xpTableLookup = buildXpTableLookup(
+    RAW_XP_TABLES as Record<string, { InternalName: string; XpAmounts: number[] }>,
+  );
+
+  it('advances simulation by one craft', () => {
+    const sim = initSimulation(
+      charState, 'Cooking', { targetLevel: 25 },
+      recipes, skills, xpTableLookup,
+    );
+
+    const levelBefore = sim.currentLevel;
+    const xpBefore = sim.totalXpGained;
+
+    const step = stepSimulation(sim);
+    expect(step).not.toBeNull();
+    expect(step!.xpGained).toBeGreaterThan(0);
+    expect(sim.steps.length).toBe(1);
+    expect(sim.totalXpGained).toBe(xpBefore + step!.xpGained);
+    expect(sim.currentLevel).toBeGreaterThanOrEqual(levelBefore);
+  });
+
+  it('returns null when stuck (empty inventory)', () => {
+    const sim = initSimulation(
+      charState, 'Cooking', { targetLevel: 25, inventory: new Map() },
+      recipes, skills, xpTableLookup,
+    );
+
+    const step = stepSimulation(sim);
+    expect(step).toBeNull();
+    expect(sim.steps.length).toBe(0);
+  });
+
+  it('updates completion count after crafting', () => {
+    const sim = initSimulation(
+      charState, 'Cooking', { targetLevel: 25 },
+      recipes, skills, xpTableLookup,
+    );
+
+    const step = stepSimulation(sim)!;
+    const countAfter = sim.completions.get(step.internalName) ?? 0;
+    expect(countAfter).toBeGreaterThan(0);
+  });
+});
+
+describe('isSimulationDone', () => {
+  const charState = new CharacterState();
+  charState.loadCharacterSheet(characterJson);
+
+  const xpTableLookup = buildXpTableLookup(
+    RAW_XP_TABLES as Record<string, { InternalName: string; XpAmounts: number[] }>,
+  );
+
+  it('returns true when already at target level', () => {
+    const sim = initSimulation(
+      charState, 'Pathology', { targetLevel: 50 },
+      recipes, skills, xpTableLookup,
+    );
+
+    expect(isSimulationDone(sim)).toBe(true);
+  });
+
+  it('returns false when below target level', () => {
+    const sim = initSimulation(
+      charState, 'Cooking', { targetLevel: 25 },
+      recipes, skills, xpTableLookup,
+    );
+
+    expect(isSimulationDone(sim)).toBe(false);
+  });
+
+  it('returns true when maxCrafts reached', () => {
+    const sim = initSimulation(
+      charState, 'Cooking', { targetLevel: 100, maxCrafts: 0 },
+      recipes, skills, xpTableLookup,
+    );
+
+    expect(isSimulationDone(sim)).toBe(true);
+  });
+});
+
+// ============================================================
+// Custom Scorer via PlannerOptions
+// ============================================================
+
+describe('planCraftingSkill — custom scorer', () => {
+  const charState = new CharacterState();
+  charState.loadCharacterSheet(characterJson);
+
+  const xpTableLookup = buildXpTableLookup(
+    RAW_XP_TABLES as Record<string, { InternalName: string; XpAmounts: number[] }>,
+  );
+
+  it('accepts a custom scorer via options', () => {
+    // Scorer that prefers recipes with low XP (inverting the default behavior)
+    const invertedScorer: RecipeScorer = (_r, xp) => 1 / (xp + 1);
+
+    const defaultResult = planCraftingSkill(
+      charState, 'Cooking', { targetLevel: 20 },
+      recipes, skills, xpTableLookup,
+    );
+
+    const invertedResult = planCraftingSkill(
+      charState, 'Cooking', { targetLevel: 20, scorer: invertedScorer },
+      recipes, skills, xpTableLookup,
+    );
+
+    // Both should reach the target
+    expect(defaultResult.targetReached).toBe(true);
+    expect(invertedResult.targetReached).toBe(true);
+
+    // Inverted scorer should use more crafts (picking worse recipes)
+    expect(invertedResult.totalCrafts).toBeGreaterThanOrEqual(defaultResult.totalCrafts);
+  });
+
+  it('custom scorer overrides strategy', () => {
+    const customScorer: RecipeScorer = (_r, xp, effort) => xp + effort;
+
+    const result = planCraftingSkill(
+      charState, 'Cooking',
+      { targetLevel: 20, strategy: 'efficient', scorer: customScorer },
+      recipes, skills, xpTableLookup,
+    );
+
+    expect(result.targetReached).toBe(true);
+  });
+});
+
+// ============================================================
+// Incremental Stepping — manual loop matches planCraftingSkill
+// ============================================================
+
+describe('incremental stepping', () => {
+  const charState = new CharacterState();
+  charState.loadCharacterSheet(characterJson);
+
+  const xpTableLookup = buildXpTableLookup(
+    RAW_XP_TABLES as Record<string, { InternalName: string; XpAmounts: number[] }>,
+  );
+
+  it('manual step loop produces same result as planCraftingSkill', () => {
+    // Run planCraftingSkill
+    const autoResult = planCraftingSkill(
+      charState, 'Cooking', { targetLevel: 22 },
+      recipes, skills, xpTableLookup,
+    );
+
+    // Manual step loop
+    const sim = initSimulation(
+      charState, 'Cooking', { targetLevel: 22 },
+      recipes, skills, xpTableLookup,
+    );
+    while (!isSimulationDone(sim)) {
+      if (!stepSimulation(sim)) break;
+    }
+    const manualResult = buildPlanResult(sim);
+
+    // Results should be identical
+    expect(manualResult.skill).toBe(autoResult.skill);
+    expect(manualResult.startLevel).toBe(autoResult.startLevel);
+    expect(manualResult.endLevel).toBe(autoResult.endLevel);
+    expect(manualResult.targetReached).toBe(autoResult.targetReached);
+    expect(manualResult.totalCrafts).toBe(autoResult.totalCrafts);
+    expect(manualResult.totalXpGained).toBe(autoResult.totalXpGained);
+    expect(manualResult.totalEffort).toBe(autoResult.totalEffort);
+    expect(manualResult.levelUps).toBe(autoResult.levelUps);
+
+    // Steps should match
+    expect(manualResult.steps.length).toBe(autoResult.steps.length);
+    for (let i = 0; i < manualResult.steps.length; i++) {
+      expect(manualResult.steps[i].recipeId).toBe(autoResult.steps[i].recipeId);
+      expect(manualResult.steps[i].xpGained).toBe(autoResult.steps[i].xpGained);
+    }
+  });
+
+  it('can stop early and resume', () => {
+    const sim = initSimulation(
+      charState, 'Cooking', { targetLevel: 22 },
+      recipes, skills, xpTableLookup,
+    );
+
+    // Step 5 times
+    for (let i = 0; i < 5; i++) {
+      if (isSimulationDone(sim)) break;
+      stepSimulation(sim);
+    }
+
+    const midwayLevel = sim.currentLevel;
+    const midwaySteps = sim.steps.length;
+    expect(midwaySteps).toBeLessThanOrEqual(5);
+
+    // Continue until done
+    while (!isSimulationDone(sim)) {
+      if (!stepSimulation(sim)) break;
+    }
+
+    const result = buildPlanResult(sim);
+    expect(result.endLevel).toBeGreaterThanOrEqual(midwayLevel);
+    expect(result.steps.length).toBeGreaterThan(midwaySteps);
+    expect(result.targetReached).toBe(true);
   });
 });
