@@ -194,6 +194,12 @@ export function canCraftRecipe(recipe: Recipe, state: SimulationState): boolean 
     : (state.skillLevels.get(reqSkill) ?? 0);
   if (playerLevel < reqLevel) return false;
 
+  // Check prerequisite recipe has been crafted at least once
+  if (recipe.PrereqRecipe) {
+    const prereqCount = state.completions.get(recipe.PrereqRecipe) ?? 0;
+    if (prereqCount === 0) return false;
+  }
+
   // Check MaxUses
   const count = state.completions.get(recipe.InternalName) ?? 0;
   if (recipe.MaxUses != null && count >= recipe.MaxUses) return false;

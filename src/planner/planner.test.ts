@@ -56,18 +56,26 @@ describe('calcDropOffMultiplier', () => {
     expect(calcDropOffMultiplier(5, 10, 5, 0.1)).toBe(1.0);
   });
 
-  it('returns 0.5 at dropOffLevel + dropOffRate', () => {
-    expect(calcDropOffMultiplier(15, 10, 5, 0.1)).toBeCloseTo(0.5);
+  it('reduces by dropOffPct per step at dropOffLevel + dropOffRate', () => {
+    // levelsAbove=5, steps=1, 1 - 0.1*1 = 0.9
+    expect(calcDropOffMultiplier(15, 10, 5, 0.1)).toBeCloseTo(0.9);
   });
 
-  it('returns 0.25 at dropOffLevel + 2*dropOffRate', () => {
-    expect(calcDropOffMultiplier(20, 10, 5, 0.1)).toBeCloseTo(0.25);
+  it('reduces linearly at dropOffLevel + 2*dropOffRate', () => {
+    // levelsAbove=10, steps=2, 1 - 0.1*2 = 0.8
+    expect(calcDropOffMultiplier(20, 10, 5, 0.1)).toBeCloseTo(0.8);
+  });
+
+  it('continues reducing linearly at higher levels', () => {
+    // levelsAbove=40, steps=8, 1 - 0.1*8 = 0.2
+    expect(calcDropOffMultiplier(50, 10, 5, 0.1)).toBeCloseTo(0.2);
   });
 
   it('clamps to dropOffPct floor', () => {
-    // At level 50, dropOff from level 10 = 40 levels above, rate 5 → 0.5^8 = 0.0039
-    // Clamped to 0.1
-    expect(calcDropOffMultiplier(50, 10, 5, 0.1)).toBe(0.1);
+    // levelsAbove=50, steps=10, 1 - 0.1*10 = 0 → clamped to 0.1
+    expect(calcDropOffMultiplier(60, 10, 5, 0.1)).toBe(0.1);
+    // levelsAbove=55, steps=11, 1 - 0.1*11 = -0.1 → clamped to 0.1
+    expect(calcDropOffMultiplier(65, 10, 5, 0.1)).toBe(0.1);
   });
 });
 
@@ -98,8 +106,8 @@ describe('calcRecipeXp', () => {
   });
 
   it('applies drop-off on subsequent crafts above drop-off level', () => {
-    // Level 25 = 5 above dropOff 20, rate 5 → mult 0.5 → 50 XP
-    expect(calcRecipeXp(mockRecipe, 25, 1)).toBe(50);
+    // Level 25 = 5 above dropOff 20, rate 5 → steps=1, mult = 1-0.1*1 = 0.9 → 90 XP
+    expect(calcRecipeXp(mockRecipe, 25, 1)).toBe(90);
   });
 
   it('applies crafting XP mod', () => {
@@ -1199,6 +1207,39 @@ describe('canCraftRecipe', () => {
     // Not quite enough
     sim.inventory!.set(5001, 1);
     expect(canCraftRecipe(recipe, sim)).toBe(false);
+  });
+
+  it('returns false when PrereqRecipe has not been crafted', () => {
+    const sim = initSimulation(
+      charState, 'Cooking', { targetLevel: 25 },
+      recipes, skills, xpTableLookup,
+    );
+
+    const prereqRecipe: Recipe = {
+      Description: 'Test',
+      IconId: 1,
+      Ingredients: [],
+      InternalName: 'WithPrereq',
+      Name: 'With Prereq',
+      ResultItems: [],
+      RewardSkill: 'Cooking',
+      RewardSkillXp: 100,
+      RewardSkillXpFirstTime: 400,
+      Skill: 'Cooking',
+      SkillLevelReq: 0,
+      PrereqRecipe: 'PrereqBase',
+    };
+
+    // Prereq not crafted (not in completions at all)
+    expect(canCraftRecipe(prereqRecipe, sim)).toBe(false);
+
+    // Prereq seeded with count 0 (e.g. via includeRecipes) — still not crafted
+    sim.completions.set('PrereqBase', 0);
+    expect(canCraftRecipe(prereqRecipe, sim)).toBe(false);
+
+    // Prereq actually crafted (count > 0)
+    sim.completions.set('PrereqBase', 1);
+    expect(canCraftRecipe(prereqRecipe, sim)).toBe(true);
   });
 
   it('requires tools to be present but does not require full stack', () => {
