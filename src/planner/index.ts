@@ -76,3 +76,42 @@ export {
 } from './step-grouping';
 
 export type { CraftRun } from './step-grouping';
+
+// ── Gardening Planner ─────────────────────────────────────
+
+export {
+  planGardeningSkill,
+  groupActionsIntoHarvestRuns,
+  DEFAULT_GARDENING_TIMING,
+} from './gardening-planner';
+
+export type {
+  GardeningSeedEntry,
+  SeedCategory,
+  SlotGroup,
+  GardeningTimingConfig,
+  GardeningPlannerOptions,
+  GardenActionType,
+  GardenAction,
+  GardeningHarvestRun,
+  GardeningPlanResult,
+} from './gardening-types';
+
+export {
+  gardeningSeeds,
+  gardeningSeedsByCode,
+  DEFAULT_SLOT_GROUPS,
+  getAvailableSeeds,
+  getSeedSlotGroup,
+  classifySeed,
+  WATER_BOTTLE_ITEM_CODE,
+  FERTILIZER_BOTTLE_ITEM_CODE,
+} from './gardening-data';
+
+export {
+  initGardeningSimulation,
+  stepGardeningSimulation,
+  isGardeningSimulationDone,
+} from './gardening-simulation';
+
+export type { GardeningSimulationState } from './gardening-simulation';
