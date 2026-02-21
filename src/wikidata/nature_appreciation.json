@@ -1,0 +1,223 @@
+{
+  "_meta": {
+    "source": "https://wiki.projectgorgon.com/wiki/Nature_Appreciation",
+    "license": "CC BY-SA 3.0",
+    "retrieved": "2026-02-20",
+    "description": "Nature Appreciation flower data sourced from the Project Gorgon community wiki. Item codes reference entries in items.json. Gardening cross-references from gardening.json."
+  },
+  "flowers": [
+    {
+      "flowerItemCode": 10301,
+      "flowerName": "Bluebell",
+      "natureAppreciationLevel": 0,
+      "xp": 10,
+      "buff": "+10 Max Power",
+      "seedLocation": "Found in Serbule and Eltibule, Myconian Cave drop.",
+      "gardeningLevel": 3,
+      "seedItemCode": 10201,
+      "growable": true
+    },
+    {
+      "flowerItemCode": 10401,
+      "flowerName": "Wolfsbane",
+      "natureAppreciationLevel": 0,
+      "xp": 15,
+      "buff": "-10 Max Power",
+      "seedLocation": "Flowers (not seeds) found in Kur and Gazluk.",
+      "gardeningLevel": null,
+      "seedItemCode": null,
+      "growable": false,
+      "notes": "Cannot be grown. Flowers found directly on monsters."
+    },
+    {
+      "flowerItemCode": 10302,
+      "flowerName": "Red Aster",
+      "natureAppreciationLevel": 0,
+      "xp": 20,
+      "buff": "+18 Max Power",
+      "seedLocation": "Found in Serbule and Eltibule.",
+      "gardeningLevel": 10,
+      "seedItemCode": 10202,
+      "growable": true
+    },
+    {
+      "flowerItemCode": 10303,
+      "flowerName": "Violet",
+      "natureAppreciationLevel": 0,
+      "xp": 40,
+      "buff": "+25 Max Power",
+      "seedLocation": "Found in Eltibule.",
+      "gardeningLevel": 15,
+      "seedItemCode": 10203,
+      "growable": true
+    },
+    {
+      "flowerItemCode": 10304,
+      "flowerName": "Dahlia",
+      "natureAppreciationLevel": 5,
+      "xp": 60,
+      "buff": "+33 Max Power",
+      "seedLocation": "Found in Eltibule.",
+      "gardeningLevel": 20,
+      "seedItemCode": 10204,
+      "growable": true
+    },
+    {
+      "flowerItemCode": 10305,
+      "flowerName": "Daisy",
+      "natureAppreciationLevel": 10,
+      "xp": 80,
+      "buff": "+40 Max Power",
+      "seedLocation": "Found in Eltibule and Sun Vale.",
+      "gardeningLevel": 25,
+      "seedItemCode": 10205,
+      "growable": true
+    },
+    {
+      "flowerItemCode": 10306,
+      "flowerName": "Pansy",
+      "natureAppreciationLevel": 15,
+      "xp": 110,
+      "buff": "+48 Max Power",
+      "seedLocation": "Found in Sun Vale.",
+      "gardeningLevel": 30,
+      "seedItemCode": 10206,
+      "growable": true
+    },
+    {
+      "flowerItemCode": 10307,
+      "flowerName": "Marigold",
+      "natureAppreciationLevel": 20,
+      "xp": 140,
+      "buff": "+55 Max Power",
+      "seedLocation": "Found in Sun Vale.",
+      "gardeningLevel": 35,
+      "seedItemCode": 10207,
+      "growable": true
+    },
+    {
+      "flowerItemCode": 10308,
+      "flowerName": "Poppy",
+      "natureAppreciationLevel": 25,
+      "xp": 180,
+      "buff": "+63 Max Power",
+      "seedLocation": "Found in Sun Vale.",
+      "gardeningLevel": 40,
+      "seedItemCode": 10208,
+      "growable": true
+    },
+    {
+      "flowerItemCode": 10309,
+      "flowerName": "Red Rose",
+      "natureAppreciationLevel": 30,
+      "xp": 220,
+      "buff": "+70 Max Power",
+      "seedLocation": "Random Drop From Mobs In Rahu and Gazluk.",
+      "gardeningLevel": 45,
+      "seedItemCode": 10209,
+      "growable": true
+    },
+    {
+      "flowerItemCode": 10310,
+      "flowerName": "Elven Lily",
+      "natureAppreciationLevel": 35,
+      "xp": 260,
+      "buff": "+78 Max Power",
+      "seedLocation": "Random drop from level 40-60 enemies.",
+      "gardeningLevel": 50,
+      "seedItemCode": 10210,
+      "growable": true
+    },
+    {
+      "flowerItemCode": 10311,
+      "flowerName": "Winterhue",
+      "natureAppreciationLevel": 40,
+      "xp": 300,
+      "buff": "+85 Max Power",
+      "seedLocation": "Found in Kur Mountains.",
+      "gardeningLevel": 55,
+      "seedItemCode": 10211,
+      "growable": true
+    },
+    {
+      "flowerItemCode": 10312,
+      "flowerName": "Desert Rose",
+      "natureAppreciationLevel": 45,
+      "xp": 350,
+      "buff": "+93 Max Power",
+      "seedLocation": "Found in Ilmari.",
+      "gardeningLevel": 60,
+      "seedItemCode": 10212,
+      "growable": true
+    },
+    {
+      "flowerItemCode": 10313,
+      "flowerName": "Dandelion",
+      "natureAppreciationLevel": 50,
+      "xp": 400,
+      "buff": "+100 Max Power",
+      "seedLocation": "Found in the Fae Realm.",
+      "gardeningLevel": 65,
+      "seedItemCode": 10213,
+      "growable": true
+    },
+    {
+      "flowerItemCode": 10314,
+      "flowerName": "Fae Mysotis",
+      "natureAppreciationLevel": 55,
+      "xp": 450,
+      "buff": "+107 Max Power",
+      "seedLocation": "Found in the Fae Realm.",
+      "gardeningLevel": 70,
+      "seedItemCode": 10214,
+      "growable": true
+    },
+    {
+      "flowerItemCode": 10315,
+      "flowerName": "Tulip",
+      "natureAppreciationLevel": 60,
+      "xp": 500,
+      "buff": "+114 Max Power",
+      "seedLocation": "Found in the Fae Realm.",
+      "gardeningLevel": 75,
+      "seedItemCode": 10215,
+      "growable": true
+    },
+    {
+      "flowerItemCode": 10316,
+      "flowerName": "Paleblood",
+      "natureAppreciationLevel": 65,
+      "xp": null,
+      "buff": "+121 Max Power",
+      "seedLocation": "Gazluk.",
+      "gardeningLevel": 80,
+      "seedItemCode": 10216,
+      "growable": true,
+      "notes": "Grows as Snowblood. XP unknown."
+    },
+    {
+      "flowerItemCode": 10317,
+      "flowerName": "Hyacinth",
+      "natureAppreciationLevel": 70,
+      "xp": null,
+      "buff": "+129 Max Power",
+      "seedLocation": "Povus.",
+      "gardeningLevel": 85,
+      "seedItemCode": 10217,
+      "growable": true,
+      "notes": "XP unknown."
+    },
+    {
+      "flowerItemCode": 10318,
+      "flowerName": "Swamp Lily",
+      "natureAppreciationLevel": 75,
+      "xp": null,
+      "buff": null,
+      "seedLocation": "Povus.",
+      "gardeningLevel": 90,
+      "seedItemCode": 10218,
+      "growable": true,
+      "notes": "XP and buff unknown."
+    }
+  ]
+}

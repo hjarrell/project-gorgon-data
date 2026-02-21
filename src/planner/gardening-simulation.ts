@@ -16,6 +16,7 @@ import {
   getSeedSlotGroup,
   WATER_BOTTLE_ITEM_CODE,
   FERTILIZER_BOTTLE_ITEM_CODE,
+  STRANGE_DIRT_ITEM_CODE,
 } from './gardening-data';
 
 // ============================================================
@@ -74,11 +75,19 @@ export interface GardeningSimulationState {
   // Water
   waterBottlesAvailable: number;
 
+  // Fertilizer bottles
+  fertilizerBottlesAvailable: number;
+
+  // Inventory constraint (null = unconstrained)
+  inventory: Map<number, number> | null;
+
   // Accumulators
   actions: GardenAction[];
   totalXpGained: number;
   seedsUsed: Map<number, number>;
   fertilizerUsed: number;
+  fertilizerCrafts: number;
+  strangeDirtUsed: number;
   waterUsed: number;
   waterRefills: number;
   produceHarvested: Map<number, number>;
@@ -124,6 +133,29 @@ function scoreSeed(seed: GardeningSeedEntry, strategy: 'xp' | 'time'): number {
   }
   // 'time': prefer highest absolute XP to minimize total cycles
   return seed.gardeningXp;
+}
+
+/**
+ * When the preferred seed for a slot group has no inventory remaining,
+ * find the next-best seed that does have inventory.
+ */
+function findAlternativeSeed(
+  state: GardeningSimulationState,
+  group: SlotGroup,
+): GardeningSeedEntry | null {
+  let best: GardeningSeedEntry | null = null;
+  let bestScore = -1;
+
+  for (const seed of state.availableSeeds) {
+    if (!group.seedItemCodes.includes(seed.seedItemCode)) continue;
+    if ((state.inventory?.get(seed.seedItemCode) ?? 0) <= 0) continue;
+    const score = scoreSeed(seed, state.options.strategy);
+    if (score > bestScore) {
+      bestScore = score;
+      best = seed;
+    }
+  }
+  return best;
 }
 
 function refreshBestSeeds(state: GardeningSimulationState): void {
@@ -253,10 +285,14 @@ export function initGardeningSimulation(
     availableSeeds: [],
     bestSeedPerGroup: new Map(),
     waterBottlesAvailable: options.timing.waterBottleCount,
+    fertilizerBottlesAvailable: options.timing.fertilizerBottleCount,
+    inventory: options.inventory ? new Map(options.inventory) : null,
     actions: [],
     totalXpGained: 0,
     seedsUsed: new Map(),
     fertilizerUsed: 0,
+    fertilizerCrafts: 0,
+    strangeDirtUsed: 0,
     waterUsed: 0,
     waterRefills: 0,
     produceHarvested: new Map(),
@@ -316,6 +352,8 @@ export function stepGardeningSimulation(state: GardeningSimulationState): Garden
       return handleHarvest(state, event, levelBefore);
     case 'refill':
       return handleRefill(state, event, levelBefore);
+    case 'craft_fertilizer':
+      return handleCraftFertilizer(state, event, levelBefore);
     default:
       return null;
   }
@@ -323,11 +361,26 @@ export function stepGardeningSimulation(state: GardeningSimulationState): Garden
 
 function handlePlant(state: GardeningSimulationState, event: PendingEvent, levelBefore: number): GardenAction {
   const slot = state.slots.get(event.slotId!)!;
-  const seed = state.bestSeedPerGroup.get(slot.group.name);
+  let seed = state.bestSeedPerGroup.get(slot.group.name) ?? null;
 
   if (!seed) {
     // No seed available for this slot, skip
     return makeAction(event, null, 0, levelBefore, state.currentLevel);
+  }
+
+  // Check inventory for seed availability
+  if (state.inventory) {
+    if ((state.inventory.get(seed.seedItemCode) ?? 0) <= 0) {
+      // Preferred seed depleted — try alternative
+      seed = findAlternativeSeed(state, slot.group);
+    }
+    if (!seed || (state.inventory.get(seed.seedItemCode) ?? 0) <= 0) {
+      // No seeds available in inventory for this slot group
+      return makeAction(event, null, 0, levelBefore, state.currentLevel);
+    }
+    // Deduct seed from inventory
+    const cur = state.inventory.get(seed.seedItemCode) ?? 0;
+    state.inventory.set(seed.seedItemCode, cur - 1);
   }
 
   slot.seed = seed;
@@ -349,6 +402,20 @@ function handlePlant(state: GardeningSimulationState, event: PendingEvent, level
 function handleWater(state: GardeningSimulationState, event: PendingEvent, levelBefore: number): GardenAction {
   const slot = state.slots.get(event.slotId!)!;
   if (!slot.seed) return makeAction(event, null, 0, levelBefore, state.currentLevel);
+
+  // Check inventory for water bottles (takes priority over bottle count)
+  if (state.inventory) {
+    const waterAvail = state.inventory.get(WATER_BOTTLE_ITEM_CODE) ?? 0;
+    if (waterAvail <= 0) {
+      // No water in inventory — abandon this plant cycle, reset slot
+      const seedCode = slot.seed.seedItemCode;
+      slot.seed = null;
+      slot.phase = 'empty';
+      slot.fertilizerApplied = 0;
+      return makeAction(event, seedCode, 0, levelBefore, state.currentLevel);
+    }
+    state.inventory.set(WATER_BOTTLE_ITEM_CODE, waterAvail - 1);
+  }
 
   // Check water availability
   if (state.waterBottlesAvailable <= 0) {
@@ -381,6 +448,30 @@ function handleWater(state: GardeningSimulationState, event: PendingEvent, level
 function handleFertilize(state: GardeningSimulationState, event: PendingEvent, levelBefore: number): GardenAction {
   const slot = state.slots.get(event.slotId!)!;
   if (!slot.seed) return makeAction(event, null, 0, levelBefore, state.currentLevel);
+
+  // Check inventory for fertilizer (inventory-only mode)
+  if (state.inventory) {
+    const fertAvail = state.inventory.get(FERTILIZER_BOTTLE_ITEM_CODE) ?? 0;
+    if (fertAvail <= 0) {
+      // No fertilizer in inventory — skip fertilizing, schedule harvest directly
+      scheduleHarvest(state, slot);
+      return makeAction(event, slot.seed.seedItemCode, 0, levelBefore, state.currentLevel);
+    }
+    state.inventory.set(FERTILIZER_BOTTLE_ITEM_CODE, fertAvail - 1);
+  }
+
+  // Check fertilizer bottle availability (non-inventory mode)
+  if (!state.inventory && state.fertilizerBottlesAvailable <= 0) {
+    // Need to craft more — schedule craft, then re-queue this fertilize event after
+    const craftTime = state.currentTime + state.timing.fertilizerCraftTimeSeconds;
+    enqueueEvent(state, { timestamp: craftTime, type: 'craft_fertilizer', slotId: null, priority: 4 });
+    enqueueEvent(state, { timestamp: craftTime + state.timing.wiggleTimeSeconds, type: 'fertilize', slotId: event.slotId, priority: 2 });
+    return makeAction({ ...event, type: 'craft_fertilizer' }, null, 0, levelBefore, state.currentLevel);
+  }
+
+  if (!state.inventory) {
+    state.fertilizerBottlesAvailable--;
+  }
 
   state.fertilizerUsed++;
   slot.fertilizerApplied++;
@@ -430,6 +521,31 @@ function handleHarvest(state: GardeningSimulationState, event: PendingEvent, lev
 function handleRefill(state: GardeningSimulationState, event: PendingEvent, levelBefore: number): GardenAction {
   state.waterBottlesAvailable = state.timing.waterBottleCount;
   state.waterRefills++;
+  return makeAction(event, null, 0, levelBefore, state.currentLevel);
+}
+
+/**
+ * Craft a batch of fertilizer: refill fert bottles using water + strange dirt.
+ * BasicFertilizer1 recipe: 3 Water + 1 Strange Dirt → 3 Fertilizer.
+ * Batches = ceil(fertilizerBottleCount / 3).
+ */
+function handleCraftFertilizer(state: GardeningSimulationState, event: PendingEvent, levelBefore: number): GardenAction {
+  const bottlesToCraft = state.timing.fertilizerBottleCount;
+  const batches = Math.ceil(bottlesToCraft / 3);
+  const waterNeeded = batches * 3;
+  const dirtNeeded = batches;
+
+  // Track water consumed for crafting
+  state.waterUsed += waterNeeded;
+  trackIngredient(state, WATER_BOTTLE_ITEM_CODE, waterNeeded, 'Craft Fertilizer');
+
+  // Track strange dirt consumed
+  state.strangeDirtUsed += dirtNeeded;
+  trackIngredient(state, STRANGE_DIRT_ITEM_CODE, dirtNeeded, 'Craft Fertilizer');
+
+  state.fertilizerBottlesAvailable = bottlesToCraft;
+  state.fertilizerCrafts += batches;
+
   return makeAction(event, null, 0, levelBefore, state.currentLevel);
 }
 

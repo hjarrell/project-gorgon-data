@@ -8,6 +8,7 @@ Wiki content is licensed under [CC BY-SA 3.0](https://creativecommons.org/licens
 
 ## Files
 
-| File | Wiki Page | Retrieved |
-|------|-----------|-----------|
-| `gardening.json` | [Gardening](https://wiki.projectgorgon.com/wiki/Gardening) | 2026-02-20 |
+| File                         | Wiki Page                                                                       | Retrieved  |
+|------------------------------|---------------------------------------------------------------------------------|------------|
+| `gardening.json`             | [Gardening](https://wiki.projectgorgon.com/wiki/Gardening)                      | 2026-02-20 |
+| `nature_appreciation.json`   | [Nature Appreciation](https://wiki.projectgorgon.com/wiki/Nature_Appreciation)  | 2026-02-20 |

@@ -56,6 +56,10 @@ export interface GardeningTimingConfig {
   waterRefillTimeSeconds: number;
   /** Number of water bottles the player has. Default 5. */
   waterBottleCount: number;
+  /** Number of fertilizer bottles the player carries. Default 5. */
+  fertilizerBottleCount: number;
+  /** Seconds to craft a full batch of fertilizer (travel + craft). Default 15. */
+  fertilizerCraftTimeSeconds: number;
 }
 
 // ============================================================
@@ -77,13 +81,19 @@ export interface GardeningPlannerOptions {
   maxActions?: number;
   /** Safety cap on simulated time in seconds. Default 172800 (48h). */
   maxSimulatedTime?: number;
+  /**
+   * Available inventory of items. Map of ItemCode → quantity.
+   * When provided, the simulation checks inventory before consuming
+   * seeds, water, and fertilizer, and deducts after use.
+   */
+  inventory?: Map<number, number>;
 }
 
 // ============================================================
 // Simulation Actions & Results
 // ============================================================
 
-export type GardenActionType = 'plant' | 'water' | 'fertilize' | 'harvest' | 'refill';
+export type GardenActionType = 'plant' | 'water' | 'fertilize' | 'harvest' | 'refill' | 'craft_fertilizer';
 
 export interface GardenAction {
   /** Simulated time (seconds from start) when this action occurs */
@@ -186,6 +196,10 @@ export interface GardeningPlanResult {
   seedsUsed: Map<number, number>;
   /** Total fertilizer applications */
   fertilizerUsed: number;
+  /** Total fertilizer craft batches (each produces 3 fertilizer) */
+  fertilizerCrafts: number;
+  /** Total strange dirt consumed for fertilizer crafting */
+  strangeDirtUsed: number;
   /** Total water applications */
   waterUsed: number;
   /** Water refills performed */
@@ -200,4 +214,6 @@ export interface GardeningPlanResult {
   ingredientTotals: Map<number, IngredientUsage>;
   /** Keyword-based ingredient totals (empty for gardening, kept for UI compat) */
   keywordIngredientTotals: Map<string, IngredientUsage>;
+  /** Remaining inventory after simulation. Only present when inventory was provided. */
+  inventoryRemaining?: Map<number, number>;
 }

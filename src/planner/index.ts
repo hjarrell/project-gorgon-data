@@ -107,8 +107,11 @@ export {
   getAvailableSeeds,
   getSeedSlotGroup,
   classifySeed,
+  EMPTY_BOTTLE_ITEM_CODE,
   WATER_BOTTLE_ITEM_CODE,
   FERTILIZER_BOTTLE_ITEM_CODE,
+  FERTILIZER_NPC_PRICE,
+  STRANGE_DIRT_ITEM_CODE,
 } from './gardening-data';
 
 export {
@@ -118,3 +121,29 @@ export {
 } from './gardening-simulation';
 
 export type { GardeningSimulationState } from './gardening-simulation';
+
+// ── Nature Appreciation Planner ──────────────────────────────
+
+export {
+  planNatureAppreciation,
+  groupFlowerUsesIntoRuns,
+  groupFlowerUsesIntoPhases,
+} from './nature-appreciation-planner';
+
+export type {
+  NatureAppreciationFlowerEntry,
+  NatureAppreciationPlannerOptions,
+  FlowerUseStep,
+  FlowerUseRun,
+  NatureAppreciationPhaseCrop,
+  NatureAppreciationPhase,
+  FlowerGardeningInfo,
+  NatureAppreciationPlanResult,
+} from './nature-appreciation-types';
+
+export {
+  natureAppreciationFlowers,
+  natureAppreciationFlowersByCode,
+  getAvailableFlowers,
+  getGrowableFlowersAtGardeningLevel,
+} from './nature-appreciation-data';

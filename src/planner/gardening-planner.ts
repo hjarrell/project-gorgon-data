@@ -30,6 +30,8 @@ export const DEFAULT_GARDENING_TIMING: GardeningTimingConfig = {
   fertilizerDelaySeconds: 0,
   waterRefillTimeSeconds: 15,
   waterBottleCount: 5,
+  fertilizerBottleCount: 5,
+  fertilizerCraftTimeSeconds: 15,
 };
 
 // ============================================================
@@ -90,11 +92,14 @@ function buildGardeningPlanResult(
     levelUps: state.currentLevel - state.startLevel,
     seedsUsed: state.seedsUsed,
     fertilizerUsed: state.fertilizerUsed,
+    fertilizerCrafts: state.fertilizerCrafts,
+    strangeDirtUsed: state.strangeDirtUsed,
     waterUsed: state.waterUsed,
     waterRefills: state.waterRefills,
     produceHarvested: state.produceHarvested,
     ingredientTotals: state.ingredientTotals,
     keywordIngredientTotals: new Map(),
+    ...(state.inventory ? { inventoryRemaining: state.inventory } : {}),
   };
 }
 

@@ -5,10 +5,16 @@ import RAW_GARDENING from '../wikidata/gardening.json';
 // Well-Known Item Codes
 // ============================================================
 
+/** item_1: Empty Bottle */
+export const EMPTY_BOTTLE_ITEM_CODE = 1;
 /** item_2: Bottle of Water */
 export const WATER_BOTTLE_ITEM_CODE = 2;
 /** item_10001: Bottle of Fertilizer */
 export const FERTILIZER_BOTTLE_ITEM_CODE = 10001;
+/** NPC vendor price for Bottle of Fertilizer (higher than item Value of 30) */
+export const FERTILIZER_NPC_PRICE = 45;
+/** item_1001: Strange Dirt (fertilizer crafting ingredient) */
+export const STRANGE_DIRT_ITEM_CODE = 1001;
 
 // ============================================================
 // Seed Data Loader
