@@ -2,3 +2,108 @@ Last downloaded version: v458
 Retrieved 2026-02-19
 
 All json files copyright 2026 Elder Game, LLC.
+
+Retrieved below:
+
+File-Specific Notes
+
+This document (and the game!) are a work in progress. You will need to look at each file to get an idea of how it works. Most of the files reference content from other files when needed. Here's some file-specific tips that may not be obvious from looking at them:
+abilities.json
+
+Each ability in this file has an ID number which is encoded into the key for the ability. (Ability_1 has the ID of 1, etc.) The "PvE" section of each ability describes how the ability is used in player-versus-monster combat. Abilities can also have a "PvP" section, which will list specific fields that are different from the PvE version. The PvP block lists only the "differences": fields not listed in the PvP section are assumed to be the same as the ones in the PvE section.
+
+Also, note that some abilities are only used by monsters. These abilities have the "Lint_MonsterAbility" keyword.
+abilitykeywords.json
+
+Lists commonly-occurring ability keywords, and Attributes that apply to all abilities that have that keyword. These attributes are combined with the attributes that are explicitly listed in abilities.json for that ability.
+advancementtables.json
+
+These are mostly internal lists of attribute power-ups. There's not too much that's useful to tools here, but one important use is when looking at skills.json. Each skill can reference an advancement table, and if it does, the player gets the benefits of that advancement table as they level up in the skill.
+ai.json
+
+This is configuration info for monster/pet AIs. There isn't much here that's useful to tools, but one bit of info you can glean from it is whether an ability is for monsters/pets or for players. If an ability name is referenced by an AI entry, it's for monsters or pets. Otherwise it's for players.
+directedgoals.json
+
+This describes all the entries in the "stuff to do" pane of the Quest window. The file contains both the categories of entries AND the actual entries for each category, lumped together for your inconvenience. If an entry has IsCategoryGate set to true, then it's used as a category header; actual entries will have a CategoryGateId that maps to one of the categories.
+effects.json
+
+This file contains client data for every buff, debuff, or other weird special effect that can happen to a player, IF the effect is visible in the client: an icon in the "effects" pane, a particle, a tooltip entry, etc. Some effects have no status indicator in the client, so they are not included here.
+
+Each effect has an ID which is encoded into the key for the entry. The "DisplayMode" field indicates how it's used:
+
+    DisplayMode of "Effect" means this effect is represented in the game as an icon in the effects pane -- it's a buff or debuff.
+    DisplayMode of "AbilityModifier" means it is shown on the tooltips for certain abilities. It's listed as an extra effect that the ability provides. (In this case, the "AbilityKeywords" array tells you which abilities it applies to. Abilities need to have only one of the keywords in this array.)
+    DisplayMode of "Instant" means the client only knows about the effect in order to know what particle effect to display (if any).
+
+The "Desc" field is normally shown to the player directly, but there is a special case to be aware of: if "DisplayMode" is "AbilityModifier", the Desc field can optionally take the format "DamageType:<Type>" where <Type> is replaced with a damage type such as Cold or Fire. The client interprets this to mean that the Effect changes affected abilities' damage type to the specified type. If the string continues with a semicolon, the rest of the string after the semicolon is displayed to the user as normal. Examples: "DamageType:Cold", "DamageType:Darkness;Deals up to 50 extra random damage"
+items.json
+
+The items have IDs, which are encoded into the key for each item object. (Item_1 has the ID of 1, etc.) The "EffectDescs" array describes the item's effects when equipped. These can be in plain-English or attribute-description formats -- see the comments on tsysclientinfo.json below for more info.
+itemuses.json
+
+This info is used by the game to create the "More Info" window for items. Note that the information in this file is 100% redundant right now: the client could figure out which recipes involve the item just by examining all recipes. So the file may go away at some point -- but more info may get added to it, making it important. We'll have to see how things go.
+lorebookinfo.json
+
+Currently, this just contains the categories that lore books can be in.
+lorebooks.json
+
+This contains information about each lore book that can be found in-game. The text of some lore books is not included here (or in the game client). For books that we want to keep "secret", the book entry will have "IsClientLocal" set to false. In those cases, the server sends the client the book text when the player actually obtains the book.
+
+Secrets don't last in an MMO because information spreads. So this just prevents books from being "scraped" moments after a game update. We will periodically "de-secretize" lore books when we feel they no longer need to be hidden.
+npcs.json
+
+Each entry in this file describes an NPC in the game. The key value is the internal name of the NPC, and this is what is used elsewhere to refer to the NPC (such as in storagevaults.json). You can use npcs.json to find the "friendly name" of these NPCs.
+
+The file also contains information about what each NPC likes and dislikes. The "Pref" field gives a general idea of how much they like/dislike it (with negative numbers indicating dislike), but this information is not sufficient to exactly calculate favor earned from a gift.
+playertitles.json
+
+Describes all the titles a player can earn.
+quests.json
+
+Describes each quest. Note that as of this writing, much of the information in this file is server info not used by the client, and will be removed from this file eventually. Fields such as "Requirements" and "InteractionFlags" are not used by the client.
+recipes.json
+
+Each recipe has an Ingredients array, and each ingredient can have either an "ItemCode" or an "ItemKeys" field. The "ItemCode" field is the type ID of an item from items.json. The name of this field will change to "ItemTypeID" in a future version of this data.
+
+Alternatively, some recipes don't have fixed ingredients; they let the user drag and drop in items. In that case, they have an "ItemKeys" field. This is an array of item keywords which the dropped-in item must have.
+
+New addition: some recipes have a ProtoResultItems array which is exactly like the ResultItems array, except that these "proto-items" are enchanted before being given to the player. (So the proto-items are the unenchanted base items.) Recipes can have ProtoResultItems, ResultItems, both, or neither.
+storagevaults.json
+
+Describes each 'storage vault' in the game, where players can store items.
+skills.json
+
+Describes each skill. (Note that not all skills are accessible in-game yet.)
+
+One thing to watch for is the Rewards array. The keys in the array are usually levels, such as "7"; players get that reward when they reach level 7. But sometimes entries in the array also indicate races, such as "7_Dwarf_Elf". In that case, only dwarves and elves would get this reward when they reach level 7; other races would not.
+
+Also note that skills can reference an Advancement Table, which will provide additional level-up rewards (such as more Max Health). If a skill is a combat skill, the skill's Advancement Table is only applied when the player is using that skill. If the skill is non-combat, the advancement table is always applied.
+sources_abilities.json and sources_recipes.json
+
+These have entries for the ability/recipe IDs described in abilities.json/recipes.json, and describe how each ability or recipe can be obtained by players. (This data is not actually used in the game client as of this writing, but will be used in the future to assist players in finding stuff.)
+tsysclientinfo.json
+
+"TSys" stands for "Treasure System". This is the internal name for the random-loot-generation system. Each entry is a possible treasure effect that can be found on loot (or via crafting). Each treasure effect has one or more tiers of potency, described in the "Tiers" array for the entry.
+
+The "SkillLevelPrereq" indicates the minimum skill-level needed to wield equipment with that tier of power. (If the Skill for the power is "Unknown" or "AnySkill", there is not actually any level requirement; the value is still provided because it often (90% of the time) corresponds to the intended power-level of the tier, so it may be useful to tools.)
+
+The "EffectDescs" sections describe what each tier does. These are strings in two possible formats: plain English and attribute-describing:
+
+    Plain-english EffectDescs: these can sometimes start with icon information, which is always in the form "<icon=#>". There may be any number of icons.
+    Attribute-descriptions: these indicate how the treasure mod alters an attribute (as described in attributes.json). They are in the format "{attributeName}{delta}{requiredSkill}". The first two are always present; the third is optional. If it exists, it will be the name of a skill as listed in skills.json. The player must have that skill active to get the buff.
+
+tsysprofiles.json
+
+("TSys" stands for "Treasure System".) A "tsys profile" is just a list of treasure effects, as found in tsysclientinfo.json. When an item in items.json has a "TSysProfile" field, that item will be randomly generated with effects contained in that profile.
+
+Each profile in this file lists its eligible effects; those effect names correspond to the "InternalName" fields in tsysclientinfo.json.
+xptables.json
+
+Each skill can reference an XP table from this file. The XP table indicates how much XP needs to be earned to level-up a skill. For some reason the keys are named "Level_1" etc. when a more intuitive name would have been "XPTable_1" or something like that. So just imagine that's how they're named.
+Lint Keywords
+
+Most types of things (items, recipes, quests, etc.) have a Keywords array. Keywords that start with "Lint_" are used by our data validation process. For instance, if an item has the "Lint_NotObtainable" keyword, that means the item cannot be obtained via any regular in-game process such as quest rewards or loot. (These items can still be created manually by admins, so they might be used as rewards in live events. The items may also have been accessible in the past, so players might still have them, but they're retired now. Or the items may just be new stuff that's not quite ready to be in the game yet.)
+
+"Lint" is the name of an old programming tool that detects problems by analyzing source files. We have a similar tool that analyzes the game's data. It would normally complain about an item that can't be obtained, but if it sees that the item has the Lint_NotObtainable keyword, it knows it's on purpose. "Lint_" keywords are used to tell the tool that something is behaving weirdly, but on purpose.
+
+The client doesn't actually use these Lint keywords, but they are included here because they're probably useful for 3rd-party tools.

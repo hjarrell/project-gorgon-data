@@ -25,3 +25,44 @@ export type {
   ResolvedResultItem,
   ResolvedRecipe,
 } from './recipe-helpers';
+
+export {
+  GEAR_SLOTS,
+  GEAR_SLOT_LABELS,
+  RARITIES,
+  RARITY_MOD_SLOTS,
+  parseEffectDesc,
+  isParsedEffect,
+  parseTierEffects,
+  getAvailablePowers,
+  getAvailableTiers,
+  collectAbilityAttributes,
+  calculateAbilityDamage,
+  getCombatAbilities,
+  encodeBuildToHash,
+  decodeBuildFromHash,
+  createDefaultGearSlots,
+} from './build-helpers';
+
+export type {
+  GearSlot,
+  Rarity,
+  ModAssignment,
+  ParsedEffect,
+  UnparsedEffect,
+  EffectDesc,
+  ModSelection,
+  GearSlotConfig,
+  AbilityAttributes,
+  DamageResult,
+  DamageContribution,
+  DoTDamageResult,
+  EquippedEffect,
+} from './build-helpers';
+
+export {
+  resolveManualEffect,
+  MANUAL_EFFECT_MAPPINGS,
+} from './manual-effect-mappings';
+
+export type { ManualEffectMapping } from './manual-effect-mappings';

@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import {
   AbilitiesRecordSchema,
+  AbilityKeywordsArraySchema,
+  AbilityDynamicDoTsArraySchema,
   AreasRecordSchema,
   ItemsRecordSchema,
   ItemUsesRecordSchema,
@@ -10,9 +12,12 @@ import {
   SourcesAbilitiesRecordSchema,
   SourcesItemsRecordSchema,
   SourcesRecipesRecordSchema,
+  TsysClientInfoRecordSchema,
 } from './schemas';
 
 import RAW_ABILITIES from './data/abilities.json';
+import RAW_ABILITY_KEYWORDS from './data/abilitykeywords.json';
+import RAW_ABILITY_DYNAMIC_DOTS from './data/abilitydynamicdots.json';
 import RAW_AREAS from './data/areas.json';
 import RAW_ITEMS from './data/items.json';
 import RAW_ITEM_USES from './data/itemuses.json';
@@ -22,6 +27,7 @@ import RAW_SKILLS from './data/skills.json';
 import RAW_SOURCES_ABILITIES from './data/sources_abilities.json';
 import RAW_SOURCES_ITEMS from './data/sources_items.json';
 import RAW_SOURCES_RECIPES from './data/sources_recipes.json';
+import RAW_TSYS_CLIENT_INFO from './data/tsysclientinfo.json';
 
 describe('schema validation', () => {
   it('abilities.json matches AbilitiesRecordSchema', () => {
@@ -71,6 +77,21 @@ describe('schema validation', () => {
 
   it('sources_recipes.json matches SourcesRecipesRecordSchema', () => {
     const result = SourcesRecipesRecordSchema.safeParse(RAW_SOURCES_RECIPES);
+    expect(result.success, result.error?.toString()).toBe(true);
+  });
+
+  it('tsysclientinfo.json matches TsysClientInfoRecordSchema', () => {
+    const result = TsysClientInfoRecordSchema.safeParse(RAW_TSYS_CLIENT_INFO);
+    expect(result.success, result.error?.toString()).toBe(true);
+  });
+
+  it('abilitykeywords.json matches AbilityKeywordsArraySchema', () => {
+    const result = AbilityKeywordsArraySchema.safeParse(RAW_ABILITY_KEYWORDS);
+    expect(result.success, result.error?.toString()).toBe(true);
+  });
+
+  it('abilitydynamicdots.json matches AbilityDynamicDoTsArraySchema', () => {
+    const result = AbilityDynamicDoTsArraySchema.safeParse(RAW_ABILITY_DYNAMIC_DOTS);
     expect(result.success, result.error?.toString()).toBe(true);
   });
 });

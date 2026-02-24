@@ -128,3 +128,38 @@ export type {
   StorageItem,
   StorageReport,
 } from './storage_report';
+
+// --- TSys Client Info ---
+export {
+  TsysTierSchema as TsysClientInfoTierSchema,
+  TsysPowerSchema as TsysClientInfoPowerSchema,
+  TsysClientInfoRecordSchema,
+} from './tsysclientinfo';
+
+export type {
+  TsysTier as TsysClientInfoTier,
+  TsysPower as TsysClientInfoPower,
+  TsysClientInfoRecord,
+} from './tsysclientinfo';
+
+// --- Ability Keywords ---
+export {
+  AbilityKeywordEntrySchema,
+  AbilityKeywordsArraySchema,
+} from './abilitykeywords';
+
+export type {
+  AbilityKeywordEntry,
+  AbilityKeywordsArray,
+} from './abilitykeywords';
+
+// --- Ability Dynamic DoTs ---
+export {
+  AbilityDynamicDoTSchema,
+  AbilityDynamicDoTsArraySchema,
+} from './abilitydynamicdots';
+
+export type {
+  AbilityDynamicDoT,
+  AbilityDynamicDoTsArray,
+} from './abilitydynamicdots';

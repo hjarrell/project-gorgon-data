@@ -9,7 +9,6 @@ import RAW_LOREBOOKS from './lorebooks.json';
 import RAW_PLAYER_TITLES from './playertitles.json';
 import RAW_QUESTS from './quests.json';
 import RAW_STORAGE_VAULTS from './storagevaults.json';
-import RAW_TSYS_CLIENT_INFO from './tsysclientinfo.json';
 import RAW_TSYS_PROFILES from './tsysprofiles.json';
 
 export {
@@ -24,6 +23,5 @@ export {
   RAW_PLAYER_TITLES,
   RAW_QUESTS,
   RAW_STORAGE_VAULTS,
-  RAW_TSYS_CLIENT_INFO,
   RAW_TSYS_PROFILES,
 };
