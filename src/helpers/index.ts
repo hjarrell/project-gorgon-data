@@ -58,6 +58,8 @@ export type {
   DamageContribution,
   DoTDamageResult,
   EquippedEffect,
+  DecodedBuild,
+  BuildHashInput,
 } from './build-helpers';
 
 export {

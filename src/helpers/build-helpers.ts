@@ -412,24 +412,32 @@ export function calculateAbilityDamage(
 export function getCombatAbilities(
   skill: string,
   abilities: Map<string, Ability>,
+  maxLevel?: number,
 ): Ability[] {
-  const upgradedAbilities = new Set<string>();
-  for (const ability of abilities.values()) {
-    if (ability.UpgradeOf && ability.Skill === skill) {
-      upgradedAbilities.add(ability.UpgradeOf);
-    }
-  }
+  // Group abilities by their upgrade root: all abilities sharing the same
+  // UpgradeOf target (or standalone if they have no upgrade relationship)
+  // keep only the highest-level version at or below maxLevel.
+  const upgradeGroups = new Map<string, Ability>();
 
-  const result: Ability[] = [];
+  const candidates: Ability[] = [];
   for (const ability of abilities.values()) {
     if (ability.Skill !== skill) continue;
     if (ability.InternalAbility) continue;
     if (ability.Keywords?.includes('Lint_MonsterAbility')) continue;
-    if (upgradedAbilities.has(ability.InternalName)) continue;
     if (ability.CanBeOnSidebar === false) continue;
-    result.push(ability);
+    if (maxLevel !== undefined && ability.Level > maxLevel) continue;
+    candidates.push(ability);
   }
 
+  for (const ability of candidates) {
+    const root = ability.UpgradeOf ?? ability.InternalName;
+    const existing = upgradeGroups.get(root);
+    if (!existing || ability.Level > existing.Level) {
+      upgradeGroups.set(root, ability);
+    }
+  }
+
+  const result = [...upgradeGroups.values()];
   result.sort((a, b) => a.Level - b.Level || a.Name.localeCompare(b.Name));
   return result;
 }
@@ -474,12 +482,19 @@ const CHAR_TO_RARITY: Record<string, Rarity> = {
   '5': 'Legendary',
 };
 
-export function encodeBuildToHash(
-  skill1: string,
-  skill2: string,
-  slots: GearSlotConfig[],
-): string {
-  const parts: string[] = [`${skill1},${skill2}`];
+export interface BuildHashInput {
+  skill1: string;
+  skill2: string;
+  slots: GearSlotConfig[];
+  sidebar1?: string[];
+  sidebar2?: string[];
+  skill1Level?: number;
+  skill2Level?: number;
+}
+
+export function encodeBuildToHash(input: BuildHashInput): string {
+  const { skill1, skill2, slots, sidebar1, sidebar2, skill1Level, skill2Level } = input;
+  const parts: string[] = [`${skill1},${skill2},${skill1Level ?? 50},${skill2Level ?? 50}`];
 
   for (const slotConfig of slots) {
     const modParts = slotConfig.mods
@@ -494,18 +509,34 @@ export function encodeBuildToHash(
     );
   }
 
+  // Sidebar abilities (after gear slots)
+  parts.push(sidebar1?.join(',') ?? '');
+  parts.push(sidebar2?.join(',') ?? '');
+
   return parts.join('|');
 }
 
-export function decodeBuildFromHash(
-  hash: string,
-): { skill1: string; skill2: string; slots: GearSlotConfig[] } | null {
+export interface DecodedBuild {
+  skill1: string;
+  skill2: string;
+  slots: GearSlotConfig[];
+  sidebar1: string[];
+  sidebar2: string[];
+  skill1Level: number;
+  skill2Level: number;
+}
+
+export function decodeBuildFromHash(hash: string): DecodedBuild | null {
   try {
     const parts = hash.split('|');
     if (parts.length < 1) return null;
 
-    const [skill1, skill2] = parts[0].split(',');
+    const headerTokens = parts[0].split(',');
+    const skill1 = headerTokens[0];
+    const skill2 = headerTokens[1];
     if (!skill1 || !skill2) return null;
+    const skill1Level = parseInt(headerTokens[2], 10) || 50;
+    const skill2Level = parseInt(headerTokens[3], 10) || 50;
 
     const slots: GearSlotConfig[] = [];
     for (let i = 1; i < parts.length && i - 1 < GEAR_SLOTS.length; i++) {
@@ -546,7 +577,12 @@ export function decodeBuildFromHash(
       });
     }
 
-    return { skill1, skill2, slots };
+    // Sidebar abilities (after gear slots: index 10 and 11)
+    const sidebarIdx = GEAR_SLOTS.length + 1;
+    const sidebar1 = parts[sidebarIdx]?.split(',').filter(Boolean) ?? [];
+    const sidebar2 = parts[sidebarIdx + 1]?.split(',').filter(Boolean) ?? [];
+
+    return { skill1, skill2, slots, sidebar1, sidebar2, skill1Level, skill2Level };
   } catch {
     return null;
   }

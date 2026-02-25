@@ -470,12 +470,14 @@ describe('encodeBuildToHash / decodeBuildFromHash', () => {
           : [],
     }));
 
-    const hash = encodeBuildToHash('Druid', 'Bard', slots);
+    const hash = encodeBuildToHash({ skill1: 'Druid', skill2: 'Bard', slots, skill1Level: 50, skill2Level: 45 });
     const decoded = decodeBuildFromHash(hash);
 
     expect(decoded).not.toBeNull();
     expect(decoded!.skill1).toBe('Druid');
     expect(decoded!.skill2).toBe('Bard');
+    expect(decoded!.skill1Level).toBe(50);
+    expect(decoded!.skill2Level).toBe(45);
     expect(decoded!.slots[0].rarity).toBe('Epic');
     expect(decoded!.slots[0].mods).toHaveLength(3);
     expect(decoded!.slots[0].mods[0].powerId).toBe('power_14007');
@@ -496,9 +498,11 @@ describe('encodeBuildToHash / decodeBuildFromHash', () => {
       rarity: 'Common',
       mods: [],
     }));
-    const hash = encodeBuildToHash('Sword', 'Shield', slots);
+    const hash = encodeBuildToHash({ skill1: 'Sword', skill2: 'Shield', slots });
     const decoded = decodeBuildFromHash(hash);
     expect(decoded!.skill1).toBe('Sword');
     expect(decoded!.skill2).toBe('Shield');
+    expect(decoded!.skill1Level).toBe(50);
+    expect(decoded!.skill2Level).toBe(50);
   });
 });
