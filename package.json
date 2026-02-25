@@ -76,7 +76,10 @@
     "clean": "rm -rf dist dist-esm",
     "prepublishOnly": "pnpm run clean && pnpm run build",
     "test": "vitest run",
-    "analyze": "tsx scripts/analyze-json.ts"
+    "analyze": "tsx scripts/analyze-json.ts",
+    "update-files": "tsx scripts/update-files.ts",
+    "diff-data": "tsx scripts/diff-data.ts",
+    "update-icons": "tsx scripts/update-icons.ts"
   },
   "keywords": [
     "project-gorgon",
@@ -90,6 +93,7 @@
     "zod": "^3.25.0 || ^4.0.0"
   },
   "devDependencies": {
+    "@types/node": "^25.3.0",
     "typescript": "^5.9.3",
     "vitest": "^4.0.18",
     "zod": "^3.25.0 || ^4.0.0"

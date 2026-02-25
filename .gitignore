@@ -1,4 +1,5 @@
 node_modules/
 dist/
 dist-esm/
+src/data/oldRaw/
 .DS_Store

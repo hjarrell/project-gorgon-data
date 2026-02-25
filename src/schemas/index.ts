@@ -163,3 +163,101 @@ export type {
   AbilityDynamicDoT,
   AbilityDynamicDoTsArray,
 } from './abilitydynamicdots';
+
+// --- Ability Dynamic Special Values ---
+export {
+  AbilityDynamicSpecialValueSchema,
+  AbilityDynamicSpecialValuesArraySchema,
+} from './abilitydynamicspecialvalues';
+
+export type {
+  AbilityDynamicSpecialValue,
+  AbilityDynamicSpecialValuesArray,
+} from './abilitydynamicspecialvalues';
+
+// --- Advancement Tables ---
+export {
+  AdvancementTableSchema,
+  AdvancementTablesRecordSchema,
+} from './advancementtables';
+
+export type {
+  AdvancementTable,
+  AdvancementTablesRecord,
+} from './advancementtables';
+
+// --- AI ---
+export { AiAbilityEntrySchema, AiSchema, AiRecordSchema } from './ai';
+export type { AiAbilityEntry, Ai, AiRecord } from './ai';
+
+// --- Attributes ---
+export { AttributeSchema, AttributesRecordSchema } from './attributes';
+export type { Attribute, AttributesRecord } from './attributes';
+
+// --- Directed Goals ---
+export { DirectedGoalSchema, DirectedGoalsArraySchema } from './directedgoals';
+export type { DirectedGoal, DirectedGoalsArray } from './directedgoals';
+
+// --- Effects ---
+export { EffectSchema, EffectsRecordSchema } from './effects';
+export type { Effect, EffectsRecord } from './effects';
+
+// --- Landmarks ---
+export { LandmarkSchema, LandmarksRecordSchema } from './landmarks';
+export type { Landmark, LandmarksRecord } from './landmarks';
+
+// --- Lorebook Info ---
+export {
+  LorebookCategorySchema,
+  LorebookInfoSchema,
+} from './lorebookinfo';
+
+export type { LorebookCategory, LorebookInfo } from './lorebookinfo';
+
+// --- Lorebooks ---
+export { LorebookSchema, LorebooksRecordSchema } from './lorebooks';
+export type { Lorebook, LorebooksRecord } from './lorebooks';
+
+// --- Player Titles ---
+export { PlayerTitleSchema, PlayerTitlesRecordSchema } from './playertitles';
+export type { PlayerTitle, PlayerTitlesRecord } from './playertitles';
+
+// --- Quests ---
+export {
+  QuestRequirementSchema,
+  QuestObjectiveSchema,
+  QuestRewardSchema,
+  QuestItemSchema,
+  QuestSchema,
+  QuestsRecordSchema,
+} from './quests';
+
+export type {
+  QuestRequirement,
+  QuestObjective,
+  QuestReward,
+  QuestItem,
+  Quest,
+  QuestsRecord,
+} from './quests';
+
+// --- Storage Vaults ---
+export {
+  StorageVaultRequirementSchema,
+  StorageVaultSchema,
+  StorageVaultsRecordSchema,
+} from './storagevaults';
+
+export type {
+  StorageVaultRequirement,
+  StorageVault,
+  StorageVaultsRecord,
+} from './storagevaults';
+
+// --- TSys Profiles ---
+export { TsysProfilesRecordSchema } from './tsysprofiles';
+export type { TsysProfilesRecord } from './tsysprofiles';
+
+// --- XP Tables ---
+export { XpTableSchema, XpTablesRecordSchema } from './xptables';
+export type { XpTable, XpTablesRecord } from './xptables';
