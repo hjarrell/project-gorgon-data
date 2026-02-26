@@ -34,3 +34,17 @@ export { applyMove } from './turn';
 
 // Dead board handling
 export { reshuffleIfDead } from './reshuffle';
+
+// Solver types
+export type {
+  SolverContext,
+  SolverFn,
+  SimConfig,
+  GameSummary,
+  GameReplay,
+  ReplayMoveRecord,
+  SerializedCascadeStep,
+} from './solver-types';
+
+// Simulation
+export { simulateGameSummary, simulateGameReplay, seededRng } from './simulation';
