@@ -36,6 +36,7 @@ export {
   parseTierEffects,
   getAvailablePowers,
   getAvailableTiers,
+  buildInternalKeywordMap,
   collectAbilityAttributes,
   calculateAbilityDamage,
   calculateStat,

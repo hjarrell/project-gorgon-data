@@ -108,11 +108,22 @@ export interface ActiveDoT {
   ticksRemaining: number;
 }
 
+/** Template for a DoT applied on each song tick (e.g., DruidBurstDoT Nature) */
+export interface SongOnHitDoT {
+  /** Source ability for attribution */
+  sourceAbilityId: string;
+  damagePerTick: number;
+  damageType: string;
+  numTicks: number;
+  duration: number;
+  tickInterval: number;
+}
+
 /** An active song being played (Bard) */
 export interface ActiveSong {
   /** The ability InternalName */
   abilityId: string;
-  /** Damage per tick (from DoT data, already modified) */
+  /** Damage per tick (from song-native DoTs only) */
   damagePerTick: number;
   /** Damage type */
   damageType: string;
@@ -122,6 +133,8 @@ export interface ActiveSong {
   nextTickAt: number;
   /** Song expiry timestamp */
   expiresAt: number;
+  /** DoT templates applied as independent ActiveDoTs on each song tick */
+  onHitDoTs: SongOnHitDoT[];
 }
 
 /** Mutable state that evolves during simulation */

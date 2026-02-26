@@ -336,6 +336,36 @@ export function calculateStat(
   return { base, flatBonus, percentMod, modified, contributions };
 }
 
+// ── Internal Ability Keyword Map ─────────────────────
+
+/**
+ * Build a map from BOOST_ABILITY_* attribute → keywords from internal abilities.
+ * Internal abilities (e.g., Song of Discord tick abilities) have keywords like
+ * "Burst" and "Attack" that affect dynamic DoT eligibility but aren't on the
+ * player-facing ability. Call once at startup, pass to collectAbilityAttributes.
+ */
+export function buildInternalKeywordMap(
+  allAbilities: Map<string, Ability>,
+): Map<string, Set<string>> {
+  const map = new Map<string, Set<string>>();
+  for (const ability of allAbilities.values()) {
+    if (!ability.InternalAbility) continue;
+    const attrs = ability.PvE?.AttributesThatDeltaDamage ?? [];
+    const keywords = ability.Keywords ?? [];
+    if (keywords.length === 0) continue;
+    for (const attr of attrs) {
+      if (!attr.startsWith('BOOST_ABILITY_')) continue;
+      let set = map.get(attr);
+      if (!set) {
+        set = new Set<string>();
+        map.set(attr, set);
+      }
+      for (const kw of keywords) set.add(kw);
+    }
+  }
+  return map;
+}
+
 // ── Ability Attribute Collection ─────────────────────
 
 export function collectAbilityAttributes(
@@ -343,6 +373,7 @@ export function collectAbilityAttributes(
   keywordEntries: AbilityKeywordEntry[],
   activeSkills: string[] = [],
   dynamicDots: AbilityDynamicDoT[] = [],
+  internalKeywordMap?: Map<string, Set<string>>,
 ): AbilityAttributes {
   const deltaAttributes = new Set<string>();
   const modAttributes = new Set<string>();
@@ -446,11 +477,28 @@ export function collectAbilityAttributes(
   }
 
   // Dynamic DoTs (from abilitydynamicdots.json)
+  // Expand keywords for dynamic DoT matching: internal abilities (e.g., Song of
+  // Discord tick abilities) may have keywords like "Burst" that the player-facing
+  // ability lacks. Link them via shared BOOST_ABILITY_* attributes on DoTs.
+  const dynDotKeywords = new Set(abilityKeywords);
+  if (internalKeywordMap) {
+    for (const dotAttr of dotAttributes) {
+      for (const attr of dotAttr.deltaAttributes) {
+        const extra = internalKeywordMap.get(attr);
+        if (extra) for (const kw of extra) dynDotKeywords.add(kw);
+      }
+    }
+    for (const attr of deltaAttributes) {
+      const extra = internalKeywordMap.get(attr);
+      if (extra) for (const kw of extra) dynDotKeywords.add(kw);
+    }
+  }
+
   const activeSkillSet = new Set(activeSkills);
   for (const dynDot of dynamicDots) {
     if (!activeSkillSet.has(dynDot.ReqActiveSkill)) continue;
     const hasAllKeywords = dynDot.ReqAbilityKeywords.every((k) =>
-      abilityKeywords.has(k),
+      dynDotKeywords.has(k),
     );
     if (!hasAllKeywords) continue;
 

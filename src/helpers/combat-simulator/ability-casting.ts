@@ -3,6 +3,7 @@ import type {
   RotationEntry,
   ActiveDoT,
   ActiveSong,
+  SongOnHitDoT,
 } from './types';
 import { isBardSong, getCooldownGroup } from './ability-selection';
 import { applyDamageToEnemy, applyRage } from './enemy';
@@ -150,14 +151,30 @@ export function castAbility(state: CombatSimState, entry: RotationEntry): void {
 function castSong(state: CombatSimState, entry: RotationEntry, cost: number): void {
   const dr = entry.damageResult;
 
-  // Extract per-tick damage from the song's DoT data.
-  // Song DoTs have Duration=0 and NumTicks=1 in game data;
-  // modifiedTotalDamage is the per-tick damage after mods.
+  // Separate song-native DoTs from on-hit DoTs.
+  // Song-native DoTs have Duration=0 and NumTicks=1 (damage summed into each song tick).
+  // On-hit DoTs have Duration>0 and NumTicks>1 (spawned as independent ActiveDoTs per tick).
   let damagePerTick = 0;
   let damageType = entry.ability.DamageType;
+  const onHitDoTs: SongOnHitDoT[] = [];
+
   for (const dot of dr.dots) {
-    damagePerTick += dot.modifiedTotalDamage / Math.max(1, dot.numTicks);
-    if (dot.damageType) damageType = dot.damageType;
+    if (dot.duration > 0 && dot.numTicks > 1) {
+      // On-hit DoT: each song tick spawns an independent DoT instance
+      const perTick = dot.modifiedTotalDamage / dot.numTicks;
+      onHitDoTs.push({
+        sourceAbilityId: entry.abilityId,
+        damagePerTick: perTick,
+        damageType: dot.damageType,
+        numTicks: dot.numTicks,
+        duration: dot.duration,
+        tickInterval: dot.duration / dot.numTicks,
+      });
+    } else {
+      // Song-native DoT: summed into the song tick damage
+      damagePerTick += dot.modifiedTotalDamage / Math.max(1, dot.numTicks);
+      if (dot.damageType) damageType = dot.damageType;
+    }
   }
 
   // If a song is already active, log its expiry
@@ -180,6 +197,7 @@ function castSong(state: CombatSimState, entry: RotationEntry, cost: number): vo
     tickInterval: SONG_TICK_INTERVAL,
     nextTickAt: state.currentTime + SONG_TICK_INTERVAL,
     expiresAt: state.currentTime + songDuration,
+    onHitDoTs,
   };
   state.activeSong = newSong;
 
@@ -202,6 +220,8 @@ export function processSongTicks(state: CombatSimState): void {
   if (!song) return;
 
   while (song.nextTickAt <= state.currentTime + 0.0001 && song.nextTickAt <= song.expiresAt + 0.0001) {
+    const tickTime = song.nextTickAt;
+
     // Route through enemy damage pipeline (no armor interaction for song ticks)
     const songEnemyResult = applyDamageToEnemy(
       state, song.damagePerTick, song.damageType,
@@ -218,7 +238,7 @@ export function processSongTicks(state: CombatSimState): void {
 
     const songEnemy = state.enemyState;
     state.timeline.push({
-      time: song.nextTickAt,
+      time: tickTime,
       type: 'song_tick',
       abilityId: song.abilityId,
       damage: song.damagePerTick,
@@ -232,6 +252,20 @@ export function processSongTicks(state: CombatSimState): void {
 
     // Apply rage for song tick damage
     applyRage(state, songEnemyResult.effectiveDamage, 0);
+
+    // Spawn independent DoTs for each on-hit DoT template (e.g., DruidBurstDoT Nature)
+    for (const template of song.onHitDoTs) {
+      const activeDot: ActiveDoT = {
+        sourceAbilityId: template.sourceAbilityId,
+        damagePerTick: template.damagePerTick,
+        damageType: template.damageType,
+        tickInterval: template.tickInterval,
+        nextTickAt: tickTime + template.tickInterval,
+        expiresAt: tickTime + template.duration,
+        ticksRemaining: template.numTicks,
+      };
+      state.activeDoTs.push(activeDot);
+    }
 
     song.nextTickAt += song.tickInterval;
 

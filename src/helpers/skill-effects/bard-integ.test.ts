@@ -9,7 +9,7 @@
  * against actual game strings.
  */
 import { describe, it, expect } from 'vitest';
-import { tsysClientInfo } from '../../data/tsysclientinfo';
+import { abilities, abilityKeywords, abilityDynamicDots, tsysClientInfo } from '../../data';
 import { simulateCombat } from '../combat-simulator/simulation';
 import type { CombatSimConfig, RotationEntry } from '../combat-simulator/types';
 import type { Ability } from '../../schemas/abilities';
@@ -18,6 +18,12 @@ import type {
   StatResult,
   CritResult,
   DoTDamageResult,
+  EquippedEffect,
+} from '../build-helpers';
+import {
+  buildInternalKeywordMap,
+  collectAbilityAttributes,
+  calculateAbilityDamage,
 } from '../build-helpers';
 import {
   resolveSkillEffects,
@@ -681,6 +687,177 @@ describe('bard mods integration', () => {
       const matching = resolved!.filter((e) => resolvedEffectMatchesAbility(e, ability));
       expect(matching.length).toBe(1);
       expect(matching[0].type).toBe('percentDamage');
+    });
+  });
+
+  // ── Cross-skill: DruidBurstDoT + BardBoostNature on Song of Discord ──
+
+  describe('DruidBurstDoT + BardBoostNature on Song of Discord', () => {
+    // Pre-compute once for this describe block
+    const internalKeywordMap = buildInternalKeywordMap(abilities);
+    const sod13 = abilities.get('ability_8654')!; // Song of Discord 13
+
+    it('collectAbilityAttributes adds Nature dynamic DoT when Druid is active', () => {
+      const attrs = collectAbilityAttributes(
+        sod13, abilityKeywords, ['Bard', 'Druid'], abilityDynamicDots, internalKeywordMap,
+      );
+
+      // Should have 2 DoTs: the native Trauma tick + Burst Nature dynamic DoT
+      expect(attrs.dotAttributes.length).toBe(2);
+
+      const traumaDot = attrs.dotAttributes[0];
+      expect(traumaDot.damageType).toBe('Trauma');
+      expect(traumaDot.damagePerTick).toBe(453);
+      expect(traumaDot.numTicks).toBe(1);
+
+      const natureDot = attrs.dotAttributes[1];
+      expect(natureDot.damageType).toBe('Nature');
+      expect(natureDot.numTicks).toBe(4);
+      expect(natureDot.duration).toBe(8);
+      expect(natureDot.deltaAttributes.has('BOOST_ABILITYDOT_BURST_NATURE')).toBe(true);
+      expect(natureDot.modAttributes.has('MOD_NATURE_INDIRECT')).toBe(true);
+    });
+
+    it('does NOT add Nature DoT when Druid is not active', () => {
+      const attrs = collectAbilityAttributes(
+        sod13, abilityKeywords, ['Bard', 'Sword'], abilityDynamicDots, internalKeywordMap,
+      );
+      expect(attrs.dotAttributes.length).toBe(1);
+      expect(attrs.dotAttributes[0].damageType).toBe('Trauma');
+    });
+
+    it('does NOT add Nature DoT without internalKeywordMap', () => {
+      // Without the map, Song of Discord lacks the Burst keyword
+      const attrs = collectAbilityAttributes(
+        sod13, abilityKeywords, ['Bard', 'Druid'], abilityDynamicDots,
+      );
+      expect(attrs.dotAttributes.length).toBe(1);
+    });
+
+    it('calculateAbilityDamage applies BOOST and MOD to the Nature DoT', () => {
+      const attrs = collectAbilityAttributes(
+        sod13, abilityKeywords, ['Bard', 'Druid'], abilityDynamicDots, internalKeywordMap,
+      );
+
+      // DruidBurstDoT tier 24: +392 Nature over 8s = 98/tick (4 ticks)
+      // BardBoostNature: Indirect Nature Damage +28%
+      const equipped: EquippedEffect[] = [
+        { effect: { attribute: 'BOOST_ABILITYDOT_BURST_NATURE', value: 98 }, powerId: 'power_14007', tierId: 'id_24', slot: 'Legs' },
+        { effect: { attribute: 'MOD_NATURE_INDIRECT', value: 0.28 }, powerId: 'power_17004', tierId: 'id_1', slot: 'Chest' },
+      ];
+
+      const dr = calculateAbilityDamage(sod13, attrs, equipped, []);
+
+      expect(dr.dots.length).toBe(2);
+
+      // Trauma DoT: 453 per tick, no equipped mods for its attributes
+      const trauma = dr.dots[0];
+      expect(trauma.damageType).toBe('Trauma');
+      expect(trauma.modifiedTotalDamage).toBe(453);
+
+      // Nature DoT: base 0/tick, +98 flat from BOOST, +28% mod from MOD_NATURE_INDIRECT
+      // modifiedPerTick = 0 * (1 + 0.28) + 98 = 98
+      // modifiedTotal = 98 * 4 = 392
+      const nature = dr.dots[1];
+      expect(nature.damageType).toBe('Nature');
+      expect(nature.flatBonusPerTick).toBe(98);
+      expect(nature.percentMod).toBeCloseTo(0.28);
+      expect(nature.modifiedTotalDamage).toBeCloseTo(392);
+    });
+
+    it('song ticks deal only Trauma; Nature DoTs tick independently', () => {
+      const attrs = collectAbilityAttributes(
+        sod13, abilityKeywords, ['Bard', 'Druid'], abilityDynamicDots, internalKeywordMap,
+      );
+
+      const equipped: EquippedEffect[] = [
+        { effect: { attribute: 'BOOST_ABILITYDOT_BURST_NATURE', value: 98 }, powerId: 'power_14007', tierId: 'id_24', slot: 'Legs' },
+      ];
+
+      const dr = calculateAbilityDamage(sod13, attrs, equipped, []);
+
+      const entry: RotationEntry = {
+        abilityId: 'SongOfDiscord13',
+        ability: sod13,
+        damageResult: dr,
+        priority: 0,
+      };
+
+      // 10s fight: song ticks at t=2, 4, 6, 8, 10 = 5 ticks
+      const sim = simulateCombat(makeConfig([entry], { fightDuration: 10 }));
+
+      // Song ticks should only contain Trauma damage (453/tick)
+      const songTicks = sim.timeline.filter((e) => e.type === 'song_tick');
+      expect(songTicks.length).toBe(5);
+      expect(songTicks[0].damage).toBeCloseTo(453);
+      expect(sim.totalSongDamage).toBeCloseTo(453 * 5, 0);
+
+      // Nature DoTs are spawned as independent ActiveDoTs on each song tick.
+      // Each Nature DoT: 4 ticks, 2s interval, 8s duration, 98 dmg/tick.
+      // Song tick at t=2 → Nature DoT ticks at t=4, 6, 8, 10
+      // Song tick at t=4 → Nature DoT ticks at t=6, 8, 10 (t=12 is past fight end)
+      // Song tick at t=6 → Nature DoT ticks at t=8, 10 (t=12, 14 past fight end)
+      // Song tick at t=8 → Nature DoT ticks at t=10 (t=12, 14, 16 past fight end)
+      // Song tick at t=10 → no ticks land within fight (t=12+ past end)
+      // Total Nature DoT ticks: 4 + 3 + 2 + 1 + 0 = 10
+      const dotTicks = sim.timeline.filter((e) => e.type === 'dot_tick');
+      expect(dotTicks.length).toBe(10);
+      expect(sim.totalDotDamage).toBeCloseTo(98 * 10, 0);
+
+      // Verify Nature DoT ticks are separate from song ticks
+      for (const tick of dotTicks) {
+        expect(tick.damageType).toBe('Nature');
+        expect(tick.damage).toBeCloseTo(98);
+      }
+    });
+
+    it('Nature DoTs continue ticking after song stops', () => {
+      const attrs = collectAbilityAttributes(
+        sod13, abilityKeywords, ['Bard', 'Druid'], abilityDynamicDots, internalKeywordMap,
+      );
+
+      const equipped: EquippedEffect[] = [
+        { effect: { attribute: 'BOOST_ABILITYDOT_BURST_NATURE', value: 98 }, powerId: 'power_14007', tierId: 'id_24', slot: 'Legs' },
+      ];
+
+      const dr = calculateAbilityDamage(sod13, attrs, equipped, []);
+
+      const entry: RotationEntry = {
+        abilityId: 'SongOfDiscord13',
+        ability: sod13,
+        damageResult: dr,
+        priority: 0,
+      };
+
+      // 20s fight: song ticks at t=2,4,...,20 = 10 ticks
+      // Last song tick at t=20 → Nature DoT ticks at t=22,24,26,28 (all within 20s? No, past fight)
+      // Actually song at t=0 with 20s fight, ticks at 2,4,6,8,10,12,14,16,18,20
+      // DoT from t=18 tick → ticks at 20 (within fight), 22,24,26 (past)
+      // DoT from t=20 tick → ticks at 22,24,26,28 (all past fight end)
+      // So we should see that DoTs spawned from early ticks have all their ticks land,
+      // while later ones get cut off by fight duration.
+      const sim = simulateCombat(makeConfig([entry], { fightDuration: 20 }));
+
+      const songTicks = sim.timeline.filter((e) => e.type === 'song_tick');
+      const dotTicks = sim.timeline.filter((e) => e.type === 'dot_tick');
+
+      // Song ticks: 10 (at 2,4,6,8,10,12,14,16,18,20)
+      expect(songTicks.length).toBe(10);
+
+      // Nature DoTs from song ticks:
+      // t=2:  ticks at 4,6,8,10       → 4 ticks
+      // t=4:  ticks at 6,8,10,12      → 4 ticks
+      // t=6:  ticks at 8,10,12,14     → 4 ticks
+      // t=8:  ticks at 10,12,14,16    → 4 ticks
+      // t=10: ticks at 12,14,16,18    → 4 ticks
+      // t=12: ticks at 14,16,18,20    → 4 ticks
+      // t=14: ticks at 16,18,20 (22 past) → 3 ticks
+      // t=16: ticks at 18,20 (22,24 past) → 2 ticks
+      // t=18: ticks at 20 (22,24,26 past) → 1 tick
+      // t=20: no ticks land (22+ past)    → 0 ticks
+      // Total: 6*4 + 3 + 2 + 1 = 30
+      expect(dotTicks.length).toBe(30);
+      expect(sim.totalDotDamage).toBeCloseTo(98 * 30, 0);
     });
   });
 });
