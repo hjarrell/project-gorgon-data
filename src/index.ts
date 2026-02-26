@@ -9,3 +9,4 @@ export {
 } from './character-state';
 export * from './planner';
 export * from './helpers';
+export * from './match3';
