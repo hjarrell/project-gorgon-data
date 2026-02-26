@@ -38,10 +38,14 @@ export {
   getAvailableTiers,
   collectAbilityAttributes,
   calculateAbilityDamage,
+  calculateStat,
   getCombatAbilities,
   encodeBuildToHash,
   decodeBuildFromHash,
   createDefaultGearSlots,
+  parseTextEffect,
+  textEffectMatchesAbility,
+  applyTextEffects,
 } from './build-helpers';
 
 export type {
@@ -53,13 +57,21 @@ export type {
   EffectDesc,
   ModSelection,
   GearSlotConfig,
+  AttributeBucket,
+  SpecialValueAttributes,
   AbilityAttributes,
+  StatResult,
+  CritResult,
+  SpecialValueResult,
+  RestoreResult,
   DamageResult,
   DamageContribution,
   DoTDamageResult,
   EquippedEffect,
   DecodedBuild,
   BuildHashInput,
+  TextEffect,
+  TextEffectType,
 } from './build-helpers';
 
 export {
@@ -68,3 +80,37 @@ export {
 } from './manual-effect-mappings';
 
 export type { ManualEffectMapping } from './manual-effect-mappings';
+
+export {
+  register as registerSkillEffects,
+  resolveSkillEffects,
+  resolvedEffectMatchesAbility,
+  applyResolvedEffects,
+  getRegisteredConfig,
+  getAllRegisteredPowerIds,
+} from './skill-effects/index';
+
+export type {
+  PowerEffectConfig,
+  EffectExtraction,
+  ResolvedEffect,
+  SkillEffectType,
+} from './skill-effects/index';
+
+export {
+  simulateCombat,
+  initCombatSim,
+} from './combat-simulator/index';
+
+export type {
+  CombatSimConfig,
+  CombatSimResult,
+  RotationEntry,
+  AbilityRole,
+  NeedBasedConfig,
+  EnemyConfig,
+  EnemySimResult,
+  AbilitySimResult,
+  TimelineEvent,
+  TimelineEventType,
+} from './combat-simulator/index';

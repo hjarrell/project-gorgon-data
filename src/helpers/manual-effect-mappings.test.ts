@@ -12,11 +12,11 @@ describe('resolveManualEffect', () => {
   });
 
   it('returns null for todo entries', () => {
-    // SongOfDiscordCrit is a todo
+    // PsychoanalyzeCrit is a todo
     expect(
       resolveManualEffect(
-        'power_17044',
-        '<icon=3665>Song of Discord has a 10% chance to deal +100% damage',
+        'power_4002',
+        '<icon=2118>Psychoanalyze deals between 10 and 60 extra damage',
       ),
     ).toBeNull();
   });
@@ -29,43 +29,10 @@ describe('resolveManualEffect', () => {
   });
 
   it('returns null when regex does not match', () => {
+    // Finishing Blow + Decapitate mapping with non-matching text
     expect(
-      resolveManualEffect('power_17042', 'Some completely different text'),
+      resolveManualEffect('power_1085', 'Some completely different text'),
     ).toBeNull();
-  });
-
-  // ── Delta: Song of Discord Stun ──────────────────
-
-  it('resolves SongOfDiscordStun flat damage', () => {
-    const result = resolveManualEffect(
-      'power_17042',
-      '<icon=3665>Song of Discord deals +71 damage and has a 10% chance to stun each target every 2 seconds',
-    );
-    expect(result).toEqual([
-      { attribute: 'BOOST_ABILITY_SONGOFDISCORD', value: 71 },
-    ]);
-  });
-
-  it('resolves SongOfDiscordStun low tier', () => {
-    const result = resolveManualEffect(
-      'power_17042',
-      '<icon=3665>Song of Discord deals +3 damage and has a 10% chance to stun each target every 2 seconds',
-    );
-    expect(result).toEqual([
-      { attribute: 'BOOST_ABILITY_SONGOFDISCORD', value: 3 },
-    ]);
-  });
-
-  // ── Delta: Song of Discord Lower Rage ────────────
-
-  it('resolves SongOfDiscordLowerRage flat damage', () => {
-    const result = resolveManualEffect(
-      'power_17043',
-      "<icon=3665>Song of Discord deals +42 damage and reduces targets' Rage by -10 every 2 seconds",
-    );
-    expect(result).toEqual([
-      { attribute: 'BOOST_ABILITY_SONGOFDISCORD', value: 42 },
-    ]);
   });
 
   // ── Delta: Finishing Blow + Decapitate ────────────

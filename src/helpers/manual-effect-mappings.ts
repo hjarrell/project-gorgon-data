@@ -52,49 +52,6 @@ export type ManualEffectMapping =
 // ── Mapping Data ────────────────────────────────────
 
 export const MANUAL_EFFECT_MAPPINGS: Record<string, ManualEffectMapping> = {
-  // ── Bard ────────────────────────────────────────────
-
-  // SongOfDiscordStun: "<icon=3665>Song of Discord deals +71 damage and has a 10% chance to stun each target every 2 seconds"
-  // Song of Discord DoT: AttributesThatDelta: ["BOOST_ABILITY_SONGOFDISCORD", "BOOST_SKILL_BARD"], NumTicks=1
-  power_17042: {
-    type: 'delta',
-    valuePattern: /deals \+(\d+) damage/,
-    attributes: ['BOOST_ABILITY_SONGOFDISCORD'],
-    description: 'Song of Discord flat damage per tick + stun chance',
-  },
-
-  // SongOfDiscordLowerRage: "<icon=3665>Song of Discord deals +5 damage and reduces targets' Rage by -10 every 2 seconds"
-  power_17043: {
-    type: 'delta',
-    valuePattern: /deals \+(\d+) damage/,
-    attributes: ['BOOST_ABILITY_SONGOFDISCORD'],
-    description: 'Song of Discord flat damage per tick + rage reduction',
-  },
-
-  // SongOfDiscordCrit: "<icon=3665>Song of Discord has a 10% chance to deal +100% damage to each target every 2 seconds"
-  power_17044: {
-    type: 'todo',
-    description: 'TODO_DESCRIPTION: Song of Discord crit chance on DoT ticks — needs crit damage model',
-  },
-
-  // SongOfDiscordBuffsBlasts: "<icon=3665>Every 2 seconds when Song of Discord damages an enemy, your Bardic Blast ability damage is boosted +1% for 30 seconds"
-  power_17046: {
-    type: 'todo',
-    description: 'TODO_DESCRIPTION: Stacking % buff to Bardic Blast from Song of Discord ticks — needs stacking buff model',
-  },
-
-  // SongOfDiscordRageahol: "<icon=3665>Song of Discord deals +5% damage to targets with less than 33% of their Max Rage"
-  power_17047: {
-    type: 'todo',
-    description: 'TODO_DESCRIPTION: Conditional % based on target rage threshold',
-  },
-
-  // BardPainYieldsArt: "<icon=108>Whenever you take damage from an enemy, your Bardic Blast abilities deal +5% damage for 20 seconds"
-  power_17003: {
-    type: 'todo',
-    description: 'TODO_DESCRIPTION: Conditional % buff to Bardic Blast on taking damage',
-  },
-
   // ── Archery ─────────────────────────────────────────
 
   // PoisonArrowDoT: "<icon=3301>Poison Arrow deals +600 Poison damage over 12 seconds"

@@ -7,6 +7,7 @@ import {
   parseTierEffects,
   collectAbilityAttributes,
   calculateAbilityDamage,
+  calculateStat,
   getCombatAbilities,
   encodeBuildToHash,
   decodeBuildFromHash,
@@ -16,7 +17,33 @@ import type {
   GearSlotConfig,
   EquippedEffect,
   ParsedEffect,
+  AbilityAttributes,
+  AttributeBucket,
 } from './build-helpers';
+
+/** Create a minimal AbilityAttributes with empty extended buckets */
+function makeAttrs(overrides: Partial<AbilityAttributes> = {}): AbilityAttributes {
+  const emptyBucket = (): AttributeBucket => ({ deltaAttributes: new Set(), modAttributes: new Set() });
+  return {
+    deltaAttributes: new Set<string>(),
+    modAttributes: new Set<string>(),
+    dotAttributes: [],
+    baseDamageMod: emptyBucket(),
+    critChance: emptyBucket(),
+    critDamage: emptyBucket(),
+    rage: emptyBucket(),
+    taunt: emptyBucket(),
+    tempTaunt: emptyBucket(),
+    powerCost: emptyBucket(),
+    resetTime: emptyBucket(),
+    range: emptyBucket(),
+    aoe: emptyBucket(),
+    accuracy: emptyBucket(),
+    vulnerableDamage: emptyBucket(),
+    specialValues: [],
+    ...overrides,
+  };
+}
 
 // ── parseEffectDesc ──────────────────────────────────
 
@@ -164,7 +191,7 @@ describe('calculateAbilityDamage', () => {
   };
 
   it('returns base damage with no mods', () => {
-    const attrs = { deltaAttributes: new Set<string>(), modAttributes: new Set<string>(), dotAttributes: [] };
+    const attrs = makeAttrs();
     const result = calculateAbilityDamage(mockAbility, attrs, []);
     expect(result.baseDamage).toBe(100);
     expect(result.modifiedDamage).toBe(100);
@@ -173,11 +200,9 @@ describe('calculateAbilityDamage', () => {
   });
 
   it('applies flat delta bonus', () => {
-    const attrs = {
+    const attrs = makeAttrs({
       deltaAttributes: new Set(['BOOST_ABILITY_TEST']),
-      modAttributes: new Set<string>(),
-      dotAttributes: [],
-    };
+    });
     const effects: EquippedEffect[] = [
       {
         effect: { attribute: 'BOOST_ABILITY_TEST', value: 50 },
@@ -192,11 +217,9 @@ describe('calculateAbilityDamage', () => {
   });
 
   it('applies percent modifier', () => {
-    const attrs = {
-      deltaAttributes: new Set<string>(),
+    const attrs = makeAttrs({
       modAttributes: new Set(['MOD_ABILITY_TEST']),
-      dotAttributes: [],
-    };
+    });
     const effects: EquippedEffect[] = [
       {
         effect: { attribute: 'MOD_ABILITY_TEST', value: 0.25 },
@@ -211,11 +234,10 @@ describe('calculateAbilityDamage', () => {
   });
 
   it('combines flat and percent correctly', () => {
-    const attrs = {
+    const attrs = makeAttrs({
       deltaAttributes: new Set(['BOOST']),
       modAttributes: new Set(['MOD']),
-      dotAttributes: [],
-    };
+    });
     const effects: EquippedEffect[] = [
       { effect: { attribute: 'MOD', value: 0.5 }, powerId: 'p1', tierId: 't1', slot: 'Head' },
       { effect: { attribute: 'BOOST', value: 30 }, powerId: 'p2', tierId: 't2', slot: 'Chest' },
@@ -227,11 +249,9 @@ describe('calculateAbilityDamage', () => {
   });
 
   it('ignores irrelevant effects', () => {
-    const attrs = {
+    const attrs = makeAttrs({
       deltaAttributes: new Set(['BOOST_ABILITY_TEST']),
-      modAttributes: new Set<string>(),
-      dotAttributes: [],
-    };
+    });
     const effects: EquippedEffect[] = [
       {
         effect: { attribute: 'UNRELATED_ATTR', value: 999 },
@@ -450,6 +470,231 @@ describe('getCombatAbilities', () => {
     ]);
     const result = getCombatAbilities('Druid', abilities);
     expect(result.map((a) => a.Name)).toEqual(['A', 'B', 'C']);
+  });
+});
+
+// ── Extended Stats ──────────────────────────────────
+
+describe('calculateAbilityDamage (extended stats)', () => {
+  function makeAbilityWith(pveOverrides: Record<string, unknown> = {}, rootOverrides: Record<string, unknown> = {}): Ability {
+    return {
+      Animation: 'Attack',
+      DamageType: 'Nature',
+      Description: 'Test',
+      IconID: 1,
+      InternalName: 'TestAbility',
+      Level: 50,
+      Name: 'Test Ability',
+      PvE: { PowerCost: 30, Range: 20, Damage: 100, ...pveOverrides },
+      ResetTime: 10,
+      Skill: 'Druid',
+      Target: 'Enemy',
+      ...rootOverrides,
+    } as Ability;
+  }
+
+  it('computes power cost reduction', () => {
+    const ability = makeAbilityWith({}, { AttributesThatDeltaPowerCost: ['ABILITY_COST_DELTA'] });
+    const attrs = collectAbilityAttributes(ability, []);
+    const effects: EquippedEffect[] = [
+      { effect: { attribute: 'ABILITY_COST_DELTA', value: -5 }, powerId: 'p1', tierId: 't1', slot: 'Head' },
+    ];
+    const result = calculateAbilityDamage(ability, attrs, effects);
+    expect(result.powerCost.base).toBe(30);
+    expect(result.powerCost.modified).toBe(25);
+    expect(result.powerCost.contributions).toHaveLength(1);
+  });
+
+  it('computes reset time reduction', () => {
+    const ability = makeAbilityWith({}, { AttributesThatDeltaResetTime: ['ABILITY_RESETTIME_DELTA'] });
+    const attrs = collectAbilityAttributes(ability, []);
+    const effects: EquippedEffect[] = [
+      { effect: { attribute: 'ABILITY_RESETTIME_DELTA', value: -2 }, powerId: 'p1', tierId: 't1', slot: 'Chest' },
+    ];
+    const result = calculateAbilityDamage(ability, attrs, effects);
+    expect(result.resetTime.base).toBe(10);
+    expect(result.resetTime.modified).toBe(8);
+  });
+
+  it('computes crit damage modifier', () => {
+    const ability = makeAbilityWith({ CritDamageMod: 1.5, AttributesThatModCritDamage: ['MOD_CRIT_DMG'] });
+    const attrs = collectAbilityAttributes(ability, []);
+    const effects: EquippedEffect[] = [
+      { effect: { attribute: 'MOD_CRIT_DMG', value: 0.3 }, powerId: 'p1', tierId: 't1', slot: 'Head' },
+    ];
+    const result = calculateAbilityDamage(ability, attrs, effects);
+    expect(result.crit.baseCritDamageMod).toBe(1.5);
+    // 1.5 * (1 + 0.3) + 0 = 1.95
+    expect(result.crit.modifiedCritDamageMod).toBeCloseTo(1.95);
+  });
+
+  it('computes crit chance bonus from keywords', () => {
+    const ability = makeAbilityWith({}, {
+      AttributesThatDeltaCritChance: ['DELTA_CRIT_CHANCE'],
+      Keywords: ['Attack', 'AnatomyCriticals'],
+    });
+    const keywordEntries: AbilityKeywordEntry[] = [
+      {
+        MustHaveAbilityKeywords: ['AnatomyCriticals'],
+        AttributesThatDeltaCritChance: ['DELTA_ANATOMY_CRIT'],
+      },
+    ];
+    const attrs = collectAbilityAttributes(ability, keywordEntries);
+    const effects: EquippedEffect[] = [
+      { effect: { attribute: 'DELTA_CRIT_CHANCE', value: 0.02 }, powerId: 'p1', tierId: 't1', slot: 'Head' },
+      { effect: { attribute: 'DELTA_ANATOMY_CRIT', value: 0.03 }, powerId: 'p2', tierId: 't2', slot: 'Chest' },
+    ];
+    const result = calculateAbilityDamage(ability, attrs, effects);
+    expect(result.crit.critChanceBonus).toBeCloseTo(0.05);
+  });
+
+  it('computes rage boost modification', () => {
+    const ability = makeAbilityWith({ RageBoost: -40, AttributesThatDeltaRage: ['DELTA_RAGE'] });
+    const attrs = collectAbilityAttributes(ability, []);
+    const effects: EquippedEffect[] = [
+      { effect: { attribute: 'DELTA_RAGE', value: 10 }, powerId: 'p1', tierId: 't1', slot: 'Head' },
+    ];
+    const result = calculateAbilityDamage(ability, attrs, effects);
+    expect(result.rage.base).toBe(-40);
+    expect(result.rage.modified).toBe(-30);
+  });
+
+  it('computes taunt modification', () => {
+    const ability = makeAbilityWith({ TauntDelta: 100, AttributesThatDeltaTaunt: ['DELTA_TAUNT'] });
+    const attrs = collectAbilityAttributes(ability, []);
+    const effects: EquippedEffect[] = [
+      { effect: { attribute: 'DELTA_TAUNT', value: 50 }, powerId: 'p1', tierId: 't1', slot: 'Head' },
+    ];
+    const result = calculateAbilityDamage(ability, attrs, effects);
+    expect(result.taunt.base).toBe(100);
+    expect(result.taunt.modified).toBe(150);
+  });
+
+  it('computes range modification', () => {
+    const ability = makeAbilityWith({ Range: 20, AttributesThatDeltaRange: ['DELTA_RANGE'] });
+    const attrs = collectAbilityAttributes(ability, []);
+    const effects: EquippedEffect[] = [
+      { effect: { attribute: 'DELTA_RANGE', value: 5 }, powerId: 'p1', tierId: 't1', slot: 'Head' },
+    ];
+    const result = calculateAbilityDamage(ability, attrs, effects);
+    expect(result.range.base).toBe(20);
+    expect(result.range.modified).toBe(25);
+  });
+
+  it('returns null for AoE when ability has none', () => {
+    const ability = makeAbilityWith({});
+    const attrs = collectAbilityAttributes(ability, []);
+    const result = calculateAbilityDamage(ability, attrs, []);
+    expect(result.aoe).toBeNull();
+  });
+
+  it('computes AoE modification', () => {
+    const ability = makeAbilityWith({ AoE: 5, AttributesThatDeltaAoE: ['DELTA_AOE'] });
+    const attrs = collectAbilityAttributes(ability, []);
+    const effects: EquippedEffect[] = [
+      { effect: { attribute: 'DELTA_AOE', value: 2 }, powerId: 'p1', tierId: 't1', slot: 'Head' },
+    ];
+    const result = calculateAbilityDamage(ability, attrs, effects);
+    expect(result.aoe).not.toBeNull();
+    expect(result.aoe!.base).toBe(5);
+    expect(result.aoe!.modified).toBe(7);
+  });
+
+  it('computes vulnerable damage modification', () => {
+    const ability = makeAbilityWith({
+      ExtraDamageIfTargetVulnerable: 50,
+      AttributesThatDeltaDamageIfTargetIsVulnerable: ['DELTA_VULN_DMG'],
+    });
+    const attrs = collectAbilityAttributes(ability, []);
+    const effects: EquippedEffect[] = [
+      { effect: { attribute: 'DELTA_VULN_DMG', value: 20 }, powerId: 'p1', tierId: 't1', slot: 'Head' },
+    ];
+    const result = calculateAbilityDamage(ability, attrs, effects);
+    expect(result.vulnerableDamage).not.toBeNull();
+    expect(result.vulnerableDamage!.base).toBe(50);
+    expect(result.vulnerableDamage!.modified).toBe(70);
+  });
+
+  it('computes special values modification', () => {
+    const ability = makeAbilityWith({
+      SpecialValues: [{
+        Label: 'Target suffers',
+        Value: 25,
+        Suffix: 'Psychic damage after delay',
+        AttributesThatDelta: ['BOOST_SPECIAL'],
+        SkipIfZero: false,
+      }],
+    });
+    const attrs = collectAbilityAttributes(ability, []);
+    const effects: EquippedEffect[] = [
+      { effect: { attribute: 'BOOST_SPECIAL', value: 10 }, powerId: 'p1', tierId: 't1', slot: 'Head' },
+    ];
+    const result = calculateAbilityDamage(ability, attrs, effects);
+    expect(result.specialValues).toHaveLength(1);
+    expect(result.specialValues[0].base).toBe(25);
+    expect(result.specialValues[0].modified).toBe(35);
+    expect(result.specialValues[0].label).toBe('Target suffers');
+  });
+
+  it('applies baseDamageMod before other damage mods', () => {
+    const ability = makeAbilityWith({
+      Damage: 100,
+      AttributesThatModBaseDamage: ['MOD_BASE'],
+      AttributesThatModDamage: ['MOD_DMG'],
+    });
+    const attrs = collectAbilityAttributes(ability, []);
+    const effects: EquippedEffect[] = [
+      { effect: { attribute: 'MOD_BASE', value: 0.2 }, powerId: 'p1', tierId: 't1', slot: 'Head' },
+      { effect: { attribute: 'MOD_DMG', value: 0.5 }, powerId: 'p2', tierId: 't2', slot: 'Chest' },
+    ];
+    const result = calculateAbilityDamage(ability, attrs, effects);
+    // modifiedBase = 100 * (1 + 0.2) = 120
+    // modifiedDamage = 120 * (1 + 0.5) + 0 = 180
+    expect(result.modifiedDamage).toBe(180);
+  });
+
+  it('returns default stats with no equipped effects', () => {
+    const ability = makeAbilityWith({
+      CritDamageMod: 2.0,
+      RageBoost: -30,
+      TauntDelta: 50,
+    });
+    const attrs = collectAbilityAttributes(ability, []);
+    const result = calculateAbilityDamage(ability, attrs, []);
+    expect(result.crit.baseCritDamageMod).toBe(2.0);
+    expect(result.crit.modifiedCritDamageMod).toBe(2.0);
+    expect(result.rage.base).toBe(-30);
+    expect(result.rage.modified).toBe(-30);
+    expect(result.taunt.base).toBe(50);
+    expect(result.taunt.modified).toBe(50);
+    expect(result.powerCost.base).toBe(30);
+    expect(result.powerCost.modified).toBe(30);
+    expect(result.resetTime.base).toBe(10);
+    expect(result.resetTime.modified).toBe(10);
+  });
+});
+
+// ── calculateStat helper ────────────────────────────
+
+describe('calculateStat', () => {
+  it('returns base when no effects match', () => {
+    const bucket: AttributeBucket = { deltaAttributes: new Set(['A']), modAttributes: new Set() };
+    const result = calculateStat(50, bucket, []);
+    expect(result.base).toBe(50);
+    expect(result.modified).toBe(50);
+    expect(result.contributions).toHaveLength(0);
+  });
+
+  it('applies delta and mod together', () => {
+    const bucket: AttributeBucket = { deltaAttributes: new Set(['D']), modAttributes: new Set(['M']) };
+    const effects: EquippedEffect[] = [
+      { effect: { attribute: 'D', value: 10 }, powerId: 'p1', tierId: 't1', slot: 'Head' },
+      { effect: { attribute: 'M', value: 0.5 }, powerId: 'p2', tierId: 't2', slot: 'Chest' },
+    ];
+    const result = calculateStat(100, bucket, effects);
+    // 100 * (1 + 0.5) + 10 = 160
+    expect(result.modified).toBe(160);
+    expect(result.contributions).toHaveLength(2);
   });
 });
 
