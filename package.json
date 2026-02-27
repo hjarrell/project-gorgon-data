@@ -1,6 +1,6 @@
 {
   "name": "project-gorgon-data",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Typed game data library for Project Gorgon MMO with Zod schemas",
   "main": "./dist/index.cjs",
   "types": "./dist/index.d.ts",

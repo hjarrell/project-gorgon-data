@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.2
+
+### Build
+
+- **Breaking (internal)**: Migrate build toolchain from dual `tsc` to `tsdown` (rolldown). Produces correct ESM (`.mjs`) and CJS (`.cjs`) outputs with proper extensions and no bare directory imports.
+- JSON game data is now loaded at runtime via `readFileSync`/`JSON.parse` instead of static `import`, avoiding OOM during bundling of ~45 MB of JSON.
+- Remove `fix-esm-import-path`, `tsconfig.esm.json`, and dual-tsc post-processing. Build completes in ~2 seconds.
+- Add `tsdown.config.ts` with 13 entry points, dual ESM/CJS format, DTS generation, and `zod` as external.
+
 ## 0.1.1
 
 ### Bug Fixes
