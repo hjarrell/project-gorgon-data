@@ -78,7 +78,10 @@ export function advanceTurn(
   rng: () => number,
   idSrc: IdSource,
 ): { result: ReturnType<typeof applyMove> } {
-  const result = applyMove(state.board, move[0], move[1], state.K, config.boardSize, idSrc, rng);
+  const result = applyMove(
+    state.board, move[0], move[1], state.K, config.boardSize, idSrc, rng,
+    { counters: state.counters, threshold: config.collectionThreshold, maxK: MAX_K },
+  );
 
   if (result.cascadeSteps.length === 0) {
     // Should not happen if solver returns a valid move, but handle gracefully
@@ -93,25 +96,16 @@ export function advanceTurn(
   state.score += result.totalScoreGained;
   state.turnsPlayed++;
 
-  // Update collection counters
-  for (let t = 0; t < result.typeClears.length; t++) {
-    state.counters[t] += result.typeClears[t];
-  }
-
-  // Check collection threshold
-  let collected = false;
-  for (let t = 0; t < state.K; t++) {
-    if (state.counters[t] >= config.collectionThreshold) {
-      collected = true;
-      break;
+  // Apply collection results from the cascade (K and counters already
+  // resolved mid-cascade by applyMove)
+  if (result.finalCounters) {
+    for (let t = 0; t < result.finalCounters.length; t++) {
+      state.counters[t] = result.finalCounters[t];
     }
   }
-  if (collected) {
-    state.counters.fill(0);
-    state.K = Math.min(state.K + 1, MAX_K);
-    state.maxK = Math.max(state.maxK, state.K);
-    state.collectionEvents++;
-  }
+  state.K = result.finalK;
+  state.maxK = Math.max(state.maxK, state.K);
+  state.collectionEvents += result.collectionEvents;
 
   // Apply turn effect
   if (result.turnEffect === 'extra') {

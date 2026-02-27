@@ -58,13 +58,29 @@ export interface CascadeStep {
   scoreGained: number;
 }
 
+/** Options for mid-cascade collection tracking in applyMove. */
+export interface CollectionOpts {
+  /** Current per-type collection counters (will be copied, not mutated). */
+  counters: number[];
+  /** Number of clears needed to trigger a collection event. */
+  threshold: number;
+  /** Hard cap on K (e.g. MAX_K). */
+  maxK: number;
+}
+
 /** Complete result of resolving a player's swap. */
 export interface TurnResult {
   cascadeSteps: CascadeStep[];
   totalScoreGained: number;
   turnEffect: TurnEffect;
-  /** Per-type count of tiles cleared this turn. Index = GemType, length = K. */
+  /** Per-type count of tiles cleared this turn. Index = GemType, length = MAX_K. */
   typeClears: number[];
+  /** K value at end of cascade (may be higher than input K if collection threshold was hit mid-cascade). */
+  finalK: number;
+  /** Number of collection events triggered during this cascade. */
+  collectionEvents: number;
+  /** Final collection counter state after cascade (only present when CollectionOpts provided). */
+  finalCounters?: number[];
 }
 
 /** Game configuration. */
