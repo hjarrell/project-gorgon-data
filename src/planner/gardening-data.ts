@@ -1,5 +1,7 @@
 import type { GardeningSeedEntry, SlotGroup, SeedCategory } from './gardening-types';
-import RAW_GARDENING from '../wikidata/gardening.json';
+import { loadJSON } from '../load-json';
+
+const RAW_GARDENING = loadJSON('wikidata/gardening.json');
 
 // ============================================================
 // Well-Known Item Codes

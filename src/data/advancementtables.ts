@@ -1,6 +1,7 @@
 import type { AdvancementTable } from '../schemas';
+import { loadJSON } from '../load-json';
 
-import RAW_ADVANCEMENT_TABLES from './raw/advancementtables.json';
+const RAW_ADVANCEMENT_TABLES = loadJSON('data/raw/advancementtables.json');
 
 export const advancementTables = new Map<string, AdvancementTable>(
   Object.entries(

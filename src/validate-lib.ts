@@ -28,34 +28,35 @@ import {
   TsysProfilesRecordSchema,
   XpTablesRecordSchema,
 } from './schemas';
+import { loadJSON } from './load-json';
 
-import RAW_ABILITIES from './data/raw/abilities.json';
-import RAW_ABILITY_KEYWORDS from './data/raw/abilitykeywords.json';
-import RAW_ABILITY_DYNAMIC_DOTS from './data/raw/abilitydynamicdots.json';
-import RAW_ABILITY_DYNAMIC_SPECIAL_VALUES from './data/raw/abilitydynamicspecialvalues.json';
-import RAW_ADVANCEMENT_TABLES from './data/raw/advancementtables.json';
-import RAW_AI from './data/raw/ai.json';
-import RAW_AREAS from './data/raw/areas.json';
-import RAW_ATTRIBUTES from './data/raw/attributes.json';
-import RAW_DIRECTED_GOALS from './data/raw/directedgoals.json';
-import RAW_EFFECTS from './data/raw/effects.json';
-import RAW_ITEMS from './data/raw/items.json';
-import RAW_ITEM_USES from './data/raw/itemuses.json';
-import RAW_LANDMARKS from './data/raw/landmarks.json';
-import RAW_LOREBOOK_INFO from './data/raw/lorebookinfo.json';
-import RAW_LOREBOOKS from './data/raw/lorebooks.json';
-import RAW_NPCS from './data/raw/npcs.json';
-import RAW_PLAYER_TITLES from './data/raw/playertitles.json';
-import RAW_QUESTS from './data/raw/quests.json';
-import RAW_RECIPES from './data/raw/recipes.json';
-import RAW_SKILLS from './data/raw/skills.json';
-import RAW_SOURCES_ABILITIES from './data/raw/sources_abilities.json';
-import RAW_SOURCES_ITEMS from './data/raw/sources_items.json';
-import RAW_SOURCES_RECIPES from './data/raw/sources_recipes.json';
-import RAW_STORAGE_VAULTS from './data/raw/storagevaults.json';
-import RAW_TSYS_CLIENT_INFO from './data/raw/tsysclientinfo.json';
-import RAW_TSYS_PROFILES from './data/raw/tsysprofiles.json';
-import RAW_XP_TABLES from './data/raw/xptables.json';
+const RAW_ABILITIES = loadJSON('./data/raw/abilities.json');
+const RAW_ABILITY_KEYWORDS = loadJSON('./data/raw/abilitykeywords.json');
+const RAW_ABILITY_DYNAMIC_DOTS = loadJSON('./data/raw/abilitydynamicdots.json');
+const RAW_ABILITY_DYNAMIC_SPECIAL_VALUES = loadJSON('./data/raw/abilitydynamicspecialvalues.json');
+const RAW_ADVANCEMENT_TABLES = loadJSON('./data/raw/advancementtables.json');
+const RAW_AI = loadJSON('./data/raw/ai.json');
+const RAW_AREAS = loadJSON('./data/raw/areas.json');
+const RAW_ATTRIBUTES = loadJSON('./data/raw/attributes.json');
+const RAW_DIRECTED_GOALS = loadJSON('./data/raw/directedgoals.json');
+const RAW_EFFECTS = loadJSON('./data/raw/effects.json');
+const RAW_ITEMS = loadJSON('./data/raw/items.json');
+const RAW_ITEM_USES = loadJSON('./data/raw/itemuses.json');
+const RAW_LANDMARKS = loadJSON('./data/raw/landmarks.json');
+const RAW_LOREBOOK_INFO = loadJSON('./data/raw/lorebookinfo.json');
+const RAW_LOREBOOKS = loadJSON('./data/raw/lorebooks.json');
+const RAW_NPCS = loadJSON('./data/raw/npcs.json');
+const RAW_PLAYER_TITLES = loadJSON('./data/raw/playertitles.json');
+const RAW_QUESTS = loadJSON('./data/raw/quests.json');
+const RAW_RECIPES = loadJSON('./data/raw/recipes.json');
+const RAW_SKILLS = loadJSON('./data/raw/skills.json');
+const RAW_SOURCES_ABILITIES = loadJSON('./data/raw/sources_abilities.json');
+const RAW_SOURCES_ITEMS = loadJSON('./data/raw/sources_items.json');
+const RAW_SOURCES_RECIPES = loadJSON('./data/raw/sources_recipes.json');
+const RAW_STORAGE_VAULTS = loadJSON('./data/raw/storagevaults.json');
+const RAW_TSYS_CLIENT_INFO = loadJSON('./data/raw/tsysclientinfo.json');
+const RAW_TSYS_PROFILES = loadJSON('./data/raw/tsysprofiles.json');
+const RAW_XP_TABLES = loadJSON('./data/raw/xptables.json');
 
 interface Validator {
   schema: z.ZodTypeAny;

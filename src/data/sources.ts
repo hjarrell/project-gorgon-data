@@ -1,8 +1,9 @@
 import type { SourceAbility, SourceItem, SourceRecipe } from '../schemas';
+import { loadJSON } from '../load-json';
 
-import RAW_SOURCES_ABILITIES from './raw/sources_abilities.json';
-import RAW_SOURCES_ITEMS from './raw/sources_items.json';
-import RAW_SOURCES_RECIPES from './raw/sources_recipes.json';
+const RAW_SOURCES_ABILITIES = loadJSON('data/raw/sources_abilities.json');
+const RAW_SOURCES_ITEMS = loadJSON('data/raw/sources_items.json');
+const RAW_SOURCES_RECIPES = loadJSON('data/raw/sources_recipes.json');
 
 export const sourcesAbilities = new Map<string, SourceAbility>(
   Object.entries(RAW_SOURCES_ABILITIES as Record<string, SourceAbility>),

@@ -1,7 +1,8 @@
 import type { Skill, XpTable } from '../schemas';
+import { loadJSON } from '../load-json';
 
-import RAW_SKILLS from './raw/skills.json';
-import RAW_XP_TABLES from './raw/xptables.json';
+const RAW_SKILLS = loadJSON('data/raw/skills.json');
+const RAW_XP_TABLES = loadJSON('data/raw/xptables.json');
 
 export const skills = new Map<string, Skill>(
   Object.entries(RAW_SKILLS as Record<string, Skill>),

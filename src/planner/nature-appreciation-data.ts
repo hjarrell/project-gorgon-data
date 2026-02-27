@@ -1,5 +1,7 @@
 import type { NatureAppreciationFlowerEntry } from './nature-appreciation-types';
-import RAW_NA from '../wikidata/nature_appreciation.json';
+import { loadJSON } from '../load-json';
+
+const RAW_NA = loadJSON('wikidata/nature_appreciation.json');
 
 // ============================================================
 // Flower Data Loader

@@ -2,83 +2,82 @@
   "name": "project-gorgon-data",
   "version": "0.1.1",
   "description": "Typed game data library for Project Gorgon MMO with Zod schemas",
-  "main": "./dist/index.js",
+  "main": "./dist/index.cjs",
   "types": "./dist/index.d.ts",
   "sideEffects": false,
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist-esm/index.js",
-      "require": "./dist/index.js"
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
     },
     "./schemas": {
       "types": "./dist/schemas/index.d.ts",
-      "import": "./dist-esm/schemas/index.js",
-      "require": "./dist/schemas/index.js"
+      "import": "./dist/schemas/index.mjs",
+      "require": "./dist/schemas/index.cjs"
     },
     "./data": {
       "types": "./dist/data/index.d.ts",
-      "import": "./dist-esm/data/index.js",
-      "require": "./dist/data/index.js"
+      "import": "./dist/data/index.mjs",
+      "require": "./dist/data/index.cjs"
     },
     "./data/items": {
       "types": "./dist/data/items.d.ts",
-      "import": "./dist-esm/data/items.js",
-      "require": "./dist/data/items.js"
+      "import": "./dist/data/items.mjs",
+      "require": "./dist/data/items.cjs"
     },
     "./data/recipes": {
       "types": "./dist/data/recipes.d.ts",
-      "import": "./dist-esm/data/recipes.js",
-      "require": "./dist/data/recipes.js"
+      "import": "./dist/data/recipes.mjs",
+      "require": "./dist/data/recipes.cjs"
     },
     "./data/skills": {
       "types": "./dist/data/skills.d.ts",
-      "import": "./dist-esm/data/skills.js",
-      "require": "./dist/data/skills.js"
+      "import": "./dist/data/skills.mjs",
+      "require": "./dist/data/skills.cjs"
     },
     "./data/abilities": {
       "types": "./dist/data/abilities.d.ts",
-      "import": "./dist-esm/data/abilities.js",
-      "require": "./dist/data/abilities.js"
+      "import": "./dist/data/abilities.mjs",
+      "require": "./dist/data/abilities.cjs"
     },
     "./data/npcs": {
       "types": "./dist/data/npcs.d.ts",
-      "import": "./dist-esm/data/npcs.js",
-      "require": "./dist/data/npcs.js"
+      "import": "./dist/data/npcs.mjs",
+      "require": "./dist/data/npcs.cjs"
     },
     "./data/areas": {
       "types": "./dist/data/areas.d.ts",
-      "import": "./dist-esm/data/areas.js",
-      "require": "./dist/data/areas.js"
+      "import": "./dist/data/areas.mjs",
+      "require": "./dist/data/areas.cjs"
     },
     "./data/sources": {
       "types": "./dist/data/sources.d.ts",
-      "import": "./dist-esm/data/sources.js",
-      "require": "./dist/data/sources.js"
+      "import": "./dist/data/sources.mjs",
+      "require": "./dist/data/sources.cjs"
     },
     "./planner": {
       "types": "./dist/planner/index.d.ts",
-      "import": "./dist-esm/planner/index.js",
-      "require": "./dist/planner/index.js"
+      "import": "./dist/planner/index.mjs",
+      "require": "./dist/planner/index.cjs"
     },
     "./helpers": {
       "types": "./dist/helpers/index.d.ts",
-      "import": "./dist-esm/helpers/index.js",
-      "require": "./dist/helpers/index.js"
+      "import": "./dist/helpers/index.mjs",
+      "require": "./dist/helpers/index.cjs"
     },
     "./match3": {
       "types": "./dist/match3/index.d.ts",
-      "import": "./dist-esm/match3/index.js",
-      "require": "./dist/match3/index.js"
+      "import": "./dist/match3/index.mjs",
+      "require": "./dist/match3/index.cjs"
     }
   },
   "files": [
-    "dist",
-    "dist-esm"
+    "dist"
   ],
   "scripts": {
-    "build": "tsc && tsc -p tsconfig.esm.json && fix-esm-import-path dist-esm/ && echo '{\"type\":\"module\"}' > dist-esm/package.json",
-    "clean": "rm -rf dist dist-esm",
+    "build": "tsdown && cp -r src/data/raw dist/data/raw && cp -r src/wikidata dist/wikidata",
+    "clean": "rm -rf dist",
     "prepublishOnly": "pnpm run clean && pnpm run build",
     "test": "vitest run",
     "test:esm": "node scripts/test-esm.mjs",
@@ -108,7 +107,7 @@
   },
   "devDependencies": {
     "@types/node": "^25.3.0",
-    "fix-esm-import-path": "^1.10.3",
+    "tsdown": "0.21.0-beta.2",
     "typescript": "^5.9.3",
     "vitest": "^4.0.18",
     "zod": "^3.25.0 || ^4.0.0"

@@ -1,6 +1,7 @@
 import type { Lorebook } from '../schemas';
+import { loadJSON } from '../load-json';
 
-import RAW_LOREBOOKS from './raw/lorebooks.json';
+const RAW_LOREBOOKS = loadJSON('data/raw/lorebooks.json');
 
 export const lorebooks = new Map<string, Lorebook>(
   Object.entries(RAW_LOREBOOKS as Record<string, Lorebook>),

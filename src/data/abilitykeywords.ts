@@ -1,6 +1,7 @@
 import type { AbilityKeywordEntry } from '../schemas';
+import { loadJSON } from '../load-json';
 
-import RAW_ABILITY_KEYWORDS from './raw/abilitykeywords.json';
+const RAW_ABILITY_KEYWORDS = loadJSON('data/raw/abilitykeywords.json');
 
 export const abilityKeywords: AbilityKeywordEntry[] =
   RAW_ABILITY_KEYWORDS as AbilityKeywordEntry[];

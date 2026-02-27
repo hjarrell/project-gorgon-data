@@ -1,8 +1,9 @@
 import type { Ability, AbilityDynamicSpecialValue } from '../schemas';
+import { loadJSON } from '../load-json';
 
-import RAW_ABILITIES from './raw/abilities.json';
-import RAW_ABILITY_DYNAMIC_DOTS from './raw/abilitydynamicdots.json';
-import RAW_ABILITY_DYNAMIC_SPECIAL_VALUES from './raw/abilitydynamicspecialvalues.json';
+const RAW_ABILITIES = loadJSON('data/raw/abilities.json');
+const RAW_ABILITY_DYNAMIC_DOTS = loadJSON('data/raw/abilitydynamicdots.json');
+const RAW_ABILITY_DYNAMIC_SPECIAL_VALUES = loadJSON('data/raw/abilitydynamicspecialvalues.json');
 
 export const abilities = new Map<string, Ability>(
   Object.entries(RAW_ABILITIES as Record<string, Ability>),

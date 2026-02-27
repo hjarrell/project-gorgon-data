@@ -1,6 +1,7 @@
 import type { TsysProfilesRecord } from '../schemas';
+import { loadJSON } from '../load-json';
 
-import RAW_TSYS_PROFILES from './raw/tsysprofiles.json';
+const RAW_TSYS_PROFILES = loadJSON('data/raw/tsysprofiles.json');
 
 export const tsysProfiles = new Map<string, string[]>(
   Object.entries(RAW_TSYS_PROFILES as TsysProfilesRecord),

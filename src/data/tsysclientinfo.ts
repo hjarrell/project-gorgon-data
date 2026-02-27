@@ -1,6 +1,7 @@
 import type { TsysPower } from '../schemas/tsysclientinfo';
+import { loadJSON } from '../load-json';
 
-import RAW_TSYS_CLIENT_INFO from './raw/tsysclientinfo.json';
+const RAW_TSYS_CLIENT_INFO = loadJSON('data/raw/tsysclientinfo.json');
 
 export const tsysClientInfo = new Map<string, TsysPower>(
   Object.entries(RAW_TSYS_CLIENT_INFO as Record<string, TsysPower>),

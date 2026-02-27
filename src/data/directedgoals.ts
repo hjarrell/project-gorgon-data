@@ -1,6 +1,7 @@
 import type { DirectedGoal } from '../schemas';
+import { loadJSON } from '../load-json';
 
-import RAW_DIRECTED_GOALS from './raw/directedgoals.json';
+const RAW_DIRECTED_GOALS = loadJSON('data/raw/directedgoals.json');
 
 export const directedGoals = RAW_DIRECTED_GOALS as DirectedGoal[];
 

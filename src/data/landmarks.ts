@@ -1,6 +1,7 @@
 import type { Landmark } from '../schemas';
+import { loadJSON } from '../load-json';
 
-import RAW_LANDMARKS from './raw/landmarks.json';
+const RAW_LANDMARKS = loadJSON('data/raw/landmarks.json');
 
 export const landmarks = new Map<string, Landmark[]>(
   Object.entries(RAW_LANDMARKS as Record<string, Landmark[]>),

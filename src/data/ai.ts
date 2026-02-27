@@ -1,6 +1,7 @@
 import type { Ai } from '../schemas';
+import { loadJSON } from '../load-json';
 
-import RAW_AI from './raw/ai.json';
+const RAW_AI = loadJSON('data/raw/ai.json');
 
 export const ai = new Map<string, Ai>(
   Object.entries(RAW_AI as Record<string, Ai>),

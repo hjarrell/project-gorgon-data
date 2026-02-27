@@ -1,6 +1,7 @@
 import type { StorageVault } from '../schemas';
+import { loadJSON } from '../load-json';
 
-import RAW_STORAGE_VAULTS from './raw/storagevaults.json';
+const RAW_STORAGE_VAULTS = loadJSON('data/raw/storagevaults.json');
 
 export const storageVaults = new Map<string, StorageVault>(
   Object.entries(RAW_STORAGE_VAULTS as Record<string, StorageVault>),
