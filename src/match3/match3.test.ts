@@ -230,7 +230,8 @@ describe('findMatches', () => {
       [1, 1, 2, 1, 1],
     ]);
     const idSrc = createIdSource(100);
-    const result = applyMove(board, { row: 1, col: 0 }, { row: 2, col: 0 }, 4, 5, idSrc);
+    const rng = seededRng(0);
+    const result = applyMove(board, { row: 1, col: 0 }, { row: 2, col: 0 }, 4, 5, idSrc, rng);
     // Should have at least 2 cascade steps: initial YYY clear, then + shaped O clear
     expect(result.cascadeSteps.length).toBeGreaterThanOrEqual(2);
     // The second cascade should contain the merged O match

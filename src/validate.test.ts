@@ -303,17 +303,17 @@ describe('spot-check known items', () => {
     expect(effect.StackingPriority).toBe(101);
   });
 
-  it('landmarks: AreaApartment1 has an Exit portal', () => {
+  it('landmarks: AreaCasino has an Employee Exit portal', () => {
     const raw = RAW_LANDMARKS as Record<string, Array<{
       Name: string; Loc: string; Type: string; Desc?: string;
     }>>;
-    const area = raw['AreaApartment1'];
+    const area = raw['AreaCasino'];
     expect(area).toBeDefined();
     expect(area.length).toBeGreaterThan(0);
     const exit = area[0];
-    expect(exit.Name).toBe('Exit');
+    expect(exit.Name).toBe('Employee Exit');
     expect(exit.Type).toBe('Portal');
-    expect(exit.Desc).toBe('Return to Statehelm');
+    expect(exit.Desc).toBe('Employees Only!');
   });
 
   it('lorebookInfo: has Categories with expected keys', () => {

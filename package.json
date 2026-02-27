@@ -93,6 +93,14 @@
   ],
   "author": "hunterjarrell",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hjarrell/project-gorgon-data.git"
+  },
+  "homepage": "https://github.com/hjarrell/project-gorgon-data#readme",
+  "bugs": {
+    "url": "https://github.com/hjarrell/project-gorgon-data/issues"
+  },
   "packageManager": "pnpm@10.8.1",
   "peerDependencies": {
     "zod": "^3.25.0 || ^4.0.0"
