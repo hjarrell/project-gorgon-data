@@ -11,7 +11,6 @@ import type {
 import { generateBoard, createIdSource } from './board';
 import { getAllValidMoves } from './matching';
 import { applyMove } from './turn';
-import { reshuffleIfDead } from './reshuffle';
 import { MAX_K } from './constants';
 
 /**
@@ -114,18 +113,6 @@ export function advanceTurn(
     state.turnsLeft -= 1;
   }
   // 'refund' → no change
-
-  // Reshuffle check
-  const { board: reshuffled, reshuffled: didReshuffle } = reshuffleIfDead(
-    state.board,
-    state.K,
-    config.boardSize,
-    idSrc,
-    rng,
-  );
-  if (didReshuffle) {
-    state.board = reshuffled;
-  }
 
   return { result };
 }

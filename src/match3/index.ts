@@ -9,6 +9,7 @@ export type {
   IdSource,
   CascadeStep,
   TurnResult,
+  CollectionOpts,
   GameConfig,
   GemDef,
   CollectionCounters,
@@ -31,9 +32,6 @@ export { scoreMatch, scoreCascadeLevel, computeTurnEffect } from './scoring';
 
 // Turn resolution
 export { applyMove } from './turn';
-
-// Dead board handling
-export { reshuffleIfDead } from './reshuffle';
 
 // Solver types
 export type {

@@ -14,7 +14,6 @@ import {
   scoreCascadeLevel,
   computeTurnEffect,
   applyMove,
-  reshuffleIfDead,
 } from './index';
 import type { Board, Tile, Match, Pos, CascadeStep } from './types';
 
@@ -556,42 +555,5 @@ describe('getAllValidMoves', () => {
     const moves = getAllValidMoves(board, 7);
     // A freshly generated board should almost always have valid moves
     expect(moves.length).toBeGreaterThan(0);
-  });
-});
-
-describe('reshuffleIfDead', () => {
-  it('returns original board if moves exist', () => {
-    const board = generateBoard(4, 7, createIdSource(), seededRng(99));
-    const { board: result, reshuffled } = reshuffleIfDead(
-      board,
-      4,
-      7,
-      createIdSource(1000),
-    );
-    expect(reshuffled).toBe(false);
-    expect(result).toBe(board); // same reference
-  });
-
-  it('produces a board with valid moves after reshuffle', () => {
-    // 3x3 Latin square — no swap of adjacent tiles creates a 3-in-a-row
-    const board = boardFromTypes([
-      [0, 1, 2],
-      [1, 2, 0],
-      [2, 0, 1],
-    ]);
-
-    // Verify this board is indeed dead
-    expect(getAllValidMoves(board, 3)).toHaveLength(0);
-
-    const { board: result, reshuffled } = reshuffleIfDead(
-      board,
-      4, // K=4 gives enough variety after shuffle
-      3,
-      createIdSource(500),
-      seededRng(42),
-    );
-
-    expect(reshuffled).toBe(true);
-    expect(result.every((t) => t !== null)).toBe(true);
   });
 });
