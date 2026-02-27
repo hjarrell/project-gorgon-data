@@ -1,6 +1,7 @@
 import type { Board, CascadeStep, IdSource } from './types';
 import type {
   SolverFn,
+  AsyncSolverFn,
   SimConfig,
   GameSummary,
   GameReplay,
@@ -26,7 +27,7 @@ export function seededRng(seed: number): () => number {
 }
 
 /** Convert a CascadeStep's Map to a plain Record for structured clone. */
-function serializeCascadeStep(step: CascadeStep): SerializedCascadeStep {
+export function serializeCascadeStep(step: CascadeStep): SerializedCascadeStep {
   const origins: Record<string, number> = {};
   step.newTileOrigins.forEach((v, k) => {
     origins[String(k)] = v;
@@ -45,7 +46,7 @@ function serializeCascadeStep(step: CascadeStep): SerializedCascadeStep {
   };
 }
 
-interface GameState {
+export interface GameState {
   board: Board;
   K: number;
   turnsLeft: number;
@@ -56,7 +57,7 @@ interface GameState {
   turnsPlayed: number;
 }
 
-function initState(config: SimConfig, rng: () => number, idSrc: IdSource): GameState {
+export function initState(config: SimConfig, rng: () => number, idSrc: IdSource): GameState {
   const board = generateBoard(config.K, config.boardSize, idSrc, rng);
   return {
     board,
@@ -70,7 +71,7 @@ function initState(config: SimConfig, rng: () => number, idSrc: IdSource): GameS
   };
 }
 
-function advanceTurn(
+export function advanceTurn(
   state: GameState,
   move: [{ row: number; col: number }, { row: number; col: number }],
   config: SimConfig,
@@ -154,6 +155,7 @@ export function simulateGameSummary(
       K: state.K,
       boardSize: config.boardSize,
       turnsLeft: state.turnsLeft,
+      startTurns: config.turns,
       score: state.score,
       collectionCounters: [...state.counters],
       collectionThreshold: config.collectionThreshold,
@@ -202,6 +204,7 @@ export function simulateGameReplay(
       K: state.K,
       boardSize: config.boardSize,
       turnsLeft: state.turnsLeft,
+      startTurns: config.turns,
       score: state.score,
       collectionCounters: [...state.counters],
       collectionThreshold: config.collectionThreshold,
@@ -217,6 +220,118 @@ export function simulateGameReplay(
     );
 
     const actualMove = isValid ? move : validMoves[0];
+    const { result } = advanceTurn(state, actualMove, config, rng, idSrc);
+
+    if (result.cascadeSteps.length > 0) {
+      moves.push({
+        move: actualMove,
+        cascadeSteps: result.cascadeSteps.map(serializeCascadeStep),
+        totalScoreGained: result.totalScoreGained,
+        turnEffect: result.turnEffect,
+        typeClears: result.typeClears,
+        scoreAfter: state.score,
+        turnsLeftAfter: state.turnsLeft,
+        kAfter: state.K,
+        collectionCounters: [...state.counters],
+      });
+    }
+  }
+
+  return {
+    summary: {
+      finalScore: state.score,
+      turnsPlayed: state.turnsPlayed,
+      maxK: state.maxK,
+      collectionEvents: state.collectionEvents,
+      seed,
+    },
+    config,
+    moves,
+  };
+}
+
+// ── Async variants (for solvers that return Promise, e.g. ONNX inference) ──
+
+function isValidSolverMove(
+  move: [{ row: number; col: number }, { row: number; col: number }],
+  validMoves: [{ row: number; col: number }, { row: number; col: number }][],
+): boolean {
+  return validMoves.some(
+    ([a, b]) =>
+      (a.row === move[0].row && a.col === move[0].col &&
+       b.row === move[1].row && b.col === move[1].col) ||
+      (a.row === move[1].row && a.col === move[1].col &&
+       b.row === move[0].row && b.col === move[0].col),
+  );
+}
+
+/** Async version of simulateGameSummary. Awaits the solver each turn. */
+export async function simulateGameSummaryAsync(
+  solver: AsyncSolverFn,
+  config: SimConfig,
+  seed: number,
+): Promise<GameSummary> {
+  const rng = seededRng(seed);
+  const idSrc = createIdSource();
+  const state = initState(config, rng, idSrc);
+
+  while (state.turnsLeft > 0) {
+    const validMoves = getAllValidMoves(state.board, config.boardSize);
+    if (validMoves.length === 0) break;
+
+    const move = await solver({
+      board: state.board,
+      K: state.K,
+      boardSize: config.boardSize,
+      turnsLeft: state.turnsLeft,
+      startTurns: config.turns,
+      score: state.score,
+      collectionCounters: [...state.counters],
+      collectionThreshold: config.collectionThreshold,
+      validMoves,
+    });
+
+    const actualMove = isValidSolverMove(move, validMoves) ? move : validMoves[0];
+    advanceTurn(state, actualMove, config, rng, idSrc);
+  }
+
+  return {
+    finalScore: state.score,
+    turnsPlayed: state.turnsPlayed,
+    maxK: state.maxK,
+    collectionEvents: state.collectionEvents,
+    seed,
+  };
+}
+
+/** Async version of simulateGameReplay. Awaits the solver each turn. */
+export async function simulateGameReplayAsync(
+  solver: AsyncSolverFn,
+  config: SimConfig,
+  seed: number,
+): Promise<GameReplay> {
+  const rng = seededRng(seed);
+  const idSrc = createIdSource();
+  const state = initState(config, rng, idSrc);
+  const moves: ReplayMoveRecord[] = [];
+
+  while (state.turnsLeft > 0) {
+    const validMoves = getAllValidMoves(state.board, config.boardSize);
+    if (validMoves.length === 0) break;
+
+    const move = await solver({
+      board: state.board,
+      K: state.K,
+      boardSize: config.boardSize,
+      turnsLeft: state.turnsLeft,
+      startTurns: config.turns,
+      score: state.score,
+      collectionCounters: [...state.counters],
+      collectionThreshold: config.collectionThreshold,
+      validMoves,
+    });
+
+    const actualMove = isValidSolverMove(move, validMoves) ? move : validMoves[0];
     const { result } = advanceTurn(state, actualMove, config, rng, idSrc);
 
     if (result.cascadeSteps.length > 0) {

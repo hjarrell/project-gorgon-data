@@ -39,6 +39,7 @@ export { reshuffleIfDead } from './reshuffle';
 export type {
   SolverContext,
   SolverFn,
+  AsyncSolverFn,
   SimConfig,
   GameSummary,
   GameReplay,
@@ -47,4 +48,13 @@ export type {
 } from './solver-types';
 
 // Simulation
-export { simulateGameSummary, simulateGameReplay, seededRng } from './simulation';
+export {
+  simulateGameSummary,
+  simulateGameReplay,
+  simulateGameSummaryAsync,
+  simulateGameReplayAsync,
+  seededRng,
+} from './simulation';
+
+// Simulation internals (for custom async game loops)
+export type { GameState } from './simulation';

@@ -6,6 +6,7 @@ export interface SolverContext {
   K: number;
   boardSize: number;
   turnsLeft: number;
+  startTurns: number;
   score: number;
   collectionCounters: CollectionCounters;
   collectionThreshold: number;
@@ -14,6 +15,9 @@ export interface SolverContext {
 
 /** A solver is a pure function: context in, move out. */
 export type SolverFn = (ctx: SolverContext) => [Pos, Pos];
+
+/** Async-compatible solver (sync solvers satisfy this type naturally). */
+export type AsyncSolverFn = (ctx: SolverContext) => [Pos, Pos] | Promise<[Pos, Pos]>;
 
 /** Configuration for a simulation run. */
 export interface SimConfig {
