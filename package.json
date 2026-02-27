@@ -77,10 +77,11 @@
     "dist-esm"
   ],
   "scripts": {
-    "build": "tsc && tsc -p tsconfig.esm.json",
+    "build": "tsc && tsc -p tsconfig.esm.json && fix-esm-import-path dist-esm/ && echo '{\"type\":\"module\"}' > dist-esm/package.json",
     "clean": "rm -rf dist dist-esm",
     "prepublishOnly": "pnpm run clean && pnpm run build",
     "test": "vitest run",
+    "test:esm": "node scripts/test-esm.mjs",
     "analyze": "tsx scripts/analyze-json.ts",
     "update-files": "tsx scripts/update-files.ts",
     "diff-data": "tsx scripts/diff-data.ts",
@@ -107,6 +108,7 @@
   },
   "devDependencies": {
     "@types/node": "^25.3.0",
+    "fix-esm-import-path": "^1.10.3",
     "typescript": "^5.9.3",
     "vitest": "^4.0.18",
     "zod": "^3.25.0 || ^4.0.0"
